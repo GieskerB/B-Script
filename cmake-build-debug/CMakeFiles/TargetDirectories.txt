@@ -1,0 +1,3 @@
+C:/Users/bjarn/GitHub/Coding/CppForFun/B-Sharp/cmake-build-debug/CMakeFiles/B_Sharp.dir
+C:/Users/bjarn/GitHub/Coding/CppForFun/B-Sharp/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/bjarn/GitHub/Coding/CppForFun/B-Sharp/cmake-build-debug/CMakeFiles/rebuild_cache.dir
