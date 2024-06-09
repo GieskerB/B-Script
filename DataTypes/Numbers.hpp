@@ -6,6 +6,13 @@
 #define B_SHARP_NUMBERS_HPP
 
 #include <string>
+#include <cstdint>
+#include <array>
+
+
+
+typedef int64_t uint64 ;
+typedef __uint128_t uint128;
 
 namespace num {
 
@@ -20,11 +27,12 @@ namespace num {
 
         friend class NumberPrinter;
 
-
     protected:
 
         Size c_SIZE;
-        unsigned long long m_storage;
+        uint64 m_storage;
+
+        void clap_to_size();
 
         Number(Size, bool);
 
@@ -35,13 +43,11 @@ namespace num {
 
     class Integer : public Number {
 
-        bool c_is_signed;
+        bool c_IS_SIGNED;
 
-        const static Integer LITERALS[11];
+//        const static Integer LITERALS[11];
 
-        void clap_to_size();
-
-        explicit Integer(unsigned char);
+//        explicit Integer(unsigned char);
 
     public:
 
@@ -65,7 +71,15 @@ namespace num {
 
     class Decimal : public Number {
 
-        unsigned char m_SCALING_FACTOR;
+        unsigned char c_SCALING_FACTOR;
+
+        uint128 m_extended_storage;
+
+        static std::array<std::string,2> slip(std::string&);
+
+    public:
+
+        Decimal(std::string, Size, unsigned char);
 
     };
 

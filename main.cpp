@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include "DataTypes/Numbers.hpp"
 #include "DataTypes/NumberPrinter.hpp"
 
@@ -10,9 +11,11 @@ int main() {
     num::NumberPrinter::print_int(i);
     num::NumberPrinter::print_int(j);
 
-    num::Integer res = i - j;
+    num::Integer res = i + j;
 
     num::NumberPrinter::print_int(res);
+
+    num::Decimal("123", num::Size::BYTE, 4);
 
     return 0;
 }

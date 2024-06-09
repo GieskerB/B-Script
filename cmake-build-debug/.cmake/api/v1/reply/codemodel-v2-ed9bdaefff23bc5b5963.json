@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/bjarn/GitHub/Coding/CppForFun/B-Sharp/cmake-build-debug",
-		"source" : "C:/Users/bjarn/GitHub/Coding/CppForFun/B-Sharp"
+		"build" : "C:/Users/bjarn/GitHub/B-Script/cmake-build-debug",
+		"source" : "C:/Users/bjarn/GitHub/B-Script"
 	},
 	"version" : 
 	{
