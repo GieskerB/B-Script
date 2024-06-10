@@ -10,9 +10,12 @@
 namespace num {
 
     class NumberPrinter {
+
+        static std::string number_to_string(uint64, bool);
+
     public:
-        static void print_int(const Integer& number);
-        static void print_dec(const Integer& number);
+        static void print_int(const Integer&);
+        static void print_dec(const Decimal&);
     };
 
 } // num

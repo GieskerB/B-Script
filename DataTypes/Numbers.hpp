@@ -1,5 +1,5 @@
 //
-// Created by bjarn on 06.06.2024.
+// Created by bjarne on 06.06.2024.
 //
 
 #ifndef B_SHARP_NUMBERS_HPP
@@ -11,7 +11,7 @@
 
 
 
-typedef int64_t uint64 ;
+typedef uint64_t uint64 ;
 typedef __uint128_t uint128;
 
 namespace num {
@@ -31,27 +31,24 @@ namespace num {
 
         Size c_SIZE;
         uint64 m_storage;
+        bool m_is_positive;
+
+        static uint64 string_to_number(const std::string&);
 
         void clap_to_size();
 
         Number(Size, bool);
 
-    public:
-        bool m_is_positive;
-
     };
 
     class Integer : public Number {
 
+        friend class NumberPrinter;
+
         bool c_IS_SIGNED;
 
-//        const static Integer LITERALS[11];
-
-//        explicit Integer(unsigned char);
-
     public:
-
-        Integer(Size, bool);
+//        Integer(Size, bool);
 
         Integer(std::string, Size, bool);
 
@@ -71,11 +68,13 @@ namespace num {
 
     class Decimal : public Number {
 
+        friend class NumberPrinter;
+
         unsigned char c_SCALING_FACTOR;
 
-        uint128 m_extended_storage;
-
         static std::array<std::string,2> slip(std::string&);
+
+        static uint64 pow_base_10(int);
 
     public:
 
