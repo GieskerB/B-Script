@@ -11,7 +11,6 @@ namespace num {
 
     class NumberPrinter {
 
-        static std::string number_to_string(uint64, bool);
 
     public:
         static void print_int(const Integer&);

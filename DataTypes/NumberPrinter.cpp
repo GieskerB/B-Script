@@ -8,35 +8,12 @@
 #include <vector>
 #include <bitset>
 #include <numeric>
+#include <sstream>
 
 namespace num {
 
-
-    std::string NumberPrinter::number_to_string(uint64 number, bool is_positive) {
-        std::vector<char> digits;
-
-        if (number == 0) {
-            digits.push_back('0');
-        }
-        while (number != 0) {
-            unsigned char digit = number % 10;
-            number /= 10;
-            digits.push_back(static_cast<char>(digit + '0'));
-        }
-        if (!is_positive) {
-            digits.push_back(static_cast<char>('-'));
-        }
-
-        // TODO: Use string stream here!
-        std::string result{};
-        for (char &digit: std::ranges::reverse_view(digits)) {
-            result.push_back( digit);
-        }
-        return result;
-    }
-
     void NumberPrinter::print_int(const num::Integer &integer) {
-        std::cout << NumberPrinter::number_to_string(integer.m_storage, integer.m_is_positive);
+        std::cout << number_to_string(integer.m_storage, integer.m_is_positive);
     }
 
 
@@ -44,7 +21,7 @@ namespace num {
         const uint64 DECIMAL_BIT_MAP = (1ULL << decimal.c_SCALING_FACTOR)-1;
         uint64 pre_decimal_part = decimal.m_storage >> decimal.c_SCALING_FACTOR;
         uint64 decimal_part = decimal.m_storage & DECIMAL_BIT_MAP;
-        std::cout << NumberPrinter::number_to_string(pre_decimal_part, decimal.m_is_positive);
+        std::cout << number_to_string(pre_decimal_part, decimal.m_is_positive);
         std::cout << '.';
 
         uint64_t numerator = decimal_part;
@@ -55,12 +32,29 @@ namespace num {
         numerator /= divisor;
         denominator /= divisor;
 
+        std::stringstream temporary_storage;
         // Konvertiere Bruch in Dezimalstring
         for (int i = 0; i < decimal.c_SCALING_FACTOR; ++i) {
             numerator *= 10;
-            std::cout << (numerator / denominator);
+            temporary_storage << (numerator / denominator);
             numerator %= denominator;
         }
+        int num_of_consecutive_nines {0};
+       std::string fractional_part = temporary_storage.str();
+        for (int i = fractional_part.size()-1; i>= 0; --i) {
+            if(fractional_part[i] == '9') {
+                ++num_of_consecutive_nines;
+            } else {
+                if(num_of_consecutive_nines >= 3) {
+                    fractional_part[i] = static_cast<char>(fractional_part[i])+1;
+                    fractional_part= fractional_part.substr(0, i+1);
+                    break;
+                } else {
+                num_of_consecutive_nines = 0;
+                }
+            }
+        }
+        std::cout << fractional_part;
 
     }
 

@@ -4,20 +4,29 @@
 
 #include <stdexcept>
 #include <bitset>
+#include <iostream>
 #include "Numbers.hpp"
 
 namespace num {
 
-    std::array<std::string,2> Decimal::slip(std::string& str_repr) {
+    int find_decimal_point(const std::string & string) {
         int point_index = 0;
-        while (point_index < str_repr.size()) {
-            if (str_repr[point_index] == '.') {
+        while (point_index < string.size()) {
+            if (string[point_index] == '.') {
                 break;
             } else {
                 ++point_index;
             }
         }
-        if (point_index == str_repr.size()) {
+        if(point_index == string.size()) {
+            return -1;
+        }
+        return point_index;
+    }
+
+    std::array<std::string,2> Decimal::slip(std::string& str_repr) {
+        int point_index = find_decimal_point(str_repr);
+        if (point_index == -1) {
             str_repr.push_back('.');
         }
         std::array<std::string,2> result{};
@@ -34,25 +43,36 @@ namespace num {
         return base;
     }
 
+    std::string remove_unneeded(std::string & str) {
+        int point_index = find_decimal_point(str);
+        if (point_index == -1) {
+
+        }
+        return str;
+    }
+
     Decimal::Decimal(std::string str_repr, Size size, unsigned char scaling_factor) : Number(size,
                                                                                              str_repr.empty() or
                                                                                              str_repr[0] != '-'),
                                                                                       c_SCALING_FACTOR(scaling_factor) {
+
         if (str_repr.empty()) {
             return;
         }
+        str_repr = remove_unneeded(str_repr);
         if (!m_is_positive and str_repr.size() == 1) {
             throw std::runtime_error("Invalid number format1: '" + str_repr + "'\n");
         }
         auto parts = Decimal::slip(str_repr);
 
-        uint64 integer_part = Number::string_to_number(parts[0]) << c_SCALING_FACTOR;
+        uint64 integer_part = string_to_number(parts[0], c_SIZE*8-c_SCALING_FACTOR) << c_SCALING_FACTOR;
 
-        uint64 numerator = Number::string_to_number(parts[1]);
+        uint64 numerator = string_to_number(parts[1],c_SCALING_FACTOR);
         const uint64 denominator = pow_base_10(static_cast<int>(parts[1].size()));
 
         uint64 decimal_part{0};
         for(unsigned char i {0}; i< c_SCALING_FACTOR; ++i ) {
+
             numerator *= 2;
             decimal_part <<= 1;
             if (numerator >= denominator) {
@@ -60,6 +80,7 @@ namespace num {
                 numerator -= denominator;
             }
         }
+//        std::cout << "-"<< std::bitset<64>(decimal_part)<< "\n";
 
         m_storage = integer_part | decimal_part;
         clap_to_size();
