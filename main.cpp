@@ -18,21 +18,23 @@ int main() {
 //    num::NumberPrinter::print_int(res);
 //    std::cout << std::endl;
 
+//        num::Decimal("123.456",num::Size::INTEGER, 16);
 
     std::string lit = "0.";
 
-    for(int i = 0; i< 64; ++i) {
+    for(int i = 0; i< 20; ++i) {
         std::cout << i << " ";
-        num::Decimal s = num::Decimal(lit, num::Size::LONG,32);
+        num::Decimal s = num::Decimal(lit, num::Size::LONG,64);
         num::NumberPrinter::print_dec(s);
         std::cout << std::endl;
         lit.push_back('3');
     }
 
 
-    for(int i: num::CONSTANTS.MAX_BASE_10_LENGTH_FOR_BASE_2_LENGTH) {
-        std::cout << i << " ";
-    }
+//    std::cout << std::endl;
+//    for(int i: num::CONSTANTS.MAX_BASE_10_LENGTH_FOR_BASE_2_LENGTH) {
+//        std::cout << i << " ";
+//    }
 
     return 0;
 }
