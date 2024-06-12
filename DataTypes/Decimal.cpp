@@ -1,7 +1,3 @@
-//
-// Created by bjarn on 08.06.2024.
-//
-
 #include <stdexcept>
 #include <bitset>
 #include <iostream>
@@ -9,26 +5,43 @@
 
 namespace num {
 
+    /*
+     * A simple helper function to finde the decimal point in the string representation of the number.
+     * If point does not exist return -1
+     */
     int find_decimal_point(const std::string &string) {
         int point_index = 0;
         while (point_index < string.size()) {
             if (string[point_index] == '.') {
-                break;
+                return point_index;
             } else {
                 ++point_index;
             }
         }
-        if (point_index == string.size()) {
-            return -1;
-        }
-        return point_index;
+        return -1;
     }
 
+    /*
+     * Another helper function for fast computation of powers with base ten.
+     */
+    uint64 pow_base_10(int exponent) {
+        uint64 base = 1;
+        for (int i{0}; i < exponent; ++i) {
+            base *= 10;
+        }
+        return base;
+    }
+
+    /*
+     * Splits the string representation of the number at the decimal point and returns both parts (integer & fraction)
+     */
     std::array<std::string, 2> Decimal::slip(const std::string &str_repr) {
-        int point_index = find_decimal_point(str_repr);
+        const int point_index = find_decimal_point(str_repr);
 
         std::array<std::string, 2> result{};
+        // Integer part is the easiest. Zero to decimal point index. If not existent until the end!
         result[0] = str_repr.substr(0, point_index);
+        // Fraction part is simply everything after the decimal point.
         if (point_index == -1) {
             result[1] = "";
         } else {
@@ -37,43 +50,47 @@ namespace num {
         return result;
     }
 
-    uint64 Decimal::pow_base_10(int exponent) {
-        uint64 base = 1;
-        for (int i{0}; i < exponent; ++i) {
-            base *= 10;
-        }
-        return base;
-    }
-
-
+    /*
+     * Since there is a limit to how much information fits into a given amount of bits and base 10 numbers have a more
+     * than 3 times higher information amount per digit then base 2 number, too large or too small numbers will be cut.
+     */
     void Decimal::fit_string(std::array<std::string, 2> &string_pair) {
-        const int MAX_WHOLE_PART_SIZE = CONSTANTS.MAX_BASE_10_LENGTH_FOR_BASE_2_LENGTH[c_SIZE * 8 -
-                                                                                       c_SCALING_FACTOR];
-        const int MAX_DEC_PART_SIZE = CONSTANTS.MAX_BASE_10_LENGTH_FOR_BASE_2_LENGTH[c_SCALING_FACTOR];
-        if (string_pair[0].size() > MAX_WHOLE_PART_SIZE) {
-            string_pair[0] = std::string("9", MAX_WHOLE_PART_SIZE);
+        const int MAX_INTEGER_PART_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMER_OF_BTIS[c_SIZE * 8 -
+                                                                                        c_SCALING_FACTOR];
+        const int MAX_FRACTION_PART_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMER_OF_BTIS[c_SCALING_FACTOR];
+        if (string_pair[0].size() > MAX_INTEGER_PART_SIZE) {
+            // If string representation for integer part is too big, clap it to the max size and set all digits to 9.
+            string_pair[0] = std::string("9", MAX_INTEGER_PART_SIZE);
         }
-        if (string_pair[1].size() > MAX_WHOLE_PART_SIZE) {
-            string_pair[1] = string_pair[1].substr(0, MAX_DEC_PART_SIZE);
-            // Maybe add rounding here
+        if (string_pair[1].size() > MAX_INTEGER_PART_SIZE) {
+            // If string representation for fraction part is too long, cut the rest.
+            // TODO Maybe add rounding here
+            string_pair[1] = string_pair[1].substr(0, MAX_FRACTION_PART_SIZE);
         }
 
     }
 
+    /*
+     * Constructs a FixedPoint decimal number with variable size and accuracy!
+     */
     Decimal::Decimal(std::string str_repr, Size size, unsigned char scaling_factor) : Number(size,
                                                                                              str_repr.empty() or
                                                                                              str_repr[0] != '-'),
                                                                                       c_SCALING_FACTOR(scaling_factor) {
 
+        // Throw Error if format is wrong
         if (str_repr.empty()) {
             throw std::runtime_error("Invalid number format0: '" + str_repr + "'\n");
         } else if (!m_is_positive and str_repr.size() == 1) {
             throw std::runtime_error("Invalid number format1: '" + str_repr + "'\n");
         }
-        auto parts = Decimal::slip(str_repr);
 
+        // Prepare numbers for upcoming conversion:
+        auto parts = Decimal::slip(str_repr);
         fit_string(parts);
 
+        // At first convert the integer part into a binary number and shift it to the left to make room for the
+        // fraction part.
         uint64 integer_part;
         const unsigned char INTEGER_PART_BIT_SIZE{static_cast<unsigned char>(c_SIZE * 8 - c_SCALING_FACTOR)};
         if (check_overflow(parts[0], INTEGER_PART_BIT_SIZE)) {
@@ -83,24 +100,22 @@ namespace num {
         }
 
         uint64 numerator = string_to_number(parts[1], c_SCALING_FACTOR);
-        const uint64 denominator = pow_base_10(static_cast<int>(parts[1].size()));
+        uint64 denominator = pow_base_10(static_cast<int>(parts[1].size()));
 
-        uint64 decimal_part{0};
+        uint64 fraction_part{0};
         for (unsigned char i{0}; i < c_SCALING_FACTOR; ++i) {
-
+            // Converting from fraction to binary like with pen and paper...
             numerator *= 2;
-            decimal_part <<= 1;
+            fraction_part <<= 1;
             if (numerator >= denominator) {
-                decimal_part |= 1;
+                fraction_part |= 1;
                 numerator -= denominator;
             }
         }
-//        std::cout << "-"<< std::bitset<64>(decimal_part)<< "\n";
 
-        m_storage = integer_part | decimal_part;
+        // Finally combining both parts and clamping the number to its size just to be sure.
+        m_storage = integer_part | fraction_part;
         clap_to_size();
 
     }
-    // 100110011001100110011001100110011001100110011001100110011001
-    // 10011001100110011001100110011001100110011001100110011001100
 }

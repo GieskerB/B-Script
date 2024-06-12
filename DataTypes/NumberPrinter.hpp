@@ -13,8 +13,8 @@ namespace num {
 
 
     public:
-        static void print_int(const Integer&);
-        static void print_dec(const Decimal&);
+        static void print(const Integer&);
+        static void print(const Decimal &);
     };
 
 } // num

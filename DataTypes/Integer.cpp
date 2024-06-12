@@ -1,7 +1,3 @@
-//
-// Created by bjarn on 07.06.2024.
-//
-
 #include <stdexcept>
 #include "Numbers.hpp"
 #include "NumberPrinter.hpp"
@@ -13,7 +9,6 @@ namespace num {
         return false;
     }
 
-//    Integer::Integer(Size size, bool is_signed) : Integer("", size, is_signed) {}
 
     Integer::Integer(std::string str_repr, Size size, bool is_signed) : Number(size,
                                                                                str_repr.empty() or str_repr[0] != '-'),

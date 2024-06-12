@@ -1,13 +1,13 @@
-//
-// Created by bjarn on 08.06.2024.
-//
-
 #include <stdexcept>
 #include <iostream>
+#include <sstream>
 #include "Numbers.hpp"
 
 namespace num {
 
+    /*
+     * name is self-explanatory
+     */
     std::string number_to_string(uint64 number, bool is_positive) {
         std::vector<char> digits;
 
@@ -24,16 +24,18 @@ namespace num {
         }
 
         // TODO: Use string stream here!
-        std::string result{};
+        std::stringstream result;
         for (char &digit: std::ranges::reverse_view(digits)) {
-            result.push_back( digit);
+            result<< digit;
         }
-        return result;
+        return result.str();
     }
 
+    /*
+     * name is self-explanatory
+     */
     uint64 string_to_number(const std::string & str_repr,unsigned char bit_length) {
         const char start = str_repr[0] == '-' ? 1 : 0;
-//        std::string number_base_10 = str_repr.substr(start,CONSTANTS.MAX_BASE_10_LENGTH_FOR_BASE_2_LENGTH[bit_length]);
 
         if(str_repr.empty() or str_repr == "0") {
             return 0;
@@ -56,11 +58,36 @@ namespace num {
         return result;
     }
 
+    /*
+     * To further make sure a number does not get too big when initialized, just compare it to the biggest number
+     * possible with a given number of bits.
+     */
+    bool check_overflow(const std::string &string, unsigned char bit_size) {
+        const std::string COMPARE = CONSTANTS.MAX_NUMBER_LIMIT_STRING[bit_size];
+
+        if(string.size() < COMPARE.size()) {
+            return true;
+        }
+        for(int i = 0; i< COMPARE.size();++i) {
+            if(string[i] > COMPARE[i]) {
+                return  false;
+            } else if (string[i] < COMPARE[i]) {
+                return true;
+            }
+
+        }
+        // If all equals it's okay and right on the limit.
+        return true;
+    }
+
+    /*
+     * A struct to store some global constants
+     */
     template<unsigned char N>
-    Constants<N>::Constants() : MAX_BASE_10_LENGTH_FOR_BASE_2_LENGTH() {
+    Constants<N>::Constants() : INFORMATION_LIMIT_PER_NUMER_OF_BTIS() {
         uint64 temp_value = 1ULL;
         for (unsigned char i = 0; i != N; ++i) {
-            MAX_BASE_10_LENGTH_FOR_BASE_2_LENGTH[i] = std::ceil(i / std::log2f(10.f));
+            INFORMATION_LIMIT_PER_NUMER_OF_BTIS[i] = std::ceil(i / std::log2f(10.f));
             if(i == 0) {
                 MAX_NUMBER_LIMIT[i] = 0;
             } else {
@@ -72,11 +99,11 @@ namespace num {
         }
     }
 
-
+    /*
+     * to make sure a number does not get too big. Just "throw away" to larger bits.
+     */
     void Number::clap_to_size() {
-
         switch (c_SIZE) {
-
             case BYTE:
                 m_storage &= 0xFF;
                 break;
@@ -93,24 +120,9 @@ namespace num {
 
     }
 
-    bool Number::check_overflow(const std::string &string, unsigned char bit_size) {
-        const std::string COMPARE = CONSTANTS.MAX_NUMBER_LIMIT_STRING[bit_size];
-
-        if(string.size() < COMPARE.size()) {
-            return true;
-        }
-        for(int i = 0; i< COMPARE.size();++i) {
-            if(string[i] > COMPARE[i]) {
-                return  false;
-            } else if (string[i] < COMPARE[i]) {
-                return true;
-            }
-
-        }
-
-        return true;
-    }
-
+    /*
+     * Initialization of all base values.
+     */
     Number::Number(Size size, bool is_positive) : c_SIZE(size), m_storage(0), m_is_positive(is_positive) {}
 
 }

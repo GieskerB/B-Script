@@ -1,24 +1,23 @@
-//
-// Created by bjarn on 08.06.2024.
-//
-
 #include "NumberPrinter.hpp"
+
 #include <iostream>
-#include <ranges>
-#include <vector>
 #include <bitset>
-#include <numeric>
 #include <sstream>
 
 namespace num {
 
-
-    void NumberPrinter::print_int(const num::Integer &integer) {
+    /*
+     * In case of Integers simply print the number with help of the number_to_string method!
+     */
+    void NumberPrinter::print(const Integer & integer) {
         std::cout << number_to_string(integer.m_storage, integer.m_is_positive);
     }
 
-
-    void NumberPrinter::print_dec(const num::Decimal &decimal) {
+    /*
+     * In case of Decimal... Print the integer part like an integer and the reconstruct the fraction part.
+     */
+    void NumberPrinter::print(const Decimal & decimal) {
+        // Use the right bits to the right part when printing!
         const uint64 DECIMAL_BIT_MAP = (static_cast<uint128>(1) << decimal.c_SCALING_FACTOR) - 1;
         uint64 pre_decimal_part;
         if (decimal.c_SCALING_FACTOR == decimal.c_SIZE * 8) {
@@ -27,21 +26,23 @@ namespace num {
             pre_decimal_part = decimal.m_storage >> decimal.c_SCALING_FACTOR;
         }
         uint64 decimal_part = decimal.m_storage & DECIMAL_BIT_MAP;
+
+        // Simply print the integer part:
         std::cout << number_to_string(pre_decimal_part, decimal.m_is_positive);
         std::cout << '.';
 
+        // Converts the fraction step by step into a decimal number
         uint128 numerator = decimal_part;
         uint128 denominator = static_cast<uint128>(1) << decimal.c_SCALING_FACTOR;
 
-
         std::stringstream temporary_storage;
-        // Konvertiere Bruch in Dezimalstring
         for (int i = 0; i < decimal.c_SCALING_FACTOR; ++i) {
             numerator *= 10;
             temporary_storage << static_cast<uint64>(numerator / denominator);
             numerator %= denominator;
         }
 
+        // Use some clever techniques and round a bit to reduce confusion when printing.
         int num_of_consecutive_nines{0};
         char last_non_nine;
         int last_non_nine_index{-1};
@@ -61,8 +62,9 @@ namespace num {
                 last_non_nine_index = i;
             }
         }
+        // Just like before: Reduce output limit to the important part.
         std::cout << fractional_part.substr(0,
-                                            CONSTANTS.MAX_BASE_10_LENGTH_FOR_BASE_2_LENGTH[decimal.c_SCALING_FACTOR]);
+                                            CONSTANTS.INFORMATION_LIMIT_PER_NUMER_OF_BTIS[decimal.c_SCALING_FACTOR]);
 
     }
 
