@@ -15,6 +15,15 @@
 ########################
 
 //Value Computed by CMake
+B_Script_BINARY_DIR:STATIC=C:/Users/bjarn/GitHub/B-Script/cmake-build-debug
+
+//Value Computed by CMake
+B_Script_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+B_Script_SOURCE_DIR:STATIC=C:/Users/bjarn/GitHub/B-Script
+
+//Value Computed by CMake
 B_Sharp_BINARY_DIR:STATIC=C:/Users/bjarn/GitHub/B-Script/cmake-build-debug
 
 //Value Computed by CMake
