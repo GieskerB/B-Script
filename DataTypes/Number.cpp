@@ -62,7 +62,7 @@ namespace num {
      * To further make sure a number does not get too big when initialized, just compare it to the biggest number
      * possible with a given number of bits.
      */
-    bool check_overflow(const std::string &string, unsigned char bit_size) {
+    bool Number::check_overflow(const std::string &string, unsigned char bit_size) {
         const std::string COMPARE = CONSTANTS.MAX_NUMBER_LIMIT_STRING[bit_size];
 
         if(string.size() < COMPARE.size()) {

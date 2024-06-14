@@ -63,10 +63,15 @@ namespace num {
                 last_non_nine_index = i;
             }
         }
+        int index{static_cast<int>(fractional_part.size())};
+        while( index >1 and fractional_part[index-1] == '0') {
+            --index;
+        }
+        fractional_part = fractional_part.substr(0,index);
         // Just like before: Reduce output limit to the important part.
-        std::cout << fractional_part.substr(0,
+        fractional_part = fractional_part.substr(0,
                                             CONSTANTS.INFORMATION_LIMIT_PER_NUMER_OF_BTIS[decimal.c_SCALING_FACTOR]);
-
+        std::cout << fractional_part;
         if (line_break) std::cout << std::endl;
     }
 

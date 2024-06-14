@@ -51,6 +51,8 @@ namespace num {
         bool m_is_positive;
 
         void clap_to_size();
+        static bool check_overflow(const std::string &, unsigned char);
+
 
         Number(Size, bool);
 
@@ -60,13 +62,17 @@ namespace num {
 
         friend class NumberPrinter;
 
-        bool c_IS_SIGNED;
+        bool c_IS_SIGNED{};
+        void fit_string(std::string &);
 
-        bool check_string_size(const std::string &);
+        Integer();
 
     public:
 
+        Integer(const Integer&) = default;
         Integer(std::string, Size, bool);
+
+        Integer& operator= (const Integer&);
 
         friend Integer operator+( Integer , const Integer &);
         friend Integer operator+=( Integer &, const Integer &);
@@ -89,11 +95,13 @@ namespace num {
         unsigned char c_SCALING_FACTOR;
 
         static std::array<std::string,2> slip(const std::string&);
-
         void fit_string(std::array<std::string,2> &);
+
+        Decimal();
 
     public:
 
+        Decimal(const Decimal&) = default;
         Decimal(std::string, Size, unsigned char);
 
 

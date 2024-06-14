@@ -69,6 +69,8 @@ namespace num {
 
     }
 
+    Decimal::Decimal(): Number(Size::LONG,true), c_SCALING_FACTOR(c_SIZE * 4) {}
+
     /*
      * Constructs a FixedPoint decimal number with variable size and accuracy!
      */
@@ -92,7 +94,7 @@ namespace num {
         // fraction part.
         uint64 integer_part;
         const unsigned char INTEGER_PART_BIT_SIZE{static_cast<unsigned char>(c_SIZE * 8 - c_SCALING_FACTOR)};
-        if (check_overflow(parts[0], INTEGER_PART_BIT_SIZE)) {
+        if (Number::check_overflow(parts[0], INTEGER_PART_BIT_SIZE)) {
             integer_part = string_to_number(parts[0], INTEGER_PART_BIT_SIZE) << c_SCALING_FACTOR;
         } else {
             integer_part = CONSTANTS.MAX_NUMBER_LIMIT[INTEGER_PART_BIT_SIZE];

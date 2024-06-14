@@ -1,9 +1,12 @@
+#include <iostream>
 #include "Numbers.hpp"
 
 namespace num {
 
     Integer operator+(Integer int1, const Integer &int2) {
-        return int1 += int2;
+        Integer result(int1);
+        result += int2;
+        return result;
     }
 
     Integer operator+=(Integer &int1, const Integer &int2) {
@@ -35,7 +38,9 @@ namespace num {
     }
 
     Integer operator-(Integer int1, const Integer &int2) {
-        return int1 -= int2;
+        Integer result(int1);
+        result -= int2;
+        return result;
     }
 
     Integer operator-=(Integer &int1, const Integer &int2) {
@@ -45,7 +50,9 @@ namespace num {
     }
 
     Integer operator*(Integer int1, const Integer &int2) {
-        return int1 *= int2;
+        Integer result(int1);
+        result *= int2;
+        return result;
     }
 
     Integer operator*=(Integer &int1, const Integer &int2) {
@@ -59,7 +66,9 @@ namespace num {
     }
 
     Integer operator/(Integer int1, const Integer &int2) {
-        return int1 /= int2;
+        Integer result(int1);
+        result /= int2;
+        return result;
     }
 
     Integer operator/=(Integer &int1, const Integer &int2) {
@@ -74,12 +83,26 @@ namespace num {
 
 
     Decimal operator+(Decimal dec1, const Decimal &dec2) {
-        return dec1 += dec2;
+        Decimal result(dec1);
+        result += dec2;
+        return result;
     }
 
     Decimal operator+=(Decimal &dec1, const Decimal &dec2) {
-        uint128 dec1_large_storage = (static_cast<uint128> (dec1.m_storage)) << (64 - dec1.c_SCALING_FACTOR);
-        uint128 dec2_large_storage = (static_cast<uint128> (dec2.m_storage)) << (64 - dec2.c_SCALING_FACTOR);
+        const char SCALING_DELTA = static_cast<char>(dec1.c_SCALING_FACTOR - dec2.c_SCALING_FACTOR);
+
+        uint128 dec1_large_storage, dec2_large_storage;
+        if (SCALING_DELTA > 0) {
+            dec1_large_storage = dec1.m_storage;
+            dec2_large_storage = (static_cast<uint128> (dec2.m_storage)) << SCALING_DELTA;
+        } else if (SCALING_DELTA < 0) {
+            dec1_large_storage = (static_cast<uint128> (dec1.m_storage)) << -SCALING_DELTA;
+            dec2_large_storage = dec2.m_storage;
+        } else {
+            dec1_large_storage = dec1.m_storage;
+            dec2_large_storage = dec2.m_storage;
+        }
+
         if (dec1.m_is_positive and dec2.m_is_positive) {
             dec1_large_storage += dec2_large_storage;
         } else if (dec1.m_is_positive and !dec2.m_is_positive) {
@@ -103,13 +126,20 @@ namespace num {
             // Idea is: - 5 - 2 = - (5 + 2)
             dec1_large_storage += dec2_large_storage;
         }
-        dec1.m_storage = dec1_large_storage >> (64 - dec1.c_SCALING_FACTOR);
+
+        if (SCALING_DELTA < 0) {
+            dec1.m_storage = dec1_large_storage >> -SCALING_DELTA;
+        } else {
+            dec1.m_storage = dec1_large_storage;
+        }
         dec1.clap_to_size();
         return dec1;
     }
 
     Decimal operator-(Decimal dec1, const Decimal &dec2) {
-        return dec1 -= dec2;
+        Decimal result(dec1);
+        result -= dec2;
+        return result;
     }
 
     Decimal operator-=(Decimal &dec1, const Decimal &dec2) {
