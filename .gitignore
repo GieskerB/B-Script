@@ -2,7 +2,7 @@
 .idea
 
 # cmake debug folder
-cmake-build-debug
+/cmake-build-debug
 
 # cmake list file
 CMakeLists.txt

@@ -38,9 +38,9 @@ namespace num {
         return int1 -= int2;
     }
 
-    Integer operator-=(Integer& int1, const Integer &int2) {
+    Integer operator-=(Integer &int1, const Integer &int2) {
         Integer temp = int2;
-        temp.m_is_positive  = ! temp.m_is_positive;
+        temp.m_is_positive = !temp.m_is_positive;
         return int1 += temp;
     }
 
@@ -72,5 +72,50 @@ namespace num {
         return int1;
     }
 
+
+    Decimal operator+(Decimal dec1, const Decimal &dec2) {
+        return dec1 += dec2;
+    }
+
+    Decimal operator+=(Decimal &dec1, const Decimal &dec2) {
+        uint128 dec1_large_storage = (static_cast<uint128> (dec1.m_storage)) << (64 - dec1.c_SCALING_FACTOR);
+        uint128 dec2_large_storage = (static_cast<uint128> (dec2.m_storage)) << (64 - dec2.c_SCALING_FACTOR);
+        if (dec1.m_is_positive and dec2.m_is_positive) {
+            dec1_large_storage += dec2_large_storage;
+        } else if (dec1.m_is_positive and !dec2.m_is_positive) {
+            if (dec1_large_storage < dec2_large_storage) {
+                // Idea is: 2 - 5 = - (5 - 2)
+                dec1.m_is_positive = false;
+                dec1_large_storage = dec2_large_storage - dec2_large_storage;
+            } else {
+                dec1_large_storage -= dec2_large_storage;
+            }
+        } else if (!dec1.m_is_positive and dec2.m_is_positive) {
+            if (dec1_large_storage < dec2_large_storage) {
+                // Idea is: - 2 + 5 = 5 - 2
+                dec1.m_is_positive = true;
+                dec1_large_storage = dec2_large_storage - dec1_large_storage;
+            } else {
+                // Idea is: - 5 + 2 = - (5 - 2)
+                dec1_large_storage -= dec2_large_storage;
+            }
+        } else { //!int1.m_is_positive and !int2.m_is_positive
+            // Idea is: - 5 - 2 = - (5 + 2)
+            dec1_large_storage += dec2_large_storage;
+        }
+        dec1.m_storage = dec1_large_storage >> (64 - dec1.c_SCALING_FACTOR);
+        dec1.clap_to_size();
+        return dec1;
+    }
+
+    Decimal operator-(Decimal dec1, const Decimal &dec2) {
+        return dec1 -= dec2;
+    }
+
+    Decimal operator-=(Decimal &dec1, const Decimal &dec2) {
+        Decimal temp = dec2;
+        temp.m_is_positive = !temp.m_is_positive;
+        return dec1 += temp;
+    }
 
 }

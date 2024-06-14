@@ -96,6 +96,19 @@ namespace num {
 
         Decimal(std::string, Size, unsigned char);
 
+
+        friend Decimal operator+( Decimal , const Decimal &);
+        friend Decimal operator+=( Decimal &, const Decimal &);
+
+        friend Decimal operator-( Decimal , const Decimal &);
+        friend Decimal operator-=( Decimal &, const Decimal &);
+
+        friend Decimal operator*( Decimal , const Decimal &);
+        friend Decimal operator*=( Decimal &, const Decimal &);
+
+        friend Decimal operator/( Decimal , const Decimal &);
+        friend Decimal operator/=( Decimal &, const Decimal &);
+        
     };
 
 }

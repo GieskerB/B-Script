@@ -1,6 +1,5 @@
 #include <stdexcept>
 #include <bitset>
-#include <iostream>
 #include "Numbers.hpp"
 
 namespace num {

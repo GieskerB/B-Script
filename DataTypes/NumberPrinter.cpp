@@ -9,14 +9,15 @@ namespace num {
     /*
      * In case of Integers simply print the number with help of the number_to_string method!
      */
-    void NumberPrinter::print(const Integer & integer) {
+    void NumberPrinter::print(const Integer &integer, bool line_break) {
         std::cout << number_to_string(integer.m_storage, integer.m_is_positive);
+        if (line_break) std::cout << std::endl;
     }
 
     /*
      * In case of Decimal... Print the integer part like an integer and the reconstruct the fraction part.
      */
-    void NumberPrinter::print(const Decimal & decimal) {
+    void NumberPrinter::print(const Decimal &decimal, bool line_break) {
         // Use the right bits to the right part when printing!
         const uint64 DECIMAL_BIT_MAP = (static_cast<uint128>(1) << decimal.c_SCALING_FACTOR) - 1;
         uint64 pre_decimal_part;
@@ -66,6 +67,7 @@ namespace num {
         std::cout << fractional_part.substr(0,
                                             CONSTANTS.INFORMATION_LIMIT_PER_NUMER_OF_BTIS[decimal.c_SCALING_FACTOR]);
 
+        if (line_break) std::cout << std::endl;
     }
 
 } // num
