@@ -1,3 +1,0 @@
-C:/Users/bjarn/GitHub/B-Script/cmake-build-debug/CMakeFiles/B_Sharp.dir
-C:/Users/bjarn/GitHub/B-Script/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/bjarn/GitHub/B-Script/cmake-build-debug/CMakeFiles/rebuild_cache.dir
