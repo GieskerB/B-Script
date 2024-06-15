@@ -69,7 +69,12 @@ namespace num {
 
     }
 
-    Decimal::Decimal(): Number(Size::LONG,true), c_SCALING_FACTOR(c_SIZE * 4) {}
+    Decimal::Decimal() : Number(Size::LONG, true), c_SCALING_FACTOR(c_SIZE * 4) {}
+
+    Decimal::Decimal(const Integer &other, unsigned scaling_factor) : Number(other.c_SIZE, other.m_is_positive),
+                                                                      c_SCALING_FACTOR(scaling_factor) {
+        m_storage = other.m_storage << c_SCALING_FACTOR;
+    }
 
     /*
      * Constructs a FixedPoint decimal number with variable size and accuracy!

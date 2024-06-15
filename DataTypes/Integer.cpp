@@ -14,6 +14,10 @@ namespace num {
 
     Integer::Integer(): Number(Size::LONG,true), c_IS_SIGNED(false) {}
 
+    Integer::Integer(const num::Decimal & other): Number(other.c_SIZE,other.m_is_positive), c_IS_SIGNED(false) {
+        m_storage=  other.m_storage >> other.c_SCALING_FACTOR;
+    }
+
     Integer::Integer(std::string str_repr, Size size, bool is_signed) : Number(size,
                                                                                str_repr.empty() or str_repr[0] != '-'),
                                                                         c_IS_SIGNED(is_signed) {

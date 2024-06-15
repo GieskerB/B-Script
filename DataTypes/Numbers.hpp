@@ -53,19 +53,22 @@ namespace num {
         void clap_to_size();
         static bool check_overflow(const std::string &, unsigned char);
 
-
         Number(Size, bool);
 
     };
 
+    class Decimal;
+
     class Integer : public Number {
 
         friend class NumberPrinter;
+        friend class Decimal;
 
         bool c_IS_SIGNED{};
         void fit_string(std::string &);
 
         Integer();
+        Integer(const Decimal&);
 
     public:
 
@@ -73,6 +76,7 @@ namespace num {
         Integer(std::string, Size, bool);
 
         Integer& operator= (const Integer&);
+        int operator int(const Decimal&);
 
         friend Integer operator+( Integer , const Integer &);
         friend Integer operator+=( Integer &, const Integer &);
@@ -85,12 +89,33 @@ namespace num {
 
         friend Integer operator/( Integer , const Integer &);
         friend Integer operator/=( Integer &, const Integer &);
+
+        friend Decimal operator+(Integer , const Decimal &);
+        friend Decimal operator+(Decimal , const Integer &);
+        friend Integer operator+=(Integer& , const Decimal &);
+        friend Decimal operator+=(Decimal &, const Integer &);
+
+        friend Decimal operator-(Integer , const Decimal &);
+        friend Decimal operator-(Decimal , const Integer &);
+        friend Integer operator-=(Integer &, const Decimal &);
+        friend Decimal operator-=(Decimal &, const Integer &);
+
+        friend Decimal operator*(Integer , const Decimal &);
+        friend Decimal operator*(Decimal , const Integer &);
+        friend Integer operator*=(Integer &, const Decimal &);
+        friend Decimal operator*=(Decimal &, const Integer &);
+
+        friend Decimal operator/(Integer , const Decimal &);
+        friend Decimal operator/(Decimal , const Integer &);
+        friend Integer operator/=(Integer &, const Decimal &);
+        friend Decimal operator/=(Decimal &, const Integer &);
     };
 
 
     class Decimal : public Number {
 
         friend class NumberPrinter;
+        friend class Integer;
 
         unsigned char c_SCALING_FACTOR;
 
@@ -98,6 +123,7 @@ namespace num {
         void fit_string(std::array<std::string,2> &);
 
         Decimal();
+        Decimal(const Integer&, unsigned scaling_factor);
 
     public:
 
@@ -116,7 +142,26 @@ namespace num {
 
         friend Decimal operator/( Decimal , const Decimal &);
         friend Decimal operator/=( Decimal &, const Decimal &);
-        
+
+        friend Decimal operator+(Integer , const Decimal &);
+        friend Decimal operator+(Decimal , const Integer &);
+        friend Integer operator+=(Integer &, const Decimal &);
+        friend Decimal operator+=(Decimal &, const Integer &);
+
+        friend Decimal operator-(Integer , const Decimal &);
+        friend Decimal operator-(Decimal , const Integer &);
+        friend Integer operator-=(Integer &, const Decimal &);
+        friend Decimal operator-=(Decimal &, const Integer &);
+
+        friend Decimal operator*(Integer , const Decimal &);
+        friend Decimal operator*(Decimal , const Integer &);
+        friend Integer operator*=(Integer &, const Decimal &);
+        friend Decimal operator*=(Decimal &, const Integer &);
+
+        friend Decimal operator/(Integer , const Decimal &);
+        friend Decimal operator/(Decimal , const Integer &);
+        friend Integer operator/=(Integer &, const Decimal &);
+        friend Decimal operator/=(Decimal &, const Integer &);
     };
 
 }

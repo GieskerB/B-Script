@@ -19,6 +19,10 @@ dec64:60 = 0.34262334; // The very other extrem: Many Bits but most for fraction
 
 With large fraction parts like this I should have way better accuracy the float or double in both directions!
 
+### Status
+
+Im currently done with the simple 4 arithmetic operators for int and dec as well as print.
+
 ### Design
 
 Currently I haven't started at all with the interpreter but since i like languages like C/C++ and Java my language will be more similar to them than Python or JavaScript.

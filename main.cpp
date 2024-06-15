@@ -27,12 +27,14 @@ int main() {
 //        std::cout << std::endl;
 //        lit.push_back('3');
 
-    num::Decimal d1("2.5",num::Size::INTEGER, 7);
-    num::Decimal d2("2.5",num::Size::INTEGER, 5);
+    num::Integer i1("12",num::Size::LONG,false);
+
+    num::Decimal d1("0.5",num::Size::INTEGER,20);
+    num::Decimal d2("5.5",num::Size::INTEGER,23);
 
     num::NumberPrinter::print(d1,true);
     num::NumberPrinter::print(d2,true);
-    num::NumberPrinter::print(d1+d2);
+    num::NumberPrinter::print(i1*=d1);
 
 
 //    std::cout << std::endl;
