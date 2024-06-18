@@ -7,7 +7,6 @@
 
 #include <string>
 #include <cstdint>
-#include <array>
 #include <cmath>
 #include <vector>
 #include <ranges>
@@ -76,7 +75,6 @@ namespace num {
         Integer(std::string, Size, bool);
 
         Integer& operator= (const Integer&);
-        int operator int(const Decimal&);
 
         friend Integer operator+( Integer , const Integer &);
         friend Integer operator+=( Integer &, const Integer &);
@@ -119,8 +117,8 @@ namespace num {
 
         unsigned char c_SCALING_FACTOR;
 
-        static std::array<std::string,2> slip(const std::string&);
-        void fit_string(std::array<std::string,2> &);
+        static std::pair<std::string,std::string> slip(const std::string&);
+        void fit_string(std::pair<std::string,std::string> &);
 
         Decimal();
         Decimal(const Integer&, unsigned scaling_factor);

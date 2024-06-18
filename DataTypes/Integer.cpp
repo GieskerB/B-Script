@@ -28,6 +28,7 @@ namespace num {
         if (!m_is_positive and str_repr.size() == 1) {
             throw std::runtime_error("Invalid number format1: '" + str_repr + "'\n");
         }
+        fit_string(str_repr);
 
         if (Number::check_overflow(str_repr, c_SIZE * 8)) {
             m_storage = string_to_number(str_repr, c_SIZE * 8);

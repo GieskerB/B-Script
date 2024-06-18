@@ -215,8 +215,9 @@ namespace num {
     }
 
     Integer operator+=(Integer & int1, const Decimal &dec2) {
-        Integer addend(dec2);
-        int1 += addend;
+        Decimal addend(int1,dec2.c_SCALING_FACTOR);
+        addend += dec2;
+        int1 = Integer(addend);
         return int1;
     }
     Decimal operator+=(Decimal & dec1, const Integer &int2) {
@@ -239,8 +240,9 @@ namespace num {
     }
 
     Integer operator-=(Integer & int1, const Decimal &dec2) {
-        Integer addend(dec2);
-        int1 -= addend;
+        Decimal addend(int1,dec2.c_SCALING_FACTOR);
+        addend -= dec2;
+        int1 = Integer(addend);
         return int1;
     }
     Decimal operator-=(Decimal & dec1, const Integer &int2) {
@@ -263,8 +265,9 @@ namespace num {
     }
 
     Integer operator*=(Integer & int1, const Decimal &dec2) {
-        Integer addend(dec2);
-        int1 *= addend;
+        Decimal addend(int1,dec2.c_SCALING_FACTOR);
+        addend *= dec2;
+        int1 = Integer(addend);
         return int1;
     }
     Decimal operator*=(Decimal & dec1, const Integer &int2) {
@@ -287,8 +290,9 @@ namespace num {
     }
 
     Integer operator/=(Integer & int1, const Decimal &dec2) {
-        Integer addend(dec2);
-        int1 /= addend;
+        Decimal addend(int1,dec2.c_SCALING_FACTOR);
+        addend /= dec2;
+        int1 = Integer(addend);
         return int1;
     }
     Decimal operator/=(Decimal & dec1, const Integer &int2) {

@@ -23,7 +23,6 @@ namespace num {
             digits.push_back(static_cast<char>('-'));
         }
 
-        // TODO: Use string stream here!
         std::stringstream result;
         for (char &digit: std::ranges::reverse_view(digits)) {
             result<< digit;
