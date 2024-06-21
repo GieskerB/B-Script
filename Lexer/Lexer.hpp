@@ -7,10 +7,17 @@
 
 namespace lex {
 
+    struct Position {
+        int index{0}, line{0}, column{0};
+        std::string file_name;
+
+        inline void advance(char current_char) ;
+    };
+
     class Lexer {
 
         std::string m_text;
-        int m_pos;
+        Position m_pos;
         char m_current_char;
 
         [[nodiscard]] bool is_digit() const;
@@ -19,7 +26,7 @@ namespace lex {
 
     public:
 
-        explicit Lexer(std::string);
+        explicit Lexer(const std::string&);
 
         void advance();
 

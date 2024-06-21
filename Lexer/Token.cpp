@@ -4,6 +4,8 @@
 
 namespace lex {
 
+    const Token Token::NULL_TOKEN(TokenType::NONE);
+
     Token::Token(TokenType token_type, std::string value) : m_type(token_type), m_value(std::move(value)) {}
 
     std::ostream& operator<<(std::ostream & os, const Token & token) {

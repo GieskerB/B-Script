@@ -6,6 +6,7 @@
 namespace lex {
 
     enum TokenType {
+        NONE,
         INT,
         DEC,
         PLUS = '+',
@@ -18,10 +19,13 @@ namespace lex {
 
     class Token {
 
-        TokenType m_type;
-        std::string m_value;
 
     public:
+
+        const TokenType m_type;
+        const std::string m_value;
+
+        static const Token NULL_TOKEN;
 
         Token() = delete;
         Token(TokenType, std::string = "");

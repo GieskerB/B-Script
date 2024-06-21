@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include "Error/Error.hpp"
 #include "DataTypes/Numbers.hpp"
 #include "DataTypes/NumberPrinter.hpp"
 #include "FileReader/FileReader.hpp"
@@ -44,17 +45,16 @@ int main() {
 //    }
 
 
-    FileReader fr ;
-    fr.open_file("main.bs");
-    while(fr.can_read()) {
-        std::string tmp = fr.read_line();
-        std::cout << tmp << "->";
-        lex::Lexer lex (fr.read_line());
+
+    lex::Lexer lex ("main.bs");
+
+    try {
         auto tokens = lex.make_token();
         for(auto& token: tokens) {
             std::cout << token;
         }
-        std::cout << "\n";
+    } catch (err::Error& error) {
+        error.print();
     }
 
 
