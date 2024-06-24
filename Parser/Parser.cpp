@@ -2,45 +2,63 @@
 // Created by bjarn on 21.06.2024.
 //
 
+#include <iostream>
 #include "Parser.hpp"
 #include "../Error/Error.hpp"
 
+namespace par {
 
-Parser::Parser(const std::vector<lex::Token> &tokens) : m_tokens(tokens), m_current_token(lex::Token::NULL_TOKEN),
-                                                        m_index(-1) {
-    advance();
-}
 
-lex::Token Parser::advance() {
-    ++m_index;
-    if (m_index < m_tokens.size()) {
-        m_current_token = m_tokens[m_index];
+    lex::Token Parser::advance() {
+        ++m_index;
+        if (m_index < m_tokens.size()) {
+            m_current_token = m_tokens[m_index];
+        }
+        return m_current_token;
     }
-    return m_current_token;
-}
 
-par::NumberNode Parser::factor() {
-    if(m_current_token.m_type == lex::TokenType::INT or m_current_token.m_type == lex::TokenType::DEC) {
+    Node* Parser::factor() {
+        if(m_current_token.c_type == lex::TokenType::INT or m_current_token.c_type == lex::TokenType::DEC) {
+           lex::Token temp_token = m_current_token;
+            advance();
+            return new NumberNode(temp_token);
+        }
+        throw 1; // TODO:: Custom Error here!
+    }
+
+    Node* Parser::term() {
+        Node* left = factor();
+
+        while (m_current_token.c_type == lex::TokenType::MUL or m_current_token.c_type == lex::TokenType::DIV){
+            lex::Token op_token= m_current_token;
+            advance();
+            Node * right = factor();
+            left = new BinaryOperatorNode(left,op_token,right);
+        }
+
+        return left;
+    }
+
+    Node* Parser::expression() {
+        Node* left = term();
+
+        while (m_current_token.c_type == lex::TokenType::PLUS or m_current_token.c_type == lex::TokenType::MINUS){
+            lex::Token op_token= m_current_token;
+            advance();
+            Node * right = term();
+            left = new BinaryOperatorNode(left,op_token,right);
+        }
+
+        return left;
+    }
+
+
+    Parser::Parser(const std::vector<lex::Token> &tokens) : m_tokens(tokens), m_current_token(lex::Token::NULL_TOKEN),
+                                                            m_index(-1) {
         advance();
-        return par::NumberNode(m_current_token);
-    } else {
-        throw 1; // TODO: Right Exception here
     }
-}
 
-lex::Token Parser::term() {
-    auto left = factor();
-
-    while (m_current_token.m_type == lex::TokenType::MUL or m_current_token.m_type == lex::TokenType::DIV ) {
-        auto op = m_current_token;
-        advance();
-        auto right = factor();
-        // Vid2 Minute 7:00
-
+    Node *Parser::parse() {
+        return expression();
     }
-}
-
-lex::Token Parser::expression() {
-    return lex::Token();
-}
-
+} // par

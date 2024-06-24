@@ -22,12 +22,12 @@ namespace lex {
 
     public:
 
-        const TokenType m_type;
-        const std::string m_value;
+        TokenType c_type;
+        std::string c_value;
 
         static const Token NULL_TOKEN;
 
-        Token() = delete;
+        Token() = default;
         Token(TokenType, std::string = "");
 
         friend std::ostream& operator<< (std::ostream &, const Token&);

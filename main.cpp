@@ -1,13 +1,17 @@
 
+#define DEBUG
+
 #include <iostream>
 #include "Error/Error.hpp"
 #include "DataTypes/Numbers.hpp"
 #include "DataTypes/NumberPrinter.hpp"
 #include "FileReader/FileReader.hpp"
 #include "Lexer/Lexer.hpp"
+#include "Parser/Parser.hpp"
 
 
 int main() {
+
 
 //    num::Integer i("420", num::Size::SHORT, true), j ("-69", num::Size::BYTE, false);
 //
@@ -46,17 +50,19 @@ int main() {
 
 
 
-    lex::Lexer lex ("main.bs");
+    lex::Lexer lex("main.bs");
 
     try {
         auto tokens = lex.make_token();
-        for(auto& token: tokens) {
-            std::cout << token;
-        }
-    } catch (err::Error& error) {
+        par::Parser parser(tokens);
+        auto ast = parser.parse();
+        ast->print();
+//        for (auto &token: tokens) {
+//            std::cout << token;
+//        }
+    } catch (err::Error &error) {
         error.print();
     }
-
 
     return 0;
 }

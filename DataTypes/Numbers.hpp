@@ -72,7 +72,7 @@ namespace num {
     public:
 
         Integer(const Integer&) = default;
-        Integer(std::string, Size, bool);
+        Integer(std::string, Size = INTEGER, bool = false);
 
         Integer& operator= (const Integer&);
 
@@ -126,7 +126,7 @@ namespace num {
     public:
 
         Decimal(const Decimal&) = default;
-        Decimal(std::string, Size, unsigned char);
+        Decimal(std::string, Size = INTEGER, unsigned char = 16);
 
 
         friend Decimal operator+( Decimal , const Decimal &);

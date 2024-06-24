@@ -8,25 +8,33 @@
 #include <vector>
 #include "../Lexer/Token.hpp"
 #include "Nodes.hpp"
+#include "../DataTypes/Numbers.hpp"
 
-class Parser {
+namespace par {
 
-    std::vector<lex::Token> m_tokens;
-    lex::Token m_current_token;
-    int m_index;
+    class Parser {
 
-public:
+        std::vector<lex::Token> m_tokens;
+        lex::Token m_current_token;
+        int m_index;
 
-    Parser() = delete;
-    Parser(const std::vector<lex::Token>&);
+        lex::Token advance();
 
-    lex::Token advance();
+        Node* factor();
 
-    par::NumberNode factor();
-    lex::Token term();
-    lex::Token expression();
+        Node* term();
 
-};
+        Node* expression();
 
+    public:
+
+        Parser() = delete;
+
+        Parser(const std::vector<lex::Token> &);
+
+        Node* parse();
+
+    };
+} // par
 
 #endif //B_SHARP_PARSER_HPP
