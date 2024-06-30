@@ -4,15 +4,25 @@
 
 namespace lex {
 
-    const Token Token::NULL_TOKEN(TokenType::NONE);
+    const Token Token::NULL_TOKEN;
 
-    Token::Token(TokenType token_type, std::string value) : c_type(token_type), c_value(std::move(value)) {}
+    Token::Token():Token(TokenType::NONE,Position::NULL_POSITION) {}
 
-    std::ostream& operator<<(std::ostream & os, const Token & token) {
+    Token::Token(TokenType token_type, const Position& start, const Position& end, std::string value) : c_type(token_type),
+                                                                                          c_value(std::move(value)),
+                                                                                          c_start_pos(start),
+                                                                                          c_end_pos(end) {
+        if(c_end_pos == Position::NULL_POSITION) {
+            c_end_pos = Position(c_start_pos);
+            c_end_pos.advance();
+        }
+    }
+
+    std::ostream &operator<<(std::ostream &os, const Token &token) {
         std::string temp_string;
         const std::string open{'{'}, close{'}'};
         os << open;
-        switch (token.c_type){
+        switch (token.c_type) {
             case INT:
                 temp_string = "INT:";
                 os << temp_string << token.c_value;
@@ -28,6 +38,14 @@ namespace lex {
             case LPAREN:
             case RPAREN:
                 temp_string = static_cast<char>(token.c_type);
+                os << temp_string;
+                break;
+            case NONE:
+                temp_string = "NULL";
+                os << temp_string;
+                break;
+            case EOL:
+                temp_string = "\n";
                 os << temp_string;
                 break;
         }

@@ -23,8 +23,16 @@ std::string FileReader::read_line() {
     std::string line;
     if(!static_cast<bool>(std::getline(m_file, line))) {
         m_state = FileReaderState::DONE;
+        m_file.close();
     }
     return line;
+}
+
+std::string FileReader::read_line(unsigned int line_number) {
+    for (unsigned int line{0}; line < line_number;++line) {
+        read_line();
+    }
+    return read_line();
 }
 
 FileReaderState FileReader::get_state() {

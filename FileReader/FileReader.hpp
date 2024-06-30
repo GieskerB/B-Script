@@ -29,6 +29,7 @@ public:
     ~FileReader();
 
     std::string read_line();
+    std::string read_line(unsigned int);
 
     FileReaderState get_state();
 

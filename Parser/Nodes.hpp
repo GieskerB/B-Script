@@ -15,11 +15,13 @@ namespace par {
 
     struct Node {
 
-        const NodeType nodeType;
+        static int ALIVE_COUNTER;
+
+        const NodeType m_nodeType;
 
         Node() = delete;
         explicit Node(NodeType);
-        ~Node();
+        virtual ~Node() = 0;
 
         virtual void print() = 0;
 
@@ -29,16 +31,18 @@ namespace par {
         lex::Token num_token;
 
         NumberNode() = delete;
-        explicit NumberNode(const lex::Token&);
+        explicit NumberNode(lex::Token );
+        ~NumberNode() override;
         void print() override;
     };
 
     struct UnaryOperatorNode: public Node {
         lex::Token op_token;
-        Node* node;
+        Node* right_node;
 
         UnaryOperatorNode() = delete;
-        UnaryOperatorNode( const lex::Token& tok, Node * node );
+        UnaryOperatorNode( lex::Token  tok, Node * node );
+        ~UnaryOperatorNode() override;
         void print() override;
     };
 
@@ -48,7 +52,8 @@ namespace par {
         Node* right_node;
 
         BinaryOperatorNode() = delete;
-        explicit BinaryOperatorNode(Node * n1, const lex::Token& tok, Node * n2 ) ;
+        explicit BinaryOperatorNode(Node * l_node, lex::Token  tok, Node * r_node ) ;
+        ~BinaryOperatorNode() override;
         void print() override;
     };
 

@@ -3,16 +3,14 @@
 
 #include <string>
 #include <vector>
-#include "Token.hpp"
+#include <iostream>
 
+#include "Token.hpp"
+#include "Position.hpp"
+
+class Token;
 namespace lex {
 
-    struct Position {
-        int index{0}, line{0}, column{0};
-        std::string file_name;
-
-        inline void advance(char current_char) ;
-    };
 
     class Lexer {
 

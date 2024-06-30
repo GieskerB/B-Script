@@ -18,7 +18,7 @@ namespace num {
      * In case of Decimal... Print the integer part like an integer and the reconstruct the fraction part.
      */
     void NumberPrinter::print(const Decimal &decimal, bool line_break) {
-        // Use the right bits to the right part when printing!
+        // Use the right_node bits to the right_node part when printing!
         const uint64 DECIMAL_BIT_MAP = (static_cast<uint128>(1) << decimal.c_SCALING_FACTOR) - 1;
         uint64 pre_decimal_part;
         if (decimal.c_SCALING_FACTOR == decimal.c_SIZE * 8) {

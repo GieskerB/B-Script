@@ -3,6 +3,9 @@
 
 #include <string>
 
+#include "Lexer.hpp"
+#include "Position.hpp"
+
 namespace lex {
 
     enum TokenType {
@@ -14,23 +17,24 @@ namespace lex {
         MUL = '*',
         DIV = '/',
         LPAREN = '(',
-        RPAREN = ')'
+        RPAREN = ')',
+        EOL = ';'
     };
 
     class Token {
-
 
     public:
 
         TokenType c_type;
         std::string c_value;
+        Position c_start_pos, c_end_pos;
 
         static const Token NULL_TOKEN;
 
-        Token() = default;
-        Token(TokenType, std::string = "");
+        Token();
+        explicit Token(TokenType, const Position&, const Position& = Position::NULL_POSITION, std::string = "");
 
-        friend std::ostream& operator<< (std::ostream &, const Token&);
+        friend std::ostream &operator<<(std::ostream &, const Token &);
 
     };
 

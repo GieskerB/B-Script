@@ -75,7 +75,7 @@ namespace num {
             }
 
         }
-        // If all equals it's okay and right on the limit.
+        // If all equals it's okay and right_node on the limit.
         return true;
     }
 

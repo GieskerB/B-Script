@@ -60,9 +60,12 @@ int main() {
 //        for (auto &token: tokens) {
 //            std::cout << token;
 //        }
+        delete ast;
     } catch (err::Error &error) {
         error.print();
     }
+
+    std::cout <<  par::Node::ALIVE_COUNTER << '\n';
 
     return 0;
 }

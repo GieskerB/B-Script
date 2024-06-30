@@ -1,5 +1,4 @@
 #include <stdexcept>
-#include <iostream>
 #include "Lexer.hpp"
 #include "../FileReader/FileReader.hpp"
 #include "../Error/Error.hpp"
@@ -15,6 +14,7 @@ namespace lex {
         std::string number_string;
         char dot_count = 0;
 
+        Position start = Position(m_pos);
         while (m_current_char != '\0' and (is_digit() or m_current_char == '.')) {
             if (m_current_char == '.') {
                 if (dot_count == 1) {
@@ -27,15 +27,15 @@ namespace lex {
         }
 
         if (dot_count == 0) {
-            return {TokenType::INT, number_string};
+            return Token{TokenType::INT, start, m_pos, number_string};
         } else {
-            return {TokenType::DEC, number_string};
+            return Token{TokenType::DEC,  start, m_pos, number_string};
         }
     }
 
-    Lexer::Lexer(const std::string &file_name) : m_pos({-1, 0, -1, file_name}), m_current_char('\0') {
+    Lexer::Lexer(const std::string &file_name) : m_pos{-1, 0, -1, file_name}, m_current_char('\0') {
 
-        FileReader fr;
+        FileReader fr{};
         fr.open_file(file_name);
 
         while (fr.can_read()) {
@@ -45,20 +45,11 @@ namespace lex {
         advance();
     }
 
-    void Position::advance(char current_char) {
-        ++index;
-        if (current_char == '\n') {
-            ++line;
-            column = 0;
-        } else {
-            ++column;
-        }
-    }
 
     void Lexer::advance() {
         m_pos.advance(m_current_char);
-        if (m_pos.index < m_text.size()) {
-            m_current_char = m_text[m_pos.index];
+        if (m_pos.index() < m_text.size()) {
+            m_current_char = m_text[m_pos.index()];
         } else {
             m_current_char = '\0';
         }
@@ -72,30 +63,33 @@ namespace lex {
             } else if (is_digit()) {
                 tokens.push_back(make_number_token());
             } else if (m_current_char == '+') {
-                tokens.emplace_back(TokenType::PLUS);
+                tokens.emplace_back(TokenType::PLUS,m_pos);
                 advance();
             } else if (m_current_char == '-') {
-                tokens.emplace_back(TokenType::MINUS);
+                tokens.emplace_back(TokenType::MINUS,m_pos);
                 advance();
             } else if (m_current_char == '*') {
-                tokens.emplace_back(TokenType::MUL);
+                tokens.emplace_back(TokenType::MUL,m_pos);
                 advance();
             } else if (m_current_char == '/') {
-                tokens.emplace_back(TokenType::DIV);
+                tokens.emplace_back(TokenType::DIV,m_pos);
                 advance();
             } else if (m_current_char == '(') {
-                tokens.emplace_back(TokenType::LPAREN);
+                tokens.emplace_back(TokenType::LPAREN,m_pos);
                 advance();
             } else if (m_current_char == ')') {
-                tokens.emplace_back(TokenType::RPAREN);
+                tokens.emplace_back(TokenType::RPAREN,m_pos);
+                advance();
+            } else if (m_current_char == ';') {
+                tokens.emplace_back(TokenType::EOL,m_pos);
                 advance();
             } else {
                 //TODO: Custom Error here!
-                throw err::IllegalCharError(
-                        "in file '" + m_pos.file_name + "' at line " + std::to_string(m_pos.line) + ", column " +
-                        std::to_string(m_pos.column));
+
+                throw err::IllegalCharError(m_pos, "Character " + std::string{m_current_char} + " not allowed here");
             }
         }
+
         return tokens;
     }
 
