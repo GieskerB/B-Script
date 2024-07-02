@@ -1,14 +1,7 @@
+#include <iostream>
 #include "FileReader.hpp"
 
-void FileReader::close_file() {
-    if(can_read()) {
-        m_file.close();
-    }
-}
-
-FileReader::FileReader(): m_state(FileReaderState::EMPTY) {
-
-}
+FileReader::FileReader(): m_state(FileReaderState::EMPTY) {}
 
 FileReader::~FileReader() {
     close_file();
@@ -22,8 +15,7 @@ std::string FileReader::read_line() {
     m_state = FileReaderState::READING;
     std::string line;
     if(!static_cast<bool>(std::getline(m_file, line))) {
-        m_state = FileReaderState::DONE;
-        m_file.close();
+        close_file();
     }
     return line;
 }
@@ -33,10 +25,6 @@ std::string FileReader::read_line(unsigned int line_number) {
         read_line();
     }
     return read_line();
-}
-
-FileReaderState FileReader::get_state() {
-    return m_state;
 }
 
 bool FileReader::can_read() {
@@ -51,4 +39,11 @@ void FileReader::open_file(const std::string & file_name) {
     } else {
         m_state = FileReaderState::ERROR;
     }
+}
+
+void FileReader::close_file() {
+    if(can_read()) {
+        m_file.close();
+    }
+    m_state = FileReaderState::DONE;
 }

@@ -7,7 +7,6 @@
 
 #include <fstream>
 
-
 enum FileReaderState {
     EMPTY,
     OPEN,
@@ -21,8 +20,6 @@ class FileReader {
     FileReaderState m_state;
     std::fstream m_file;
 
-    void close_file();
-
 public:
 
     FileReader();
@@ -31,11 +28,11 @@ public:
     std::string read_line();
     std::string read_line(unsigned int);
 
-    FileReaderState get_state();
-
     bool can_read();
 
     void open_file(const std::string &);
+
+    void close_file();
 
 };
 

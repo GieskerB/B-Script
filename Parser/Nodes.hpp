@@ -17,7 +17,7 @@ namespace par {
 
         static int ALIVE_COUNTER;
 
-        const NodeType m_nodeType;
+        const NodeType NODE_TYPE;
 
         Node() = delete;
         explicit Node(NodeType);

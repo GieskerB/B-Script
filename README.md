@@ -1,28 +1,56 @@
-# B-Scrip
+# B-Script
 
-## Idea
+__B-Script is my own programming language. It is interpreted via this C++26 program.__
 
-My idea is to create my own programming language with my own interpreter.\
-I'll use the internet to get detailed information on how to build an interpreter since I never habe build anything like that.
+## Background story
 
-### Features of B-Script
+Back in spring 2024 I had to create a "Fixed-Point" class for one of my computer science courses at university. After
+I got hooked and expanded the class to not only support the __+__, __-__ and __*__ operator with a fixed scaling-factor
+with was set at compile time.\
+Now the class supports all default arithmetic operations with their assignment operator as well (e.g.: __+__
+\rightarrow __+=__). Also, the scaling factor is now set at runtime, the size of a given Fixed-Point variable in Bytes
+can also be chosen at runtime and these different FixedPoint object can be used in one arithmetic expression.
 
-I got hooked on creating a fixedpoint class from one of my computer science courses at university. In that context, we were only supposed to write a simple implementation of it.\
-My goal and special for this language is us use these FixedPoint numbers instead of floating point numbers like float or double.
+## Features
+
+### Special Feature
+
+Because of the motivation the _special feature_ of B-Script is the usage of this Fixed-Point class \underline{instead 
+of} floats or double! 
+
+### Datatypes
+
+As a simple name for the Fixed-Point variable I chose 'dec' as in decimal number. Not to be confused with decimal as a 
+base 10 number also that is true, too.
+
+In addition to the Fixed-Point class, I have created a custom Integer class to make if easier for me to implement all
+the different operators. Since floats and doubles are missing, currently only two datatypes exists: int, dec (bool, str
+and maybe char may follow)\
+But both int and dec can be stored as a 1, 2, 4 or 8 Byte variable. This will be set by the variable type. In addition,
+as written earlier, the scaling factor for the Fixed-Point class can be chosen as well.
+
 
 An example of how this might look:
-´´´
-dec32:8 x = 2.275; // A 32 Bit number with 8 Bits for the fraction part.
-dec8:2 y = 4.5; // A smaller Bit-Size and a smaller fraction part.
-dec64:60 = 0.34262334; // The very other extrem: Many Bits but most for fraction part.
-´´´
 
-With large fraction parts like this I should have way better accuracy the float or double in both directions!
+``` c++
+    int32 a = 12345; // 
+    dec32:8 x = 2.275; // A 32 Bit number with 8 Bits for the fraction part.
+    dec8:2 y = 4.5; // A smaller Bit-Size and a smaller fraction part.
+    dec64:60 = 0.34262334; // The very other extrem: Many Bits but most for fraction part.
+```
 
-### Status
+With large fraction parts like this, dec should have way better accuracy the float or double in both directions at the
+compromise of having to choose the accuracy yourself!
 
-Im currently done with the simple 4 arithmetic operators for int and dec as well as print.
+## Grammar
 
-### Design
+``` c++
+expression : term (('+'|'-') term)*
 
-Currently I haven't started at all with the interpreter but since i like languages like C/C++ and Java my language will be more similar to them than Python or JavaScript.
+term       : factor (('*'|'/') factor)*
+
+factor     : INT | DEC
+             ('+'/'-') factor
+             '(' expression ')'
+```
+\end{split}

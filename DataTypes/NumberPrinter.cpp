@@ -70,7 +70,7 @@ namespace num {
         fractional_part = fractional_part.substr(0,index);
         // Just like before: Reduce output limit to the important part.
         fractional_part = fractional_part.substr(0,
-                                            CONSTANTS.INFORMATION_LIMIT_PER_NUMER_OF_BTIS[decimal.c_SCALING_FACTOR]);
+                                            CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[decimal.c_SCALING_FACTOR]);
         std::cout << fractional_part;
         if (line_break) std::cout << std::endl;
     }

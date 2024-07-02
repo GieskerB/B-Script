@@ -8,10 +8,12 @@
 #include "Token.hpp"
 #include "Position.hpp"
 
-class Token;
 namespace lex {
+    class Token;
 
-
+    /**
+     * The lexer turns a text into a sequenz of tokens for the parser to process.
+     */
     class Lexer {
 
         std::string m_text;

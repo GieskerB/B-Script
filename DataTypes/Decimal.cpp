@@ -34,15 +34,15 @@ namespace num {
     /*
      * Splits the string representation of the number at the decimal point and returns both parts (integer & fraction)
      */
-    std::pair<std::string,std::string> Decimal::slip(const std::string &str_repr) {
+    std::pair<std::string, std::string> Decimal::slip(const std::string &str_repr) {
         const int point_index = find_decimal_point(str_repr);
 
-        std::pair<std::string,std::string> result{};
+        std::pair<std::string, std::string> result{};
         // Integer part is the easiest. Zero to decimal point index. If not existent until the end!
         result.first = str_repr.substr(0, point_index);
         // Fraction part is simply everything after the decimal point.
         if (point_index == -1) {
-            result.second= "";
+            result.second = "";
         } else {
             result.second = str_repr.substr(point_index + 1, str_repr.size() - point_index);
         }
@@ -53,10 +53,10 @@ namespace num {
      * Since there is a limit to how much information fits into a given amount of bits and base 10 numbers have a more
      * than 3 times higher information amount per digit then base 2 number, too large or too small numbers will be cut.
      */
-    void Decimal::fit_string(std::pair<std::string,std::string> &string_pair) {
-        const int MAX_INTEGER_PART_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMER_OF_BTIS[c_SIZE * 8 -
-                                                                                        c_SCALING_FACTOR];
-        const int MAX_FRACTION_PART_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMER_OF_BTIS[c_SCALING_FACTOR];
+    void Decimal::fit_string(std::pair<std::string, std::string> &string_pair) {
+        const int MAX_INTEGER_PART_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[c_SIZE * 8 -
+                                                                                         c_SCALING_FACTOR];
+        const int MAX_FRACTION_PART_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[c_SCALING_FACTOR];
         if (string_pair.first.size() > MAX_INTEGER_PART_SIZE) {
             // If string representation for integer part is too big, clap it to the max size and set all digits to 9.
             string_pair.first = std::string("9", MAX_INTEGER_PART_SIZE);
@@ -69,9 +69,10 @@ namespace num {
 
     }
 
-    Decimal::Decimal() : Number(Size::LONG, true), c_SCALING_FACTOR(c_SIZE * 4) {}
+    Decimal::Decimal() : Number(Size::LONG, true, NumberType::DEC), c_SCALING_FACTOR(c_SIZE * 4) {}
 
-    Decimal::Decimal(const Integer &other, unsigned scaling_factor) : Number(other.c_SIZE, other.m_is_positive),
+    Decimal::Decimal(const Integer &other, unsigned scaling_factor) : Number(other.c_SIZE, other.m_is_positive,
+                                                                             NumberType::DEC),
                                                                       c_SCALING_FACTOR(scaling_factor) {
         m_storage = other.m_storage << c_SCALING_FACTOR;
     }
@@ -81,7 +82,8 @@ namespace num {
      */
     Decimal::Decimal(std::string str_repr, Size size, unsigned char scaling_factor) : Number(size,
                                                                                              str_repr.empty() or
-                                                                                             str_repr[0] != '-'),
+                                                                                             str_repr[0] != '-',
+                                                                                             NumberType::DEC),
                                                                                       c_SCALING_FACTOR(scaling_factor) {
 
         // Throw Error if format is wrong

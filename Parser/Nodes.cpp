@@ -6,7 +6,7 @@ namespace par {
 
     int Node::ALIVE_COUNTER = 0;
 
-    Node::Node(NodeType nodeType) : m_nodeType(nodeType) {
+    Node::Node(NodeType nodeType) : NODE_TYPE(nodeType) {
         // TODO: Debug Print here
         ++Node::ALIVE_COUNTER;
     }
@@ -16,7 +16,7 @@ namespace par {
         --Node::ALIVE_COUNTER;
     }
 
-    NumberNode::NumberNode(lex::Token tok) : Node(NUMBER), num_token(std::move(tok)) {}
+    NumberNode::NumberNode(lex::Token tok) : Node(NodeType::NUMBER), num_token(std::move(tok)) {}
 
     NumberNode::~NumberNode() = default;
 
@@ -25,7 +25,7 @@ namespace par {
     }
 
 
-    UnaryOperatorNode::UnaryOperatorNode(lex::Token tok, Node *node) : Node(UNARY), op_token(std::move(tok)),
+    UnaryOperatorNode::UnaryOperatorNode(lex::Token tok, Node *node) : Node(NodeType::UNARY), op_token(std::move(tok)),
                                                                        right_node(node) {}
 
     UnaryOperatorNode::~UnaryOperatorNode(){
@@ -38,7 +38,7 @@ namespace par {
         std::cout ;
     }
 
-    BinaryOperatorNode::BinaryOperatorNode(Node *l_node, lex::Token tok, Node *r_node) : Node(BINARY),
+    BinaryOperatorNode::BinaryOperatorNode(Node *l_node, lex::Token tok, Node *r_node) : Node(NodeType::BINARY),
                                                                                          left_node(l_node),
                                                                                          op_token(std::move(tok)),
                                                                                          right_node(r_node) {}

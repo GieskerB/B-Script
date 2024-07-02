@@ -19,11 +19,10 @@ namespace num {
 
     std::string number_to_string(uint64, bool);
     uint64 string_to_number(const std::string&,unsigned char);
-    bool check_overflow(const std::string&, unsigned char);
 
     template<unsigned char N>
     struct Constants {
-        unsigned char INFORMATION_LIMIT_PER_NUMER_OF_BTIS[N];
+        unsigned char INFORMATION_LIMIT_PER_NUMBER_OF_BITS[N];
         uint64 MAX_NUMBER_LIMIT[N]{0};
         std::string MAX_NUMBER_LIMIT_STRING[N];
         Constants();
@@ -31,6 +30,10 @@ namespace num {
 
     const Constants<65> CONSTANTS{};
 
+    enum NumberType {
+        INT,
+        DEC
+    };
 
     enum Size {
         BYTE = 1,
@@ -49,10 +52,16 @@ namespace num {
         uint64 m_storage;
         bool m_is_positive;
 
-        void clap_to_size();
+        virtual void clap_to_size();
         static bool check_overflow(const std::string &, unsigned char);
 
-        Number(Size, bool);
+        Number(Size, bool, NumberType);
+
+    public:
+
+        const NumberType c_NUMBER_TYPE;
+
+        void invert();
 
     };
 

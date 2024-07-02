@@ -1,7 +1,0 @@
-expression:     term (('+'|'-') term)*
-
-term:           factor (('*'|'/') factor)*
-
-factor:         INT | DEC
-                ('+'/'-') factor
-                '(' expression ')'

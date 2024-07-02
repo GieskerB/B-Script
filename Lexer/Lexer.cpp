@@ -10,6 +10,9 @@ namespace lex {
     }
 
 
+    /**
+     * From a sequence of digits and at mose one dot create a number token.
+     */
     Token Lexer::make_number_token() {
         std::string number_string;
         char dot_count = 0;
@@ -18,7 +21,7 @@ namespace lex {
         while (m_current_char != '\0' and (is_digit() or m_current_char == '.')) {
             if (m_current_char == '.') {
                 if (dot_count == 1) {
-                    throw std::runtime_error("To many dots in number");
+                    throw err::InvalidSyntaxError(start, m_pos, "Too many dots in literal.");
                 }
                 ++dot_count;
             }
@@ -84,8 +87,6 @@ namespace lex {
                 tokens.emplace_back(TokenType::EOL,m_pos);
                 advance();
             } else {
-                //TODO: Custom Error here!
-
                 throw err::IllegalCharError(m_pos, "Character " + std::string{m_current_char} + " not allowed here");
             }
         }

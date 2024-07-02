@@ -8,6 +8,7 @@
 #include "FileReader/FileReader.hpp"
 #include "Lexer/Lexer.hpp"
 #include "Parser/Parser.hpp"
+#include "Interpreter/Interpreter.hpp"
 
 
 int main() {
@@ -44,28 +45,27 @@ int main() {
 //    num::NumberPrinter::print(i1*=d1,true);
 
 //    std::cout << std::endl;
-//    for(int i: num::CONSTANTS.INFORMATION_LIMIT_PER_NUMER_OF_BTIS) {
+//    for(int i: num::CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS) {
 //        std::cout << i << " ";
 //    }
 
 
 
-    lex::Lexer lex("main.bs");
+    lex::Lexer lexer("main.bs");
+    auto tokens = lexer.make_token();
+    par::Parser parser(tokens);
 
     try {
-        auto tokens = lex.make_token();
-        par::Parser parser(tokens);
         auto ast = parser.parse();
         ast->print();
-//        for (auto &token: tokens) {
-//            std::cout << token;
-//        }
         delete ast;
+        itp::Interpreter::visit(ast);
     } catch (err::Error &error) {
         error.print();
     }
 
-    std::cout <<  par::Node::ALIVE_COUNTER << '\n';
+
+    std::cout << "Number of leaked memory Nodes: "<< par::Node::ALIVE_COUNTER << '\n';
 
     return 0;
 }

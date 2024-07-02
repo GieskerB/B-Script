@@ -6,20 +6,22 @@ namespace num {
 
 
     void Integer::fit_string(std::string &string) {
-        const int MAX_INTEGER_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMER_OF_BTIS[c_SIZE * 8];
-        if(string.size() > MAX_INTEGER_SIZE) {
-            string = std::string("9",MAX_INTEGER_SIZE);
+        const int MAX_INTEGER_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[c_SIZE * 8];
+        if (string.size() > MAX_INTEGER_SIZE) {
+            string = std::string("9", MAX_INTEGER_SIZE);
         }
     }
 
-    Integer::Integer(): Number(Size::LONG,true), c_IS_SIGNED(false) {}
+    Integer::Integer() : Number(Size::LONG, true, NumberType::INT), c_IS_SIGNED(false) {}
 
-    Integer::Integer(const num::Decimal & other): Number(other.c_SIZE,other.m_is_positive), c_IS_SIGNED(false) {
-        m_storage=  other.m_storage >> other.c_SCALING_FACTOR;
+    Integer::Integer(const num::Decimal &other) : Number(other.c_SIZE, other.m_is_positive, NumberType::INT),
+                                                  c_IS_SIGNED(false) {
+        m_storage = other.m_storage >> other.c_SCALING_FACTOR;
     }
 
     Integer::Integer(std::string str_repr, Size size, bool is_signed) : Number(size,
-                                                                               str_repr.empty() or str_repr[0] != '-'),
+                                                                               str_repr.empty() or str_repr[0] != '-',
+                                                                               NumberType::INT),
                                                                         c_IS_SIGNED(is_signed) {
         if (str_repr.empty()) {
             return;
@@ -39,7 +41,7 @@ namespace num {
         clap_to_size();
     }
 
-    Integer& Integer::operator=(const num::Integer & other) {
+    Integer &Integer::operator=(const num::Integer &other) {
         m_storage = other.m_storage;
         m_is_positive = other.m_is_positive;
         clap_to_size();
