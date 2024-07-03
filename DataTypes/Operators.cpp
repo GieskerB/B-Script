@@ -1,13 +1,16 @@
 #include <iostream>
 #include "Numbers.hpp"
+#include "../Error/Error.hpp"
 
 namespace num {
 
     std::pair<uint128, bool>
     storage_addition(uint128 storage1, const uint128 storage2, bool is_positive1, const bool is_positive2) {
-        if (is_positive1 and is_positive2) {
+        if ((is_positive1 and is_positive2) or (!is_positive1 and !is_positive2)) {
+            // Idea is: +5 + 2 = +(5 + 2)
+            // And: -5 - 2 = -(5 + 2)
             storage1 += storage2;
-        } else if (is_positive1 and !is_positive2) {
+        } else if (is_positive1) { // 1 is pos but 2 is neg
             if (storage1 < storage2) {
                 // Idea is: 2 - 5 = - (5 - 2)
                 is_positive1 = false;
@@ -15,7 +18,7 @@ namespace num {
             } else {
                 storage1 -= storage2;
             }
-        } else if (!is_positive1 and is_positive2) {
+        } else { // 1 ist neg and 2 is pos
             if (storage1 < storage2) {
                 // Idea is: - 2 + 5 = 5 - 2
                 is_positive1 = true;
@@ -24,9 +27,6 @@ namespace num {
                 // Idea is: - 5 + 2 = - (5 - 2)
                 storage1 -= storage2;
             }
-        } else { //!int1.m_is_positive and !int2.m_is_positive
-            // Idea is: - 5 - 2 = - (5 + 2)
-            storage1 += storage2;
         }
         return std::pair{storage1, is_positive1};
     }
@@ -57,7 +57,7 @@ namespace num {
         }
     }
 
-    Integer operator+(Integer int1, const Integer &int2) {
+    Integer operator+(const Integer& int1, const Integer &int2) {
         Integer result(int1);
         result += int2;
         return result;
@@ -71,7 +71,7 @@ namespace num {
         return int1;
     }
 
-    Integer operator-(Integer int1, const Integer &int2) {
+    Integer operator-(const Integer& int1, const Integer &int2) {
         Integer result(int1);
         result -= int2;
         return result;
@@ -83,7 +83,7 @@ namespace num {
         return int1 += temp;
     }
 
-    Integer operator*(Integer int1, const Integer &int2) {
+    Integer operator*(const Integer& int1, const Integer &int2) {
         Integer result(int1);
         result *= int2;
         return result;
@@ -99,13 +99,16 @@ namespace num {
         return int1;
     }
 
-    Integer operator/(Integer int1, const Integer &int2) {
+    Integer operator/(const Integer& int1, const Integer &int2) {
         Integer result(int1);
         result /= int2;
         return result;
     }
 
     Integer operator/=(Integer &int1, const Integer &int2) {
+        if(int2.is_zero()) {
+            throw err::RuntimeError(int2.m_position_start, int2.m_position_end,"Division by 0 is not allowed!");
+        }
         // neg times neg = pos
         int1.m_is_positive ^= ~int2.m_is_positive;
 
@@ -116,7 +119,7 @@ namespace num {
     }
 
 
-    Decimal operator+(Decimal dec1, const Decimal &dec2) {
+    Decimal operator+(const Decimal& dec1, const Decimal &dec2) {
         Decimal result(dec1);
         result += dec2;
         return result;
@@ -136,7 +139,7 @@ namespace num {
         return dec1;
     }
 
-    Decimal operator-(Decimal dec1, const Decimal &dec2) {
+    Decimal operator-(const Decimal& dec1, const Decimal &dec2) {
         Decimal result(dec1);
         result -= dec2;
         return result;
@@ -149,7 +152,7 @@ namespace num {
         return dec1;
     }
 
-    Decimal operator*(Decimal dec1, const Decimal &dec2) {
+    Decimal operator*(const Decimal& dec1, const Decimal &dec2) {
         Decimal result(dec1);
         result *= dec2;
         return result;
@@ -175,13 +178,17 @@ namespace num {
         return dec1;
     }
 
-    Decimal operator/(Decimal dec1, const Decimal &dec2) {
+    Decimal operator/(const Decimal& dec1, const Decimal &dec2) {
         Decimal result(dec1);
         result /= dec2;
         return result;
     }
 
     Decimal operator/=(Decimal &dec1, const Decimal &dec2) {
+        if(dec2.is_zero()) {
+            throw err::RuntimeError(dec2.m_position_start, dec2.m_position_end,"Division by 0 is not allowed!");
+        }
+
         const char SCALING_DELTA = static_cast<char>(dec1.c_SCALING_FACTOR - dec2.c_SCALING_FACTOR);
 
         auto shifted_storage = shift_to_equal_size(dec1.m_storage, dec2.m_storage, SCALING_DELTA);
@@ -202,7 +209,7 @@ namespace num {
     }
 
 
-    Decimal operator+(Integer int1, const Decimal & dec2) {
+    Decimal operator+(const Integer& int1, const Decimal & dec2) {
         Decimal result(int1, dec2.c_SCALING_FACTOR);
         result += dec2;
         return result;
@@ -227,7 +234,7 @@ namespace num {
     }
 
     
-    Decimal operator-(Integer int1, const Decimal & dec2) {
+    Decimal operator-(const Integer& int1, const Decimal & dec2) {
         Decimal result(int1, dec2.c_SCALING_FACTOR);
         result -= dec2;
         return result;
@@ -252,7 +259,7 @@ namespace num {
     }
     
     
-    Decimal operator*(Integer int1, const Decimal & dec2) {
+    Decimal operator*(const Integer& int1, const Decimal & dec2) {
         Decimal result(int1, dec2.c_SCALING_FACTOR);
         result *= dec2;
         return result;
@@ -277,7 +284,7 @@ namespace num {
     }
 
     
-    Decimal operator/(Integer int1, const Decimal & dec2) {
+    Decimal operator/(const Integer& int1, const Decimal & dec2) {
         Decimal result(int1, dec2.c_SCALING_FACTOR);
         result /= dec2;
         return result;

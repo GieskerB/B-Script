@@ -47,6 +47,12 @@ namespace err {
 
     };
 
+    class RuntimeError: public Error {
+    public:
+        RuntimeError() = delete;
+        explicit RuntimeError(const lex::Position& , const lex::Position&, std::string );
+    };
+
 } // err
 
 #endif //B_SHARP_ERROR_HPP

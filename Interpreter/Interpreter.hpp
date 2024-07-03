@@ -1,6 +1,8 @@
 #ifndef B_SHARP_INTERPRETER_HPP
 #define B_SHARP_INTERPRETER_HPP
 
+#include <memory>
+
 #include "../DataTypes/Numbers.hpp"
 #include "../Parser/Nodes.hpp"
 
@@ -8,18 +10,22 @@ namespace itp {
 
     class Interpreter {
 
-        static num::Number* add_numbers(num::Number*,num::Number*);
-        static num::Number* sub_numbers(num::Number*,num::Number*);
-        static num::Number* mul_numbers(num::Number*,num::Number*);
-        static num::Number* div_numbers(num::Number*,num::Number*);
+        static std::shared_ptr<num::Number>
+        add_numbers(std::shared_ptr<num::Number> &, const std::shared_ptr<num::Number> &);
+        static std::shared_ptr<num::Number>
+        sub_numbers(std::shared_ptr<num::Number> &, const std::shared_ptr<num::Number> &);
+        static std::shared_ptr<num::Number>
+        mul_numbers(std::shared_ptr<num::Number> &, const std::shared_ptr<num::Number> &);
+        static std::shared_ptr<num::Number>
+        div_numbers(std::shared_ptr<num::Number> &, const std::shared_ptr<num::Number> &);
 
-        static num::Number* visit_number_node (par::NumberNode*);
-        static num::Number* visit_unary_node (par::UnaryOperatorNode*);
-        static num::Number* visit_binary_node (par::BinaryOperatorNode*);
+        static std::shared_ptr<num::Number> visit_number_node(const std::shared_ptr<par::NumberNode> &);
+        static std::shared_ptr<num::Number> visit_unary_node(const std::shared_ptr<par::UnaryOperatorNode> &);
+        static std::shared_ptr<num::Number> visit_binary_node(const std::shared_ptr<par::BinaryOperatorNode> &);
 
     public:
 
-        static num::Number* visit (par::Node*);
+        static std::shared_ptr<num::Number> visit(const std::shared_ptr<par::Node> &);
 
     };
 

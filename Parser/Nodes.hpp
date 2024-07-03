@@ -2,6 +2,7 @@
 #define B_SHARP_NODES_HPP
 
 #include <utility>
+#include <memory>
 
 #include "../Lexer/Token.hpp"
 
@@ -15,13 +16,12 @@ namespace par {
 
     struct Node {
 
-        static int ALIVE_COUNTER;
-
         const NodeType NODE_TYPE;
 
+        lex::Position pos_start,pos_end;
+
         Node() = delete;
-        explicit Node(NodeType);
-        virtual ~Node() = 0;
+        explicit Node(NodeType, const lex::Position& , const lex::Position&);
 
         virtual void print() = 0;
 
@@ -32,28 +32,24 @@ namespace par {
 
         NumberNode() = delete;
         explicit NumberNode(lex::Token );
-        ~NumberNode() override;
         void print() override;
     };
 
     struct UnaryOperatorNode: public Node {
+        std::shared_ptr<Node> right_node;
         lex::Token op_token;
-        Node* right_node;
 
         UnaryOperatorNode() = delete;
-        UnaryOperatorNode( lex::Token  tok, Node * node );
-        ~UnaryOperatorNode() override;
+        UnaryOperatorNode( lex::Token, const std::shared_ptr<Node>& );
         void print() override;
     };
 
     struct BinaryOperatorNode: public Node {
-        Node* left_node;
+        std::shared_ptr<Node> left_node,right_node;
         lex::Token op_token;
-        Node* right_node;
 
         BinaryOperatorNode() = delete;
-        explicit BinaryOperatorNode(Node * l_node, lex::Token  tok, Node * r_node ) ;
-        ~BinaryOperatorNode() override;
+        explicit BinaryOperatorNode(const std::shared_ptr<Node>& , lex::Token  , const std::shared_ptr<Node>&  ) ;
         void print() override;
     };
 

@@ -4,49 +4,35 @@
 
 namespace par {
 
-    int Node::ALIVE_COUNTER = 0;
+    Node::Node(NodeType nodeType, const lex::Position &start, const lex::Position &end) : NODE_TYPE(nodeType),
+                                                                                          pos_start(start),
+                                                                                          pos_end(end) {}
 
-    Node::Node(NodeType nodeType) : NODE_TYPE(nodeType) {
-        // TODO: Debug Print here
-        ++Node::ALIVE_COUNTER;
-    }
-
-    Node::~Node() {
-        // TODO: Debug Print here
-        --Node::ALIVE_COUNTER;
-    }
-
-    NumberNode::NumberNode(lex::Token tok) : Node(NodeType::NUMBER), num_token(std::move(tok)) {}
-
-    NumberNode::~NumberNode() = default;
+    NumberNode::NumberNode(lex::Token tok) : Node(NodeType::NUMBER, tok.c_start_pos, tok.c_end_pos),
+                                             num_token(std::move(tok)) {}
 
     void NumberNode::print() {
         std::cout << num_token;
     }
 
-
-    UnaryOperatorNode::UnaryOperatorNode(lex::Token tok, Node *node) : Node(NodeType::UNARY), op_token(std::move(tok)),
-                                                                       right_node(node) {}
-
-    UnaryOperatorNode::~UnaryOperatorNode(){
-        delete right_node;
-    }
+    UnaryOperatorNode::UnaryOperatorNode(lex::Token tok, const std::shared_ptr<Node> &node) : Node(NodeType::UNARY,
+                                                                                                   tok.c_start_pos,
+                                                                                                   node->pos_end),
+                                                                                              op_token(std::move(tok)),
+                                                                                              right_node(node) {}
 
     void UnaryOperatorNode::print() {
         std::cout << ' ' << op_token;
         right_node->print();
-        std::cout ;
     }
 
-    BinaryOperatorNode::BinaryOperatorNode(Node *l_node, lex::Token tok, Node *r_node) : Node(NodeType::BINARY),
-                                                                                         left_node(l_node),
-                                                                                         op_token(std::move(tok)),
-                                                                                         right_node(r_node) {}
-
-    BinaryOperatorNode::~BinaryOperatorNode(){
-        delete left_node;
-        delete right_node;
-    }
+    BinaryOperatorNode::BinaryOperatorNode(const std::shared_ptr<Node> &l_node, lex::Token tok,
+                                           const std::shared_ptr<Node> &r_node) : Node(NodeType::BINARY,
+                                                                                       l_node->pos_start,
+                                                                                       r_node->pos_end),
+                                                                                  left_node(l_node),
+                                                                                  op_token(std::move(tok)),
+                                                                                  right_node(r_node) {}
 
     void BinaryOperatorNode::print() {
         std::cout << '(';
@@ -55,4 +41,5 @@ namespace par {
         right_node->print();
         std::cout << ')';
     }
+
 } // par

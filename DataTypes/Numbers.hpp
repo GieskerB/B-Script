@@ -10,6 +10,7 @@
 #include <cmath>
 #include <vector>
 #include <ranges>
+#include "../Lexer/Position.hpp"
 
 
 typedef uint64_t uint64 ;
@@ -49,6 +50,7 @@ namespace num {
     protected:
 
         Size c_SIZE;
+        lex::Position m_position_start, m_position_end;
         uint64 m_storage;
         bool m_is_positive;
 
@@ -63,6 +65,9 @@ namespace num {
 
         void invert();
 
+        void set_position(const lex::Position & start, const lex::Position& end);
+
+        [[nodiscard]] bool is_zero() const;
     };
 
     class Decimal;
@@ -85,34 +90,34 @@ namespace num {
 
         Integer& operator= (const Integer&);
 
-        friend Integer operator+( Integer , const Integer &);
+        friend Integer operator+( const Integer& , const Integer &);
         friend Integer operator+=( Integer &, const Integer &);
 
-        friend Integer operator-( Integer , const Integer &);
+        friend Integer operator-( const Integer& , const Integer &);
         friend Integer operator-=( Integer &, const Integer &);
 
-        friend Integer operator*( Integer , const Integer &);
+        friend Integer operator*( const Integer& , const Integer &);
         friend Integer operator*=( Integer &, const Integer &);
 
-        friend Integer operator/( Integer , const Integer &);
+        friend Integer operator/( const Integer& , const Integer &);
         friend Integer operator/=( Integer &, const Integer &);
 
-        friend Decimal operator+(Integer , const Decimal &);
+        friend Decimal operator+(const Integer& , const Decimal &);
         friend Decimal operator+(Decimal , const Integer &);
         friend Integer operator+=(Integer& , const Decimal &);
         friend Decimal operator+=(Decimal &, const Integer &);
 
-        friend Decimal operator-(Integer , const Decimal &);
+        friend Decimal operator-(const Integer& , const Decimal &);
         friend Decimal operator-(Decimal , const Integer &);
         friend Integer operator-=(Integer &, const Decimal &);
         friend Decimal operator-=(Decimal &, const Integer &);
 
-        friend Decimal operator*(Integer , const Decimal &);
+        friend Decimal operator*(const Integer& , const Decimal &);
         friend Decimal operator*(Decimal , const Integer &);
         friend Integer operator*=(Integer &, const Decimal &);
         friend Decimal operator*=(Decimal &, const Integer &);
 
-        friend Decimal operator/(Integer , const Decimal &);
+        friend Decimal operator/(const Integer& , const Decimal &);
         friend Decimal operator/(Decimal , const Integer &);
         friend Integer operator/=(Integer &, const Decimal &);
         friend Decimal operator/=(Decimal &, const Integer &);
@@ -138,34 +143,34 @@ namespace num {
         Decimal(std::string, Size = INTEGER, unsigned char = 16);
 
 
-        friend Decimal operator+( Decimal , const Decimal &);
+        friend Decimal operator+( const Decimal& , const Decimal &);
         friend Decimal operator+=( Decimal &, const Decimal &);
 
-        friend Decimal operator-( Decimal , const Decimal &);
+        friend Decimal operator-( const Decimal& , const Decimal &);
         friend Decimal operator-=( Decimal &, const Decimal &);
 
-        friend Decimal operator*( Decimal , const Decimal &);
+        friend Decimal operator*( const Decimal& , const Decimal &);
         friend Decimal operator*=( Decimal &, const Decimal &);
 
-        friend Decimal operator/( Decimal , const Decimal &);
+        friend Decimal operator/( const Decimal& , const Decimal &);
         friend Decimal operator/=( Decimal &, const Decimal &);
 
-        friend Decimal operator+(Integer , const Decimal &);
+        friend Decimal operator+(const Integer& , const Decimal &);
         friend Decimal operator+(Decimal , const Integer &);
         friend Integer operator+=(Integer &, const Decimal &);
         friend Decimal operator+=(Decimal &, const Integer &);
 
-        friend Decimal operator-(Integer , const Decimal &);
+        friend Decimal operator-(const Integer& , const Decimal &);
         friend Decimal operator-(Decimal , const Integer &);
         friend Integer operator-=(Integer &, const Decimal &);
         friend Decimal operator-=(Decimal &, const Integer &);
 
-        friend Decimal operator*(Integer , const Decimal &);
+        friend Decimal operator*(const Integer& , const Decimal &);
         friend Decimal operator*(Decimal , const Integer &);
         friend Integer operator*=(Integer &, const Decimal &);
         friend Decimal operator*=(Decimal &, const Integer &);
 
-        friend Decimal operator/(Integer , const Decimal &);
+        friend Decimal operator/(const Integer& , const Decimal &);
         friend Decimal operator/(Decimal , const Integer &);
         friend Integer operator/=(Integer &, const Decimal &);
         friend Decimal operator/=(Decimal &, const Integer &);

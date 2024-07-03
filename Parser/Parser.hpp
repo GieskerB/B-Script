@@ -6,6 +6,8 @@
 #define B_SHARP_PARSER_HPP
 
 #include <vector>
+#include <memory>
+
 #include "../Lexer/Token.hpp"
 #include "Nodes.hpp"
 #include "../DataTypes/Numbers.hpp"
@@ -20,11 +22,11 @@ namespace par {
 
         lex::Token advance();
 
-        Node* factor();
+        std::shared_ptr<Node> factor();
 
-        Node* term();
+        std::shared_ptr<Node> term();
 
-        Node* expression();
+        std::shared_ptr<Node> expression();
 
     public:
 
@@ -32,7 +34,7 @@ namespace par {
 
         Parser(const std::vector<lex::Token> &);
 
-        Node* parse();
+        std::shared_ptr<Node> parse();
 
     };
 } // par
