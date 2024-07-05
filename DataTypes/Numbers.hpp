@@ -11,6 +11,7 @@
 #include <vector>
 #include <ranges>
 #include "../Lexer/Position.hpp"
+#include "../Interpreter/Context.hpp"
 
 
 typedef uint64_t uint64 ;
@@ -51,6 +52,7 @@ namespace num {
 
         Size c_SIZE;
         lex::Position m_position_start, m_position_end;
+        itp::Context m_context;
         uint64 m_storage;
         bool m_is_positive;
 
@@ -66,6 +68,7 @@ namespace num {
         void invert();
 
         void set_position(const lex::Position & start, const lex::Position& end);
+        void set_context(const itp::Context&);
 
         [[nodiscard]] bool is_zero() const;
     };

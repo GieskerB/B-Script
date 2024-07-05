@@ -123,7 +123,7 @@ namespace num {
      * Initialization of all base values.
      */
     Number::Number(Size size, bool is_positive, NumberType number_type) : c_SIZE(size), m_position_start(
-            lex::Position::NULL_POSITION), m_position_end(lex::Position::NULL_POSITION), m_storage(0),
+            lex::Position::NULL_POSITION), m_position_end(lex::Position::NULL_POSITION), m_context(itp::Context::NULL_CONTEXT), m_storage(0),
                                                                           m_is_positive(is_positive),
                                                                           c_NUMBER_TYPE(number_type) {}
 
@@ -138,6 +138,10 @@ namespace num {
 
     bool Number::is_zero() const{
         return m_storage == 0;
+    }
+
+    void Number::set_context(const itp::Context &context) {
+        m_context = context;
     }
 
 }

@@ -128,7 +128,7 @@ namespace itp {
         return left_number;
     }
 
-    std::shared_ptr<num::Number> Interpreter::visit(const std::shared_ptr<par::Node> &node) {
+    std::shared_ptr<num::Number> Interpreter::visit(const std::shared_ptr<par::Node> &node, const itp::Context& context) {
         if (node == nullptr) {
             throw std::runtime_error("Null pointer in Interpreter visit()!");
         }
@@ -136,13 +136,13 @@ namespace itp {
         switch (node->NODE_TYPE) {
 
             case par::NUMBER:
-                result = visit_number_node(std::dynamic_pointer_cast<par::NumberNode>(node));
+                result = visit_number_node(std::dynamic_pointer_cast<par::NumberNode>(node), context);
                 break;
             case par::UNARY:
-                result = visit_unary_node(std::dynamic_pointer_cast<par::UnaryOperatorNode>(node));
+                result = visit_unary_node(std::dynamic_pointer_cast<par::UnaryOperatorNode>(node), context);
                 break;
             case par::BINARY:
-                result = visit_binary_node(std::dynamic_pointer_cast<par::BinaryOperatorNode>(node));
+                result = visit_binary_node(std::dynamic_pointer_cast<par::BinaryOperatorNode>(node), context);
                 break;
             default:
                 throw std::runtime_error("Unknown Node in Interpreter visit()!");
@@ -150,28 +150,30 @@ namespace itp {
         return result;
     }
 
-    std::shared_ptr<num::Number> Interpreter::visit_number_node(const std::shared_ptr<par::NumberNode> &node) {
+    std::shared_ptr<num::Number> Interpreter::visit_number_node(const std::shared_ptr<par::NumberNode> &node,const  itp::Context& context) {
         if (node == nullptr) {
             throw std::runtime_error("Null pointer in Interpreter visit_number_node()!");
         }
         if (node->num_token.c_type == lex::TokenType::INT) {
             auto result =  std::make_shared<num::Integer>(node->num_token.c_value);
             result->set_position(node->pos_start,node->pos_end);
+            result->set_context(context);
             return result;
         } else if (node->num_token.c_type == lex::TokenType::DEC) {
             auto result = std::make_shared<num::Decimal>(node->num_token.c_value);
             result->set_position(node->pos_start,node->pos_end);
+            result->set_context(context);
             return result;
         } else {
             throw std::runtime_error("Unexpected token in Interpreter visit_number_node()!");
         }
     }
 
-    std::shared_ptr<num::Number> Interpreter::visit_unary_node(const std::shared_ptr<par::UnaryOperatorNode> &node) {
+    std::shared_ptr<num::Number> Interpreter::visit_unary_node(const std::shared_ptr<par::UnaryOperatorNode> &node,const  itp::Context& context) {
         if (node == nullptr) {
             throw std::runtime_error("Null pointer in Interpreter visit_unary_node()!");
         }
-        auto number = visit(node->right_node);
+        auto number = visit(node->right_node, context);
         if (node->op_token.c_type == lex::TokenType::MINUS) {
             number->invert();
         } else if (node->op_token.c_type != lex::TokenType::PLUS) {
@@ -180,12 +182,12 @@ namespace itp {
         return number;
     }
 
-    std::shared_ptr<num::Number> Interpreter::visit_binary_node(const std::shared_ptr<par::BinaryOperatorNode> &node) {
+    std::shared_ptr<num::Number> Interpreter::visit_binary_node(const std::shared_ptr<par::BinaryOperatorNode> &node,const  itp::Context& context) {
         if (node == nullptr) {
             throw std::runtime_error("Null pointer in Interpreter visit_binary_node()!");
         }
-        auto left_number = visit(node->left_node);
-        auto right_number = visit(node->right_node);
+        auto left_number = visit(node->left_node, context);
+        auto right_number = visit(node->right_node, context);
         if (node->op_token.c_type == lex::TokenType::PLUS) {
             left_number = add_numbers(left_number, right_number);
         } else if (node->op_token.c_type == lex::TokenType::MINUS) {
@@ -197,6 +199,7 @@ namespace itp {
         } else {
             throw std::runtime_error("Unexpected token in Interpreter visit_binary_node()!");
         }
+//        left_number->set_context(context);
         return left_number;
     }
 

@@ -1,5 +1,3 @@
-
-#include <iostream>
 #include "Error/Error.hpp"
 #include "DataTypes/Numbers.hpp"
 #include "DataTypes/NumberPrinter.hpp"
@@ -7,6 +5,7 @@
 #include "Lexer/Lexer.hpp"
 #include "Parser/Parser.hpp"
 #include "Interpreter/Interpreter.hpp"
+#include "Interpreter/Context.hpp"
 
 
 int main() {
@@ -19,7 +18,8 @@ int main() {
 
         auto ast = parser.parse();
         ast->print();
-        auto res = itp::Interpreter::visit(ast);
+        itp::Context program_context("<program>");
+        auto res = itp::Interpreter::visit(ast, program_context);
         if(res->c_NUMBER_TYPE == num::NumberType::INT) {
             num::NumberPrinter::print(*std::dynamic_pointer_cast<num::Integer>(res));
         } else {

@@ -9,27 +9,33 @@
 
 #include "../Lexer/Lexer.hpp"
 #include "../Lexer/Position.hpp"
+#include "../Interpreter/Context.hpp"
 
 
+class Context;
 namespace err {
 
     class Error : std::exception {
 
-        // Important information about the error: name, message and location.
-        std::string m_name, m_message;
-        lex::Position m_start_pos, m_end_pos;
-
-        void underline_with_arrows() const;
+        lex::Position m_end_pos;
 
     protected:
 
         Error(std::string, lex::Position , lex::Position , std::string);
 
+        // Important information about the error: name, message and location.
+        std::string m_name;
+        // Important information about the error: name, message and location.
+        std::string m_message;
+        lex::Position m_start_pos;
+
+        void underline_with_arrows() const;
+
     public:
 
         Error() = delete;
 
-        void print();
+        virtual void print();
 
     };
 
@@ -48,9 +54,15 @@ namespace err {
     };
 
     class RuntimeError: public Error {
+         itp::Context* p_context;
+
+        void generate_trace_back();
+
     public:
         RuntimeError() = delete;
-        explicit RuntimeError(const lex::Position& , const lex::Position&, std::string );
+        explicit RuntimeError(const lex::Position& , const lex::Position&, std::string, const itp::Context&);
+
+        void print();
     };
 
 } // err

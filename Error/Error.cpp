@@ -8,6 +8,7 @@
 #include <limits>
 #include <utility>
 #include <iostream>
+#include <sstream>
 
 namespace err {
 
@@ -58,8 +59,35 @@ namespace err {
             "IllegalCharError", start, end, std::move(message)) {}
 
 
-    RuntimeError::RuntimeError(const lex::Position &start, const lex::Position &end, std::string message) : Error(
-            "RuntimeError", start, end, std::move(message)) {
+    RuntimeError::RuntimeError(const lex::Position &start, const lex::Position &end, std::string message,
+                               const itp::Context &context) : Error(
+            "RuntimeError", start, end, std::move(message)), p_context(const_cast<itp::Context *>(&context)) {}
+
+
+    void RuntimeError::generate_trace_back() {
+
+        std::string result;
+        std::stringstream step_result;
+
+        lex::Position temp_pos = m_start_pos;
+
+        while (p_context != nullptr) {
+            step_result << "\tFile " << temp_pos.file_name() << ", line " << temp_pos.line() << " in "
+                        << p_context->get_display_name() << '\n';
+            temp_pos = p_context->get_position();
+            p_context = p_context->get_parent();
+            result.insert(0, step_result.str());
+        }
+
+        std::cerr << "\nTraceback (most recent call)\n";
+        std::cerr << result;
 
     }
+
+    void RuntimeError::print() {
+        generate_trace_back();
+        std::cerr << m_name << ": " << m_message << '\n';
+        underline_with_arrows();
+    }
+
 } // err
