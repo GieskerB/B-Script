@@ -4,12 +4,20 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <array>
 
 #include "Token.hpp"
 #include "Position.hpp"
 
 namespace lex {
     class Token;
+
+    struct Constants {
+        std::vector<std::string> c_KEYWORDS;
+        constexpr void generate_number_keywords(){
+            //TODO add keyword gen here
+        }
+    };
 
     /**
      * The lexer turns a text into a sequenz of tokens for the parser to process.
@@ -21,8 +29,10 @@ namespace lex {
         char m_current_char;
 
         [[nodiscard]] bool is_digit() const;
+        [[nodiscard]] bool is_letter() const;
 
         [[nodiscard]] Token make_number_token();
+        [[nodiscard]] Token make_word_token();
 
     public:
 

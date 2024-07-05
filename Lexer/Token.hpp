@@ -12,12 +12,15 @@ namespace lex {
         NONE,
         INT,
         DEC,
+        KEYWORD,
+        IDENTIFIER,
         PLUS = '+',
         MINUS = '-',
         MUL = '*',
         DIV = '/',
         LPAREN = '(',
         RPAREN = ')',
+        EQUALS = '=',
         EOL = ';'
     };
 

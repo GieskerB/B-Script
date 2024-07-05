@@ -31,12 +31,21 @@ namespace lex {
                 temp_string = "DEC:";
                 os << temp_string << token.c_value;
                 break;
+            case KEYWORD:
+                temp_string = "KEYWORD:";
+                os << temp_string << token.c_value;
+                break;
+            case IDENTIFIER:
+                temp_string = "IDENTIFIER:";
+                os << temp_string << token.c_value;
+                break;
             case PLUS:
             case MINUS:
             case MUL:
             case DIV:
             case LPAREN:
             case RPAREN:
+            case EQUALS:
                 temp_string = static_cast<char>(token.c_type);
                 os << temp_string;
                 break;

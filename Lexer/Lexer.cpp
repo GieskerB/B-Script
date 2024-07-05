@@ -9,6 +9,10 @@ namespace lex {
         return '0' <= m_current_char and m_current_char <= '9';
     }
 
+    bool Lexer::is_letter() const {
+        return ('a' <= m_current_char and m_current_char <= 'z') or ('A' <= m_current_char and m_current_char <= 'Z') or
+               '_' == m_current_char;
+    }
 
     /**
      * From a sequence of digits and at mose one dot create a number token.
@@ -32,7 +36,18 @@ namespace lex {
         if (dot_count == 0) {
             return Token{TokenType::INT, start, m_pos, number_string};
         } else {
-            return Token{TokenType::DEC,  start, m_pos, number_string};
+            return Token{TokenType::DEC, start, m_pos, number_string};
+        }
+    }
+
+
+    Token Lexer::make_word_token() {
+        std::string word_string;
+        Position start = Position(m_pos);
+
+        while(m_current_char != '\0' and (is_digit() or is_letter())) {
+            word_string.push_back(m_current_char);
+            advance();
         }
     }
 
@@ -65,26 +80,31 @@ namespace lex {
                 advance();
             } else if (is_digit()) {
                 tokens.push_back(make_number_token());
+            } else if (is_letter()) {
+                tokens.push_back(make_word_token());
             } else if (m_current_char == '+') {
-                tokens.emplace_back(TokenType::PLUS,m_pos);
+                tokens.emplace_back(TokenType::PLUS, m_pos);
                 advance();
             } else if (m_current_char == '-') {
-                tokens.emplace_back(TokenType::MINUS,m_pos);
+                tokens.emplace_back(TokenType::MINUS, m_pos);
                 advance();
             } else if (m_current_char == '*') {
-                tokens.emplace_back(TokenType::MUL,m_pos);
+                tokens.emplace_back(TokenType::MUL, m_pos);
                 advance();
             } else if (m_current_char == '/') {
-                tokens.emplace_back(TokenType::DIV,m_pos);
+                tokens.emplace_back(TokenType::DIV, m_pos);
                 advance();
             } else if (m_current_char == '(') {
-                tokens.emplace_back(TokenType::LPAREN,m_pos);
+                tokens.emplace_back(TokenType::LPAREN, m_pos);
                 advance();
             } else if (m_current_char == ')') {
-                tokens.emplace_back(TokenType::RPAREN,m_pos);
+                tokens.emplace_back(TokenType::RPAREN, m_pos);
                 advance();
             } else if (m_current_char == ';') {
-                tokens.emplace_back(TokenType::EOL,m_pos);
+                tokens.emplace_back(TokenType::EOL, m_pos);
+                advance();
+            } else if (m_current_char == '=') {
+                tokens.emplace_back(TokenType::EQUALS, m_pos);
                 advance();
             } else {
                 throw err::IllegalCharError(m_pos, "Character " + std::string{m_current_char} + " not allowed here");
@@ -93,6 +113,7 @@ namespace lex {
 
         return tokens;
     }
+
 
 }
 
