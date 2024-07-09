@@ -45,11 +45,12 @@ compromise of having to choose the accuracy yourself!
 ## Grammar
 
 ``` c++
-expression : term (('+'|'-') term)*
+expression : VAR_KEYWORD[VARIABLE] IDENTIFIER '=' expr
+             term (('+'|'-') term)*
 
 term       : factor (('*'|'/') factor)*
 
-factor     : INT | DEC
+factor     : INT | DEC | IDENTIFIER
              ('+'/'-') factor
              '(' expression ')'
 ```

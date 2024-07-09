@@ -1,7 +1,3 @@
-//
-// Created by bjarne on 06.06.2024.
-//
-
 #ifndef B_SHARP_NUMBERS_HPP
 #define B_SHARP_NUMBERS_HPP
 
@@ -10,12 +6,18 @@
 #include <cmath>
 #include <vector>
 #include <ranges>
+
+
 #include "../Lexer/Position.hpp"
 #include "../Interpreter/Context.hpp"
 
 
 typedef uint64_t uint64 ;
 typedef __uint128_t uint128;
+
+namespace itp{
+    class Context;
+}
 
 namespace num {
 
@@ -54,7 +56,7 @@ namespace num {
 
         Size c_SIZE;
         lex::Position m_position_start, m_position_end;
-        itp::Context m_context;
+        itp::Context* p_context;
         uint64 m_storage;
         bool m_is_positive;
 
@@ -65,12 +67,12 @@ namespace num {
 
     public:
 
-        const NumberType c_NUMBER_TYPE;
+        NumberType c_NUMBER_TYPE;
 
         void invert();
 
         void set_position(const lex::Position & start, const lex::Position& end);
-        void set_context(const itp::Context&);
+        void set_context(itp::Context&);
 
         [[nodiscard]] bool is_zero() const;
     };

@@ -24,17 +24,23 @@ namespace itp {
         div_numbers(std::shared_ptr<num::Number> &, const std::shared_ptr<num::Number> &);
 
         static std::shared_ptr<num::Number>
-        visit_number_node(const std::shared_ptr<par::NumberNode> &, const itp::Context &);
+        visit_variable_access_node(const std::shared_ptr<par::VariableAccessNode> &,  itp::Context &);
 
         static std::shared_ptr<num::Number>
-        visit_unary_node(const std::shared_ptr<par::UnaryOperatorNode> &, const itp::Context &);
+        visit_variable_assign_node(const std::shared_ptr<par::VariableAssignNode> &,  itp::Context &);
 
         static std::shared_ptr<num::Number>
-        visit_binary_node(const std::shared_ptr<par::BinaryOperatorNode> &, const itp::Context &);
+        visit_number_node(const std::shared_ptr<par::NumberNode> &,  itp::Context &);
+
+        static std::shared_ptr<num::Number>
+        visit_unary_node(const std::shared_ptr<par::UnaryOperatorNode> &,  itp::Context &);
+
+        static std::shared_ptr<num::Number>
+        visit_binary_node(const std::shared_ptr<par::BinaryOperatorNode> &,  itp::Context &);
 
     public:
 
-        static std::shared_ptr<num::Number> visit(const std::shared_ptr<par::Node> &, const itp::Context&);
+        static std::shared_ptr<num::Number> visit(const std::shared_ptr<par::Node> &,  itp::Context&);
 
     };
 

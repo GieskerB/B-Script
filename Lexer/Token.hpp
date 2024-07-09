@@ -12,7 +12,7 @@ namespace lex {
         NONE,
         INT,
         DEC,
-        KEYWORD,
+        VAR_KEYWORD,
         IDENTIFIER,
         PLUS = '+',
         MINUS = '-',

@@ -25,7 +25,11 @@ namespace par {
             lex::Token temp_token = m_current_token;
             advance();
             return std::make_shared<NumberNode>(temp_token);
-        } else if (m_current_token.c_type == lex::TokenType::LPAREN) {
+        } else if (m_current_token.c_type == lex::TokenType::IDENTIFIER) {
+            lex::Token temp_token = m_current_token;
+            advance();
+            return std::make_shared<VariableAccessNode>(temp_token);
+        }else if (m_current_token.c_type == lex::TokenType::LPAREN) {
             advance();
             std::shared_ptr<Node> expr = expression();
             if (m_current_token.c_type == lex::TokenType::RPAREN) {
@@ -56,6 +60,26 @@ namespace par {
     }
 
     std::shared_ptr<Node> Parser::expression() {
+        if (m_current_token.c_type == lex::TokenType::VAR_KEYWORD) {
+            advance();
+            if (m_current_token.c_type != lex::TokenType::IDENTIFIER) {
+                throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
+                                              "Expected Identifier here.");
+            }
+
+            auto identifier = m_current_token;
+            advance();
+            if (m_current_token.c_type != lex::TokenType::EQUALS) {
+                throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
+                                              "Expected '=' here.");
+            }
+            advance();
+            auto expr = expression();
+            return std::make_shared<VariableAssignNode>(identifier,expr);
+
+        }
+
+
         std::shared_ptr<Node> left = term();
 
         while (m_current_token.c_type == lex::TokenType::PLUS or m_current_token.c_type == lex::TokenType::MINUS) {

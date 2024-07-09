@@ -31,8 +31,8 @@ namespace lex {
                 temp_string = "DEC:";
                 os << temp_string << token.c_value;
                 break;
-            case KEYWORD:
-                temp_string = "KEYWORD:";
+            case VAR_KEYWORD:
+                temp_string = "VAR_KEYWORD:";
                 os << temp_string << token.c_value;
                 break;
             case IDENTIFIER:

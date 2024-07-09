@@ -8,6 +8,25 @@ namespace par {
                                                                                           pos_start(start),
                                                                                           pos_end(end) {}
 
+
+    VariableAssignNode::VariableAssignNode(lex::Token id_token, const std::shared_ptr<Node> &val_node) : Node(
+            NodeType::VAR_ASSIGN, id_token.c_start_pos, val_node->pos_end), identifier_token(std::move(id_token)),
+                                                                                                         value_node(
+                                                                                                                 val_node) {}
+
+    void VariableAssignNode::print() {
+        std::cout << identifier_token << '=';
+        value_node->print();
+    }
+
+    VariableAccessNode::VariableAccessNode(lex::Token id_token) : Node(NodeType::VAR_ACCESS, id_token.c_start_pos,
+                                                                       id_token.c_end_pos),
+                                                                  identifier_token(std::move(id_token)) {}
+
+    void VariableAccessNode::print() {
+        std::cout << identifier_token;
+    }
+
     NumberNode::NumberNode(lex::Token tok) : Node(NodeType::NUMBER, tok.c_start_pos, tok.c_end_pos),
                                              num_token(std::move(tok)) {}
 

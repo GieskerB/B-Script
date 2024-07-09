@@ -9,11 +9,9 @@
 
 
 int main() {
-
-
-    for(auto& lol : lex::CONSTANTS.c_KEYWORDS ){
-        std::cout << lol << std::endl;
-    }
+//    for(auto& lol : lex::CONSTANTS.VARIABLE_KEYWORDS ){
+//        std::cout << lol << std::endl;
+//    }
 
     try {
         lex::Lexer lexer("main.bs");

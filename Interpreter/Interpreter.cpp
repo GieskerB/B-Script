@@ -128,7 +128,8 @@ namespace itp {
         return left_number;
     }
 
-    std::shared_ptr<num::Number> Interpreter::visit(const std::shared_ptr<par::Node> &node, const itp::Context& context) {
+    std::shared_ptr<num::Number>
+    Interpreter::visit(const std::shared_ptr<par::Node> &node, itp::Context &context) {
         if (node == nullptr) {
             throw std::runtime_error("Null pointer in Interpreter visit()!");
         }
@@ -144,24 +145,54 @@ namespace itp {
             case par::BINARY:
                 result = visit_binary_node(std::dynamic_pointer_cast<par::BinaryOperatorNode>(node), context);
                 break;
+            case par::VAR_ASSIGN:
+                result = visit_variable_assign_node(std::dynamic_pointer_cast<par::VariableAssignNode>(node), context);
+                break;
+            case par::VAR_ACCESS:
+                result = visit_variable_access_node(std::dynamic_pointer_cast<par::VariableAccessNode>(node), context);
+                break;
             default:
                 throw std::runtime_error("Unknown Node in Interpreter visit()!");
         }
         return result;
     }
 
-    std::shared_ptr<num::Number> Interpreter::visit_number_node(const std::shared_ptr<par::NumberNode> &node,const  itp::Context& context) {
+
+    std::shared_ptr<num::Number>
+    Interpreter::visit_variable_access_node(const std::shared_ptr<par::VariableAccessNode> &node,
+                                            itp::Context &context) {
+        auto var_name = node->identifier_token.c_value;
+        try {
+            auto var_value = context.get_symbole_table().get(var_name);
+            return var_value;
+        } catch (std::runtime_error &error) {
+            throw err::RuntimeError(node->pos_start, node->pos_start, "'" + var_name + "' is not defined.", context);
+        }
+
+    }
+
+    std::shared_ptr<num::Number>
+    Interpreter::visit_variable_assign_node(const std::shared_ptr<par::VariableAssignNode> &node,
+                                            itp::Context &context) {
+        auto var_name = node->identifier_token.c_value;
+        auto var_value = visit(node->value_node, context);
+        context.get_symbole_table().set(var_name, var_value);
+        return var_value;
+    }
+
+    std::shared_ptr<num::Number>
+    Interpreter::visit_number_node(const std::shared_ptr<par::NumberNode> &node, itp::Context &context) {
         if (node == nullptr) {
             throw std::runtime_error("Null pointer in Interpreter visit_number_node()!");
         }
         if (node->num_token.c_type == lex::TokenType::INT) {
-            auto result =  std::make_shared<num::Integer>(node->num_token.c_value);
-            result->set_position(node->pos_start,node->pos_end);
+            auto result = std::make_shared<num::Integer>(node->num_token.c_value);
+            result->set_position(node->pos_start, node->pos_end);
             result->set_context(context);
             return result;
         } else if (node->num_token.c_type == lex::TokenType::DEC) {
             auto result = std::make_shared<num::Decimal>(node->num_token.c_value);
-            result->set_position(node->pos_start,node->pos_end);
+            result->set_position(node->pos_start, node->pos_end);
             result->set_context(context);
             return result;
         } else {
@@ -169,7 +200,8 @@ namespace itp {
         }
     }
 
-    std::shared_ptr<num::Number> Interpreter::visit_unary_node(const std::shared_ptr<par::UnaryOperatorNode> &node,const  itp::Context& context) {
+    std::shared_ptr<num::Number>
+    Interpreter::visit_unary_node(const std::shared_ptr<par::UnaryOperatorNode> &node, itp::Context &context) {
         if (node == nullptr) {
             throw std::runtime_error("Null pointer in Interpreter visit_unary_node()!");
         }
@@ -182,7 +214,8 @@ namespace itp {
         return number;
     }
 
-    std::shared_ptr<num::Number> Interpreter::visit_binary_node(const std::shared_ptr<par::BinaryOperatorNode> &node,const  itp::Context& context) {
+    std::shared_ptr<num::Number>
+    Interpreter::visit_binary_node(const std::shared_ptr<par::BinaryOperatorNode> &node, itp::Context &context) {
         if (node == nullptr) {
             throw std::runtime_error("Null pointer in Interpreter visit_binary_node()!");
         }

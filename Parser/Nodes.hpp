@@ -9,6 +9,8 @@
 namespace par {
 
     enum NodeType {
+        VAR_ACCESS,
+        VAR_ASSIGN,
         NUMBER,
         UNARY,
         BINARY
@@ -27,11 +29,28 @@ namespace par {
 
     };
 
+    struct VariableAssignNode: public Node{
+        lex::Token identifier_token;
+        std::shared_ptr<Node> value_node;
+
+        VariableAssignNode() = delete;
+        explicit VariableAssignNode(lex::Token,const std::shared_ptr<Node>&);
+        void print() override;
+    };
+
+    struct VariableAccessNode: public Node {
+        lex::Token identifier_token;
+
+        VariableAccessNode() = delete;
+        explicit VariableAccessNode(lex::Token);
+        void print() override;
+    };
+
     struct NumberNode: public Node {
         lex::Token num_token;
 
         NumberNode() = delete;
-        explicit NumberNode(lex::Token );
+        explicit NumberNode(lex::Token);
         void print() override;
     };
 
@@ -52,8 +71,6 @@ namespace par {
         explicit BinaryOperatorNode(const std::shared_ptr<Node>& , lex::Token  , const std::shared_ptr<Node>&  ) ;
         void print() override;
     };
-
-
 
 } // par
 

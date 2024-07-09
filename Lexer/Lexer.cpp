@@ -1,3 +1,6 @@
+#include <sstream>
+#include <algorithm>
+
 #include "Lexer.hpp"
 #include "../FileReader/FileReader.hpp"
 #include "../Error/Error.hpp"
@@ -41,12 +44,19 @@ namespace lex {
 
 
     Token Lexer::make_word_token() {
-        std::string word_string;
+        std::stringstream word_string_stream;
         Position start = Position(m_pos);
 
-        while(m_current_char != '\0' and (is_digit() or is_letter())) {
-            word_string.push_back(m_current_char);
+        while (m_current_char != '\0' and (is_digit() or is_letter())) {
+            word_string_stream << m_current_char;
             advance();
+        }
+        const std::string word_string = word_string_stream.str();
+        if (CONSTANTS.VARIABLE_KEYWORDS.end() !=
+            std::find(CONSTANTS.VARIABLE_KEYWORDS.begin(), CONSTANTS.VARIABLE_KEYWORDS.end(), word_string)) {
+            return Token{TokenType::VAR_KEYWORD, start, m_pos, word_string};
+        } else {
+            return Token{TokenType::IDENTIFIER, start, m_pos, word_string};
         }
     }
 

@@ -107,7 +107,7 @@ namespace num {
 
     Integer operator/=(Integer &int1, const Integer &int2) {
         if(int2.is_zero()) {
-            throw err::RuntimeError(int2.m_position_start, int2.m_position_end,"Division by 0 is not allowed!",int2.m_context);
+            throw err::RuntimeError(int2.m_position_start, int2.m_position_end,"Division by 0 is not allowed!",*int2.p_context);
         }
         // neg times neg = pos
         int1.m_is_positive ^= ~int2.m_is_positive;
@@ -186,7 +186,7 @@ namespace num {
 
     Decimal operator/=(Decimal &dec1, const Decimal &dec2) {
         if(dec2.is_zero()) {
-            throw err::RuntimeError(dec2.m_position_start, dec2.m_position_end,"Division by 0 is not allowed!",dec2.m_context);
+            throw err::RuntimeError(dec2.m_position_start, dec2.m_position_end,"Division by 0 is not allowed!",*dec2.p_context);
         }
 
         const char SCALING_DELTA = static_cast<char>(dec1.c_SCALING_FACTOR - dec2.c_SCALING_FACTOR);
