@@ -7,6 +7,7 @@
 #include <array>
 
 #include "Token.hpp"
+#include "../DataTypes/Numbers.hpp"
 #include "Position.hpp"
 
 namespace lex {
@@ -15,9 +16,24 @@ namespace lex {
     struct Constants {
         std::vector<std::string> c_KEYWORDS;
         constexpr void generate_number_keywords(){
-            //TODO add keyword gen here
+            for (auto& size : num::sizes) {
+                const char byte_to_bits{static_cast<char>(size * 8)};
+                const std::string size_string = std::to_string(byte_to_bits);
+                c_KEYWORDS.push_back("int" + size_string);
+                c_KEYWORDS.push_back("uint" + size_string);
+                std::string dec_base = "dec" + size_string + ':';
+                for (int scale_factor{0}; scale_factor <= byte_to_bits; ++scale_factor) {
+                    c_KEYWORDS.push_back(dec_base + std::to_string(scale_factor));
+                }
+            }
+        }
+
+        constexpr Constants() {
+            generate_number_keywords();
         }
     };
+
+    const Constants CONSTANTS{};
 
     /**
      * The lexer turns a text into a sequenz of tokens for the parser to process.

@@ -10,8 +10,12 @@
 
 int main() {
 
-    try {
 
+    for(auto& lol : lex::CONSTANTS.c_KEYWORDS ){
+        std::cout << lol << std::endl;
+    }
+
+    try {
         lex::Lexer lexer("main.bs");
         auto tokens = lexer.make_token();
         par::Parser parser(tokens);

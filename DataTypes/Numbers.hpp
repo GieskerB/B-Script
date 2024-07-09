@@ -44,6 +44,8 @@ namespace num {
         LONG = 8
     };
 
+    static const std::array<Size, 4> sizes = {Size::BYTE,Size::SHORT,Size::INTEGER,Size::LONG};
+
     class Number {
 
         friend class NumberPrinter;

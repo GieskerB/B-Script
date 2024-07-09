@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include "Lexer.hpp"
 #include "../FileReader/FileReader.hpp"
 #include "../Error/Error.hpp"
