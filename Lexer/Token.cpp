@@ -23,12 +23,8 @@ namespace lex {
         const std::string open{'{'}, close{'}'};
         os << open;
         switch (token.c_type) {
-            case INT:
-                temp_string = "INT:";
-                os << temp_string << token.c_value;
-                break;
-            case DEC:
-                temp_string = "DEC:";
+            case NUM:
+                temp_string = "NUM:";
                 os << temp_string << token.c_value;
                 break;
             case VAR_KEYWORD:
@@ -46,8 +42,16 @@ namespace lex {
             case LPAREN:
             case RPAREN:
             case EQUALS:
+            case LESS_THEN:
+            case GREATER_THEN:
                 temp_string = static_cast<char>(token.c_type);
                 os << temp_string;
+                break;
+            case DOUBLE_EQUALS:
+            case LESS_THEN_OR_EQUALS:
+            case GREATER_THEN_OR_EQUALS:
+                temp_string = static_cast<char>(token.c_type - '=');
+                os << temp_string << '=';
                 break;
             case NONE:
                 temp_string = "NULL";

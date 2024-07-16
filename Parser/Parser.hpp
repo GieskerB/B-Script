@@ -22,11 +22,14 @@ namespace par {
 
         lex::Token advance();
 
-        std::shared_ptr<Node> factor();
+        static short type_to_key(const std::string&);
 
-        std::shared_ptr<Node> term();
+        std::shared_ptr<Node> factor(short);
+        std::shared_ptr<Node> term(short);
+        std::shared_ptr<Node> expression(short);
+        std::shared_ptr<Node> declaration(short = 0);
 
-        std::shared_ptr<Node> expression();
+
 
     public:
 

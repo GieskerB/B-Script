@@ -45,13 +45,14 @@ compromise of having to choose the accuracy yourself!
 ## Grammar
 
 ``` c++
-expression : VAR_KEYWORD[VARIABLE] IDENTIFIER '=' expr
-             term (('+'|'-') term)*
+deklaration : VAR_KEYWORD[VARIABLE] IDENTIFIER '=' expr
 
-term       : factor (('*'|'/') factor)*
+expression  : term (('+'|'-') term)*
 
-factor     : INT | DEC | IDENTIFIER
-             ('+'/'-') factor
-             '(' expression ')'
+term        : factor (('*'|'/') factor)*
+
+factor      : INT | DEC | IDENTIFIER
+              ('+'/'-') factor
+              '(' expression ')'
 ```
 \end{split}

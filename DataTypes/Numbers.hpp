@@ -64,10 +64,13 @@ namespace num {
         static bool check_overflow(const std::string &, unsigned char);
 
         Number(Size, bool, NumberType);
+        Number(const Number&,NumberType);
 
     public:
 
         NumberType c_NUMBER_TYPE;
+
+        static std::shared_ptr<Number> create_form_key(const std::string&, short);
 
         void invert();
 

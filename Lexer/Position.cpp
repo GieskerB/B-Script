@@ -3,7 +3,7 @@
 #include <utility>
 
 namespace lex {
-    const Position Position::NULL_POSITION(-1, -1, -1, "");
+    const Position Position::NULL_POSITION(-1, -1, -1, "NULL");
 
     Position::Position(int index, int line, int column, std::string file_name) : m_index(index), m_line(line),
                                                                                  m_column(column),

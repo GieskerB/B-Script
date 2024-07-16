@@ -13,7 +13,7 @@ namespace lex {
 
     bool Lexer::is_letter() const {
         return ('a' <= m_current_char and m_current_char <= 'z') or ('A' <= m_current_char and m_current_char <= 'Z') or
-               '_' == m_current_char;
+               '_' == m_current_char or m_current_char == ':';
     }
 
     /**
@@ -35,11 +35,7 @@ namespace lex {
             advance();
         }
 
-        if (dot_count == 0) {
-            return Token{TokenType::INT, start, m_pos, number_string};
-        } else {
-            return Token{TokenType::DEC, start, m_pos, number_string};
-        }
+        return Token{TokenType::NUM, start, m_pos, number_string};
     }
 
 
@@ -47,7 +43,11 @@ namespace lex {
         std::stringstream word_string_stream;
         Position start = Position(m_pos);
 
+        bool has_colon{false};
         while (m_current_char != '\0' and (is_digit() or is_letter())) {
+            if (m_current_char == ':') {
+                has_colon = true;
+            }
             word_string_stream << m_current_char;
             advance();
         }
@@ -56,6 +56,9 @@ namespace lex {
             std::find(CONSTANTS.VARIABLE_KEYWORDS.begin(), CONSTANTS.VARIABLE_KEYWORDS.end(), word_string)) {
             return Token{TokenType::VAR_KEYWORD, start, m_pos, word_string};
         } else {
+            if (has_colon) {
+                throw err::IllegalCharError(m_pos, "':' not allowed in identifier");
+            }
             return Token{TokenType::IDENTIFIER, start, m_pos, word_string};
         }
     }
@@ -82,10 +85,28 @@ namespace lex {
         }
     }
 
-    std::vector<Token> Lexer::make_token() {
+    bool Lexer::can_lex() const {
+        return m_current_char != '\0';
+    }
+
+    std::vector<Token> Lexer::all() {
         std::vector<Token> tokens;
-        while (m_current_char != '\0') {
-            if (m_current_char == ' ' or m_current_char == '\t' or m_current_char == '\n') {
+        while (can_lex()) {
+            auto line_tokens = next_line();
+            tokens.insert(tokens.end(), line_tokens.begin(), line_tokens.end());
+        }
+        return tokens;
+    }
+
+    std::vector<Token> Lexer::next_line() {
+        std::vector<Token> tokens;
+        while (can_lex()) {
+            if (m_current_char == '\n') {
+                do {
+                    advance();
+                } while (m_current_char == '\n');
+                return tokens;
+            } else if (m_current_char == ' ' or m_current_char == '\t') {
                 advance();
             } else if (is_digit()) {
                 tokens.push_back(make_number_token());

@@ -27,8 +27,8 @@ namespace par {
         std::cout << identifier_token;
     }
 
-    NumberNode::NumberNode(lex::Token tok) : Node(NodeType::NUMBER, tok.c_start_pos, tok.c_end_pos),
-                                             num_token(std::move(tok)) {}
+    NumberNode::NumberNode(lex::Token tok, short key) : Node(NodeType::NUMBER, tok.c_start_pos, tok.c_end_pos),
+                                                        key(key), num_token(std::move(tok)) {}
 
     void NumberNode::print() {
         std::cout << num_token;

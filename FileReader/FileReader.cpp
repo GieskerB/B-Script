@@ -7,10 +7,9 @@ FileReader::~FileReader() {
     close_file();
 }
 
-
 std::string FileReader::read_line() {
     if(!can_read()) {
-        throw std::runtime_error("Can not Read the file!");
+        throw std::runtime_error("Can not Read the file: '" + m_file_name + "'");
     }
     m_state = FileReaderState::READING;
     std::string line;
@@ -32,6 +31,7 @@ bool FileReader::can_read() {
 }
 
 void FileReader::open_file(const std::string & file_name) {
+    m_file_name = file_name;
     close_file();
     m_file.open("../" + file_name);
     if( m_file.is_open()) {

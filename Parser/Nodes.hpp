@@ -48,9 +48,10 @@ namespace par {
 
     struct NumberNode: public Node {
         lex::Token num_token;
+        short key;
 
         NumberNode() = delete;
-        explicit NumberNode(lex::Token);
+        explicit NumberNode(lex::Token,short);
         void print() override;
     };
 

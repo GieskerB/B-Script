@@ -7,7 +7,6 @@
 #include "Interpreter/Interpreter.hpp"
 #include "Interpreter/Context.hpp"
 
-
 int main() {
 //    for(auto& lol : lex::CONSTANTS.VARIABLE_KEYWORDS ){
 //        std::cout << lol << std::endl;
@@ -15,22 +14,34 @@ int main() {
 
     try {
         lex::Lexer lexer("main.bs");
-        auto tokens = lexer.make_token();
-        par::Parser parser(tokens);
-
-        auto ast = parser.parse();
-        ast->print();
         itp::Context program_context("<program>");
-        auto res = itp::Interpreter::visit(ast, program_context);
-        if(res->c_NUMBER_TYPE == num::NumberType::INT) {
-            num::NumberPrinter::print(*std::dynamic_pointer_cast<num::Integer>(res));
-        } else {
-            num::NumberPrinter::print(*std::dynamic_pointer_cast<num::Decimal>(res));
+        while(lexer.can_lex()){
+            auto tokens = lexer.next_line();
+            par::Parser parser(tokens);
+            auto abstract_syntax_tree = parser.parse();
+            abstract_syntax_tree->print();
+            auto res = itp::Interpreter::visit(abstract_syntax_tree, program_context);
+            if(res->c_NUMBER_TYPE == num::NumberType::INT) {
+                num::NumberPrinter::print(*std::dynamic_pointer_cast<num::Integer>(res));
+            } else {
+                num::NumberPrinter::print(*std::dynamic_pointer_cast<num::Decimal>(res));
+            }
+            std::cout << "\n";
         }
+//        auto tokens = lexer.all();
+//        par::Parser parser(tokens);
+//        auto abstract_syntax_tree = parser.parse();
+//        abstract_syntax_tree->print();
+//        auto res = itp::Interpreter::visit(abstract_syntax_tree, program_context);
+//        if(res->c_NUMBER_TYPE == num::NumberType::INT) {
+//            num::NumberPrinter::print(*std::dynamic_pointer_cast<num::Integer>(res));
+//        } else {
+//            num::NumberPrinter::print(*std::dynamic_pointer_cast<num::Decimal>(res));
+//        }
+//        std::cout << "\n";
     } catch (err::Error &error) {
         error.print();
     }
-
     return 0;
 }
 

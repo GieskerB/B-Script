@@ -18,6 +18,7 @@ enum FileReaderState {
 class FileReader {
 
     FileReaderState m_state;
+    std::string m_file_name;
     std::fstream m_file;
 
 public:

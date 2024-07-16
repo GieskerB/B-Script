@@ -10,8 +10,7 @@ namespace lex {
 
     enum TokenType {
         NONE,
-        INT,
-        DEC,
+        NUM,
         VAR_KEYWORD,
         IDENTIFIER,
         PLUS = '+',
@@ -21,7 +20,12 @@ namespace lex {
         LPAREN = '(',
         RPAREN = ')',
         EQUALS = '=',
-        EOL = ';'
+        EOL = ';',
+        LESS_THEN = '<',
+        GREATER_THEN= '>',
+        DOUBLE_EQUALS = '=' * 2,
+        LESS_THEN_OR_EQUALS= '<' + '=',
+        GREATER_THEN_OR_EQUALS= '>' + '='
     };
 
     class Token {

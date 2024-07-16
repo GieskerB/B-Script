@@ -18,6 +18,9 @@ namespace lex {
         constexpr void generate_number_keywords(){
             VARIABLE_KEYWORDS.emplace_back("int");
             VARIABLE_KEYWORDS.emplace_back("dec");
+            VARIABLE_KEYWORDS.emplace_back("and");
+            VARIABLE_KEYWORDS.emplace_back("or");
+            VARIABLE_KEYWORDS.emplace_back("not");
             for (auto& size : num::sizes) {
                 const char byte_to_bits{static_cast<char>(size * 8)};
                 const std::string size_string = std::to_string(byte_to_bits);
@@ -60,7 +63,11 @@ namespace lex {
 
         void advance();
 
-        std::vector<Token> make_token();
+        bool can_lex() const;
+
+        std::vector<Token> all();
+
+        std::vector<Token> next_line();
 
     };
 

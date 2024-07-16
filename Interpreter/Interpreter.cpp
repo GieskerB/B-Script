@@ -41,29 +41,27 @@ namespace itp {
         if (left_number == nullptr or right_number == nullptr) {
             throw std::runtime_error("Null pointer in Interpreter add_numbers()!");
         }
+        std::shared_ptr<num::Number> result;
+
         if (left_number->c_NUMBER_TYPE == num::NumberType::INT and
             right_number->c_NUMBER_TYPE == num::NumberType::INT) {
             auto left = std::dynamic_pointer_cast<num::Integer>(left_number);
             auto right = std::dynamic_pointer_cast<num::Integer>(right_number);
-            *left -= *right;
-            left_number = left;
+            result = std::make_shared<num::Integer> (*left - *right);
         } else if (left_number->c_NUMBER_TYPE == num::NumberType::INT) {
             auto left = std::dynamic_pointer_cast<num::Integer>(left_number);
             auto right = std::dynamic_pointer_cast<num::Decimal>(right_number);
-            *left -= *right;
-            left_number = left;
+            result = std::make_shared<num::Decimal> (*left - *right);
         } else if (right_number->c_NUMBER_TYPE == num::NumberType::INT) {
             auto left = std::dynamic_pointer_cast<num::Decimal>(left_number);
             auto right = std::dynamic_pointer_cast<num::Integer>(right_number);
-            *left -= *right;
-            left_number = left;
+            result = std::make_shared<num::Decimal> (*left - *right);
         } else {
             auto left = std::dynamic_pointer_cast<num::Decimal>(left_number);
             auto right = std::dynamic_pointer_cast<num::Decimal>(right_number);
-            *left -= *right;
-            left_number = left;
+            result = std::make_shared<num::Decimal> (*left - *right);
         }
-        return left_number;
+        return result;
     }
 
     std::shared_ptr<num::Number>
@@ -164,6 +162,7 @@ namespace itp {
         auto var_name = node->identifier_token.c_value;
         try {
             auto var_value = context.get_symbole_table().get(var_name);
+            var_value->set_position(node->pos_start, node->pos_end);
             return var_value;
         } catch (std::runtime_error &error) {
             throw err::RuntimeError(node->pos_start, node->pos_start, "'" + var_name + "' is not defined.", context);
@@ -185,7 +184,16 @@ namespace itp {
         if (node == nullptr) {
             throw std::runtime_error("Null pointer in Interpreter visit_number_node()!");
         }
-        if (node->num_token.c_type == lex::TokenType::INT) {
+        if(node->num_token.c_type == lex::TokenType::NUM) {
+            auto result = num::Number::create_form_key(node->num_token.c_value, node->key);
+            result->set_position(node->pos_start, node->pos_end);
+            result->set_context(context);
+            return result;
+        } else {
+            throw std::runtime_error("Unexpected token in Interpreter visit_number_node()!");
+        }
+
+        /*if (node->num_token.c_type == lex::TokenType::INT) {
             auto result = std::make_shared<num::Integer>(node->num_token.c_value);
             result->set_position(node->pos_start, node->pos_end);
             result->set_context(context);
@@ -197,7 +205,7 @@ namespace itp {
             return result;
         } else {
             throw std::runtime_error("Unexpected token in Interpreter visit_number_node()!");
-        }
+        }*/
     }
 
     std::shared_ptr<num::Number>

@@ -14,7 +14,7 @@ namespace num {
 
     Integer::Integer() : Number(Size::LONG, true, NumberType::INT), c_IS_SIGNED(false) {}
 
-    Integer::Integer(const num::Decimal &other) : Number(other.c_SIZE, other.m_is_positive, NumberType::INT),
+    Integer::Integer(const num::Decimal &other) : Number(other, NumberType::INT),
                                                   c_IS_SIGNED(false) {
         m_storage = other.m_storage >> other.c_SCALING_FACTOR;
     }

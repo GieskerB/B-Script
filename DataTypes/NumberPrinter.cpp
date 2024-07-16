@@ -15,7 +15,7 @@ namespace num {
     }
 
     /*
-     * In case of Decimal... Print the integer part like an integer and the reconstruct the fraction part.
+     * In case of Decimal... Print the integer part like an integer and the reconstructed the fraction part.
      */
     void NumberPrinter::print(const Decimal &decimal, bool line_break) {
         // Use the right_node bits to the right_node part when printing!
@@ -26,6 +26,7 @@ namespace num {
         } else {
             pre_decimal_part = decimal.m_storage >> decimal.c_SCALING_FACTOR;
         }
+
         uint64 decimal_part = decimal.m_storage & DECIMAL_BIT_MAP;
 
         // Simply print the integer part:
