@@ -163,7 +163,7 @@ namespace itp {
         try {
             auto var_value = context.get_symbole_table().get(var_name);
             var_value->set_position(node->pos_start, node->pos_end);
-            return var_value;
+            return std::dynamic_pointer_cast<num::Number>(var_value);
         } catch (std::runtime_error &error) {
             throw err::RuntimeError(node->pos_start, node->pos_start, "'" + var_name + "' is not defined.", context);
         }
@@ -192,20 +192,6 @@ namespace itp {
         } else {
             throw std::runtime_error("Unexpected token in Interpreter visit_number_node()!");
         }
-
-        /*if (node->num_token.c_type == lex::TokenType::INT) {
-            auto result = std::make_shared<num::Integer>(node->num_token.c_value);
-            result->set_position(node->pos_start, node->pos_end);
-            result->set_context(context);
-            return result;
-        } else if (node->num_token.c_type == lex::TokenType::DEC) {
-            auto result = std::make_shared<num::Decimal>(node->num_token.c_value);
-            result->set_position(node->pos_start, node->pos_end);
-            result->set_context(context);
-            return result;
-        } else {
-            throw std::runtime_error("Unexpected token in Interpreter visit_number_node()!");
-        }*/
     }
 
     std::shared_ptr<num::Number>
@@ -240,7 +226,6 @@ namespace itp {
         } else {
             throw std::runtime_error("Unexpected token in Interpreter visit_binary_node()!");
         }
-//        left_number->set_context(context);
         return left_number;
     }
 

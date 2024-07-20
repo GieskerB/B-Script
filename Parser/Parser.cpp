@@ -142,6 +142,13 @@ namespace par {
         }
 
         auto identifier = m_current_token;
+        auto ident_name = identifier.c_value;
+        if (m_key_map.contains(ident_name)) {
+            throw err::InvalidSyntaxError(identifier.c_start_pos, identifier.c_end_pos,
+                                          "Redefinition of variable '" + ident_name +
+                                          "'."); //TODO CUSTOM ERROR HERE
+        }
+        m_key_map[ident_name] = key;
         advance();
         if (m_current_token.c_type != lex::TokenType::EQUALS) {
             throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
@@ -152,8 +159,36 @@ namespace par {
         return std::make_shared<VariableAssignNode>(identifier, expr);
     }
 
-    Parser::Parser(const std::vector<lex::Token> &tokens) : m_tokens(tokens), m_current_token(lex::Token::NULL_TOKEN),
-                                                            m_index(-1) {
+    std::shared_ptr<Node> Parser::assignment(short key) {
+
+        auto identifier = m_current_token;
+        auto ident_name = identifier.c_value;
+        if (!m_key_map.contains(ident_name)) {
+            throw err::InvalidSyntaxError(identifier.c_start_pos, identifier.c_end_pos,
+                                          "Variable '" + ident_name +
+                                          "' is not defined."); //TODO CUSTOM ERROR HERE
+        }
+        key = m_key_map[ident_name];
+        advance();
+        if (m_current_token.c_type != lex::TokenType::EQUALS) {
+            throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
+                                          "Expected '=' here.");
+        }
+        advance();
+        auto expr = expression(key);
+        return std::make_shared<VariableAssignNode>(identifier, expr);
+    }
+
+    Parser::Parser() : m_tokens(), m_current_token(lex::Token::NULL_TOKEN), m_key_map(), m_index(-1) {}
+
+//    Parser::Parser(const std::vector<lex::Token> &tokens) : m_tokens(tokens), m_current_token(lex::Token::NULL_TOKEN),
+//                                                            m_index(-1) {
+//        advance();
+//    }
+
+    void Parser::import_tokens(const std::vector<lex::Token> &tokens) {
+        m_tokens = tokens;
+        m_index = -1;
         advance();
     }
 
@@ -161,6 +196,8 @@ namespace par {
         std::shared_ptr<Node> abstract_syntax_tree;
         if (m_current_token.c_type == lex::TokenType::VAR_KEYWORD) {
             abstract_syntax_tree = declaration(0);
+        } else if (m_current_token.c_type == lex::TokenType::IDENTIFIER) {
+            abstract_syntax_tree = assignment(0);
         } else {
             abstract_syntax_tree = expression(0);
         }

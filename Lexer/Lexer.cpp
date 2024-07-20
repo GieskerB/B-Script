@@ -63,6 +63,57 @@ namespace lex {
         }
     }
 
+
+
+    Token Lexer::make_not_equals_token() {
+        // Expected char '=' before this call
+        Position start = Position(m_pos);
+        advance();
+
+        if(m_current_char != '=') {
+            throw err::IllegalCharError(m_pos,"'=' (after '!')");
+        }
+        return Token{TokenType::NOT_EQUALS, start,m_pos, "!="};
+    }
+    Token Lexer::make_equals_token() {
+        // Expected char '!' before this call
+        Position start = Position(m_pos);
+        advance();
+
+        if(m_current_char == '=') {
+            advance();
+            return Token{TokenType::DOUBLE_EQUALS, start, m_pos, "=="};
+        }
+        return Token{TokenType::EQUALS,start,m_pos, "="};
+    }
+
+    Token Lexer::make_less_than_token() {
+        // Expected char '<' before this call
+        Position start = Position(m_pos);
+        advance();
+
+        if(m_current_char == '=') {
+            advance();
+            return Token{TokenType::LESS_THEN_OR_EQUALS, start, m_pos, "=="};
+        }
+        return Token{TokenType::LESS_THEN,start,m_pos, "="};
+    }
+
+    Token Lexer::make_greater_than_token() {
+        // Expected char '>' before this call
+        Position start = Position(m_pos);
+        advance();
+
+        if(m_current_char == '=') {
+            advance();
+            return Token{TokenType::GREATER_THEN_OR_EQUALS, start, m_pos, "=="};
+        }
+        return Token{TokenType::GREATER_THEN,start,m_pos, "="};
+
+    }
+
+
+
     Lexer::Lexer(const std::string &file_name) : m_pos{-1, 0, -1, file_name}, m_current_char('\0') {
 
         FileReader fr{};
@@ -133,9 +184,14 @@ namespace lex {
             } else if (m_current_char == ';') {
                 tokens.emplace_back(TokenType::EOL, m_pos);
                 advance();
+            } else if (m_current_char == '!') {
+                tokens.push_back(make_not_equals_token());
             } else if (m_current_char == '=') {
-                tokens.emplace_back(TokenType::EQUALS, m_pos);
-                advance();
+                tokens.push_back(make_equals_token());
+            } else if (m_current_char == '<') {
+                tokens.push_back(make_less_than_token());
+            } else if (m_current_char == '>') {
+                tokens.push_back(make_greater_than_token());
             } else {
                 throw err::IllegalCharError(m_pos, "Character " + std::string{m_current_char} + " not allowed here");
             }

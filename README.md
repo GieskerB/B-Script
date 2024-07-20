@@ -45,9 +45,15 @@ compromise of having to choose the accuracy yourself!
 ## Grammar
 
 ``` c++
-deklaration : VAR_KEYWORD[VARIABLE] IDENTIFIER '=' expr
+assignment  : VAR_KEYWORD[int/dec/...] IDENTIFIER '=' expression
+            : IDENTIFIER '=' expression
 
-expression  : term (('+'|'-') term)*
+expression  : '!' comp_expr
+              comp-expr (('&&'|'||')comp-expr)*
+
+comp-expr   : arith-expr (('=='|'!='|'<'|'<='|'>'|'>=') arith-expr)*
+
+arith-expr  : term (('+'|'-') term)*
 
 term        : factor (('*'|'/') factor)*
 

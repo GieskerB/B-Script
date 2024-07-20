@@ -14,10 +14,11 @@ int main() {
 
     try {
         lex::Lexer lexer("main.bs");
+        par::Parser parser{};
         itp::Context program_context("<program>");
         while(lexer.can_lex()){
             auto tokens = lexer.next_line();
-            par::Parser parser(tokens);
+            parser.import_tokens(tokens);
             auto abstract_syntax_tree = parser.parse();
             abstract_syntax_tree->print();
             auto res = itp::Interpreter::visit(abstract_syntax_tree, program_context);

@@ -7,25 +7,24 @@
 
 
 #include  "Context.hpp"
-#include "../DataTypes/Numbers.hpp"
 
-namespace num{
-    class Number;
+namespace dat {
+    class DataType;
 }
 
 namespace itp {
     class SymbolTable {
 
-        std::unordered_map<std::string, std::shared_ptr<num::Number>> m_variables{};
+        std::unordered_map<std::string, std::shared_ptr<dat::DataType>> m_variables{};
         SymbolTable *p_parent;
 
     public:
 
         explicit SymbolTable(SymbolTable *parent = nullptr);
 
-        std::shared_ptr<num::Number> get(const std::string &) const;
+        std::shared_ptr<dat::DataType> get(const std::string &) const;
 
-        void set(const std::string &, const std::shared_ptr<num::Number> &);
+        void set(const std::string &, const std::shared_ptr<dat::DataType> &);
 
     };
 } // itp

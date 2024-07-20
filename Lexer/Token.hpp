@@ -23,6 +23,7 @@ namespace lex {
         EOL = ';',
         LESS_THEN = '<',
         GREATER_THEN= '>',
+        NOT_EQUALS = '!' + '=',
         DOUBLE_EQUALS = '=' * 2,
         LESS_THEN_OR_EQUALS= '<' + '=',
         GREATER_THEN_OR_EQUALS= '>' + '='

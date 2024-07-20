@@ -18,6 +18,7 @@ namespace par {
 
         std::vector<lex::Token> m_tokens;
         lex::Token m_current_token;
+        std::unordered_map<std::string,short> m_key_map;
         int m_index;
 
         lex::Token advance();
@@ -28,14 +29,15 @@ namespace par {
         std::shared_ptr<Node> term(short);
         std::shared_ptr<Node> expression(short);
         std::shared_ptr<Node> declaration(short = 0);
+        std::shared_ptr<Node> assignment(short = 0);
 
 
 
     public:
 
-        Parser() = delete;
+        Parser();
 
-        Parser(const std::vector<lex::Token> &);
+        void import_tokens(const std::vector<lex::Token> &);
 
         std::shared_ptr<Node> parse();
 

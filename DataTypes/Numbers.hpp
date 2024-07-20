@@ -8,27 +8,30 @@
 #include <ranges>
 
 
+#include "DataTypes.hpp"
 #include "../Lexer/Position.hpp"
 #include "../Interpreter/Context.hpp"
 
 
-typedef uint64_t uint64 ;
+typedef uint64_t uint64;
 typedef __uint128_t uint128;
 
-namespace itp{
+namespace itp {
     class Context;
 }
 
 namespace num {
 
     std::string number_to_string(uint64, bool);
-    uint64 string_to_number(const std::string&,unsigned char);
+
+    uint64 string_to_number(const std::string &, unsigned char);
 
     template<unsigned char N>
     struct Constants {
         unsigned char INFORMATION_LIMIT_PER_NUMBER_OF_BITS[N];
         uint64 MAX_NUMBER_LIMIT[N]{0};
         std::string MAX_NUMBER_LIMIT_STRING[N];
+
         Constants();
     };
 
@@ -46,37 +49,32 @@ namespace num {
         LONG = 8
     };
 
-    static const std::array<Size, 4> sizes = {Size::BYTE,Size::SHORT,Size::INTEGER,Size::LONG};
+    static constexpr std::array<Size, 4> sizes = {Size::BYTE, Size::SHORT, Size::INTEGER, Size::LONG};
 
-    class Number {
+    class Number : public dat::DataType {
 
         friend class NumberPrinter;
 
     protected:
 
         Size c_SIZE;
-        lex::Position m_position_start, m_position_end;
-        itp::Context* p_context;
         uint64 m_storage;
         bool m_is_positive;
 
         virtual void clap_to_size();
+
         static bool check_overflow(const std::string &, unsigned char);
 
-        Number(Size, bool, NumberType);
-        Number(const Number&,NumberType);
+        Number(Size, bool, const NumberType &);
+        Number(const Number &, const NumberType &);
 
     public:
 
         NumberType c_NUMBER_TYPE;
 
-        static std::shared_ptr<Number> create_form_key(const std::string&, short);
+        static std::shared_ptr<Number> create_form_key(const std::string &, short);
 
         void invert();
-
-        void set_position(const lex::Position & start, const lex::Position& end);
-        void set_context(itp::Context&);
-
         [[nodiscard]] bool is_zero() const;
     };
 
@@ -87,48 +85,49 @@ namespace num {
         friend class NumberPrinter;
         friend class Decimal;
 
-        bool c_IS_SIGNED{};
+        bool c_IS_SIGNED;
+
         void fit_string(std::string &);
 
         Integer();
-        Integer(const Decimal&);
+        Integer(const Decimal &);
 
     public:
 
-        Integer(const Integer&) = default;
+        Integer(const Integer &) = default;
         Integer(std::string, Size = INTEGER, bool = false);
 
-        Integer& operator= (const Integer&);
+        Integer &operator=(const Integer &);
 
-        friend Integer operator+( const Integer& , const Integer &);
-        friend Integer operator+=( Integer &, const Integer &);
+        friend Integer operator+(const Integer &, const Integer &);
+        friend Integer operator+=(Integer &, const Integer &);
 
-        friend Integer operator-( const Integer& , const Integer &);
-        friend Integer operator-=( Integer &, const Integer &);
+        friend Integer operator-(const Integer &, const Integer &);
+        friend Integer operator-=(Integer &, const Integer &);
 
-        friend Integer operator*( const Integer& , const Integer &);
-        friend Integer operator*=( Integer &, const Integer &);
+        friend Integer operator*(const Integer &, const Integer &);
+        friend Integer operator*=(Integer &, const Integer &);
 
-        friend Integer operator/( const Integer& , const Integer &);
-        friend Integer operator/=( Integer &, const Integer &);
+        friend Integer operator/(const Integer &, const Integer &);
+        friend Integer operator/=(Integer &, const Integer &);
 
-        friend Decimal operator+(const Integer& , const Decimal &);
-        friend Decimal operator+(Decimal , const Integer &);
-        friend Integer operator+=(Integer& , const Decimal &);
+        friend Decimal operator+(const Integer &, const Decimal &);
+        friend Decimal operator+(Decimal, const Integer &);
+        friend Integer operator+=(Integer &, const Decimal &);
         friend Decimal operator+=(Decimal &, const Integer &);
 
-        friend Decimal operator-(const Integer& , const Decimal &);
-        friend Decimal operator-(Decimal , const Integer &);
+        friend Decimal operator-(const Integer &, const Decimal &);
+        friend Decimal operator-(Decimal, const Integer &);
         friend Integer operator-=(Integer &, const Decimal &);
         friend Decimal operator-=(Decimal &, const Integer &);
 
-        friend Decimal operator*(const Integer& , const Decimal &);
-        friend Decimal operator*(Decimal , const Integer &);
+        friend Decimal operator*(const Integer &, const Decimal &);
+        friend Decimal operator*(Decimal, const Integer &);
         friend Integer operator*=(Integer &, const Decimal &);
         friend Decimal operator*=(Decimal &, const Integer &);
 
-        friend Decimal operator/(const Integer& , const Decimal &);
-        friend Decimal operator/(Decimal , const Integer &);
+        friend Decimal operator/(const Integer &, const Decimal &);
+        friend Decimal operator/(Decimal, const Integer &);
         friend Integer operator/=(Integer &, const Decimal &);
         friend Decimal operator/=(Decimal &, const Integer &);
     };
@@ -141,47 +140,47 @@ namespace num {
 
         unsigned char c_SCALING_FACTOR;
 
-        static std::pair<std::string,std::string> slip(const std::string&);
-        void fit_string(std::pair<std::string,std::string> &);
+        static std::pair<std::string, std::string> slip(const std::string &);
+        void fit_string(std::pair<std::string, std::string> &);
 
         Decimal();
-        Decimal(const Integer&, unsigned scaling_factor);
+        Decimal(const Integer &, unsigned scaling_factor);
 
     public:
 
-        Decimal(const Decimal&) = default;
+        Decimal(const Decimal &) = default;
         Decimal(std::string, Size = INTEGER, unsigned char = 16);
 
 
-        friend Decimal operator+( const Decimal& , const Decimal &);
-        friend Decimal operator+=( Decimal &, const Decimal &);
+        friend Decimal operator+(const Decimal &, const Decimal &);
+        friend Decimal operator+=(Decimal &, const Decimal &);
 
-        friend Decimal operator-( const Decimal& , const Decimal &);
-        friend Decimal operator-=( Decimal &, const Decimal &);
+        friend Decimal operator-(const Decimal &, const Decimal &);
+        friend Decimal operator-=(Decimal &, const Decimal &);
 
-        friend Decimal operator*( const Decimal& , const Decimal &);
-        friend Decimal operator*=( Decimal &, const Decimal &);
+        friend Decimal operator*(const Decimal &, const Decimal &);
+        friend Decimal operator*=(Decimal &, const Decimal &);
 
-        friend Decimal operator/( const Decimal& , const Decimal &);
-        friend Decimal operator/=( Decimal &, const Decimal &);
+        friend Decimal operator/(const Decimal &, const Decimal &);
+        friend Decimal operator/=(Decimal &, const Decimal &);
 
-        friend Decimal operator+(const Integer& , const Decimal &);
-        friend Decimal operator+(Decimal , const Integer &);
+        friend Decimal operator+(const Integer &, const Decimal &);
+        friend Decimal operator+(Decimal, const Integer &);
         friend Integer operator+=(Integer &, const Decimal &);
         friend Decimal operator+=(Decimal &, const Integer &);
 
-        friend Decimal operator-(const Integer& , const Decimal &);
-        friend Decimal operator-(Decimal , const Integer &);
+        friend Decimal operator-(const Integer &, const Decimal &);
+        friend Decimal operator-(Decimal, const Integer &);
         friend Integer operator-=(Integer &, const Decimal &);
         friend Decimal operator-=(Decimal &, const Integer &);
 
-        friend Decimal operator*(const Integer& , const Decimal &);
-        friend Decimal operator*(Decimal , const Integer &);
+        friend Decimal operator*(const Integer &, const Decimal &);
+        friend Decimal operator*(Decimal, const Integer &);
         friend Integer operator*=(Integer &, const Decimal &);
         friend Decimal operator*=(Decimal &, const Integer &);
 
-        friend Decimal operator/(const Integer& , const Decimal &);
-        friend Decimal operator/(Decimal , const Integer &);
+        friend Decimal operator/(const Integer &, const Decimal &);
+        friend Decimal operator/(Decimal, const Integer &);
         friend Integer operator/=(Integer &, const Decimal &);
         friend Decimal operator/=(Decimal &, const Integer &);
     };

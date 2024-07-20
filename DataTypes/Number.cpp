@@ -122,19 +122,21 @@ namespace num {
     /*
      * Initialization of all base values.
      */
-    Number::Number(Size size, bool is_positive, NumberType number_type) : c_SIZE(size), m_position_start(
-            lex::Position::NULL_POSITION), m_position_end(lex::Position::NULL_POSITION),
-                                                                          p_context(nullptr),
-                                                                          m_storage(0),
-                                                                          m_is_positive(is_positive),
-                                                                          c_NUMBER_TYPE(number_type) {}
+    Number::Number(Size size, bool is_positive, const NumberType &number_type) : DataType(lex::Position::NULL_POSITION,
+                                                                                          lex::Position::NULL_POSITION,
+                                                                                          nullptr,
+                                                                                          dat::DataTypeType::NUMBER),
+                                                                                 c_SIZE(size), m_storage(0),
+                                                                                 m_is_positive(is_positive),
+                                                                                 c_NUMBER_TYPE(number_type) {}
 
-    Number::Number(const Number &other, NumberType number_type) : c_SIZE(other.c_SIZE),
-                                                                  m_position_start(other.m_position_start),
-                                                                  m_position_end(other.m_position_end),
-                                                                  p_context(other.p_context), m_storage(0),
-                                                                  m_is_positive(other.m_is_positive),
-                                                                  c_NUMBER_TYPE(number_type) {}
+    Number::Number(const Number &other, const NumberType &number_type) : DataType(other.m_position_start,
+                                                                                  other.m_position_end,
+                                                                                  other.p_context,
+                                                                                  dat::DataTypeType::NUMBER),
+                                                                         c_SIZE(other.c_SIZE), m_storage(0),
+                                                                         m_is_positive(other.m_is_positive),
+                                                                         c_NUMBER_TYPE(number_type) {}
 
     std::shared_ptr<Number> Number::create_form_key(const std::string &value, short key) {
         short type = key & 0b1111;
@@ -159,17 +161,8 @@ namespace num {
         m_is_positive = !m_is_positive;
     }
 
-    void Number::set_position(const lex::Position &start, const lex::Position &end) {
-        m_position_start = start;
-        m_position_end = end;
-    }
-
     bool Number::is_zero() const {
         return m_storage == 0;
-    }
-
-    void Number::set_context(itp::Context &context) {
-        p_context = &context;
     }
 
 }
