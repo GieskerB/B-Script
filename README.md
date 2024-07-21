@@ -48,10 +48,10 @@ compromise of having to choose the accuracy yourself!
 assignment  : VAR_KEYWORD[int/dec/...] IDENTIFIER '=' expression
             : IDENTIFIER '=' expression
 
-expression  : '!' comp_expr
-              comp-expr (('&&'|'||')comp-expr)*
+expression  : comp-expr (('&&'|'||')comp-expr)*
 
-comp-expr   : arith-expr (('=='|'!='|'<'|'<='|'>'|'>=') arith-expr)*
+comp-expr   : '!' comp_expr
+              arith-expr (('=='|'!='|'<'|'<='|'>'|'>=') arith-expr)*
 
 arith-expr  : term (('+'|'-') term)*
 

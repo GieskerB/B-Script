@@ -8,25 +8,28 @@
 
 namespace lex {
 
-    enum TokenType {
+    enum TokenType: unsigned short {
         NONE,
-        NUM,
+        NUMBER,
         VAR_KEYWORD,
         IDENTIFIER,
         PLUS = '+',
         MINUS = '-',
-        MUL = '*',
-        DIV = '/',
-        LPAREN = '(',
-        RPAREN = ')',
+        MULTIPLY = '*',
+        DIVIDE = '/',
+        LEFT_PARENTHESES = '(',
+        RIGHT_PARENTHESES = ')',
         EQUALS = '=',
-        EOL = ';',
+        END_OF_LINE = ';',
         LESS_THEN = '<',
         GREATER_THEN= '>',
         NOT_EQUALS = '!' + '=',
-        DOUBLE_EQUALS = '=' * 2,
+        DOUBLE_EQUALS = '=' + '=',
         LESS_THEN_OR_EQUALS= '<' + '=',
-        GREATER_THEN_OR_EQUALS= '>' + '='
+        GREATER_THEN_OR_EQUALS= '>' + '=',
+        LOGIC_AND = '&' * 2,
+        LOGIC_OR = '|' * 2,
+        LOGIC_NOT = '!'
     };
 
     class Token {

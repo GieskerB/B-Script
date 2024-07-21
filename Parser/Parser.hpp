@@ -14,6 +14,14 @@
 
 namespace par {
 
+    enum NextFunctionCall {
+        EXPRESSION,
+        COMP_EXPR,
+        ARITH_EXPR,
+        TERM,
+        FACTOR
+    };
+
     class Parser {
 
         std::vector<lex::Token> m_tokens;
@@ -25,12 +33,17 @@ namespace par {
 
         static short type_to_key(const std::string&);
 
-        std::shared_ptr<Node> factor(short);
-        std::shared_ptr<Node> term(short);
-        std::shared_ptr<Node> expression(short);
-        std::shared_ptr<Node> declaration(short = 0);
-        std::shared_ptr<Node> assignment(short = 0);
+        std::shared_ptr<Node> next_call(NextFunctionCall,short);
+        std::shared_ptr<Node> binary_operator(NextFunctionCall,const std::vector<lex::TokenType>&,short);
+        std::shared_ptr<Node> unary_operator(NextFunctionCall,const std::vector<lex::TokenType>&,short);
 
+        std::shared_ptr<Node> declaration();
+        std::shared_ptr<Node> assignment();
+        std::shared_ptr<Node> expression(short = 0);
+        std::shared_ptr<Node> comparison_expression(short);
+        std::shared_ptr<Node> arithmetic_expression(short);
+        std::shared_ptr<Node> term(short);
+        std::shared_ptr<Node> factor(short);
 
 
     public:

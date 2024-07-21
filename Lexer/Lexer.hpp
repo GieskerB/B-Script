@@ -12,6 +12,7 @@
 
 namespace lex {
     class Token;
+    enum TokenType: unsigned short;
 
     struct Constants {
         std::vector<std::string> VARIABLE_KEYWORDS;
@@ -53,10 +54,8 @@ namespace lex {
 
         [[nodiscard]] Token make_number_token();
         [[nodiscard]] Token make_word_token();
-        [[nodiscard]] Token make_not_equals_token();
-        [[nodiscard]] Token make_equals_token();
-        [[nodiscard]] Token make_less_than_token();
-        [[nodiscard]] Token make_greater_than_token();
+
+        Token make_two_char_token(char, char, TokenType  ,  TokenType );
 
     public:
 

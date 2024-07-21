@@ -184,7 +184,7 @@ namespace itp {
         if (node == nullptr) {
             throw std::runtime_error("Null pointer in Interpreter visit_number_node()!");
         }
-        if(node->num_token.c_type == lex::TokenType::NUM) {
+        if(node->num_token.c_type == lex::TokenType::NUMBER) {
             auto result = num::Number::create_form_key(node->num_token.c_value, node->key);
             result->set_position(node->pos_start, node->pos_end);
             result->set_context(context);
@@ -219,9 +219,9 @@ namespace itp {
             left_number = add_numbers(left_number, right_number);
         } else if (node->op_token.c_type == lex::TokenType::MINUS) {
             left_number = sub_numbers(left_number, right_number);
-        } else if (node->op_token.c_type == lex::TokenType::MUL) {
+        } else if (node->op_token.c_type == lex::TokenType::MULTIPLY) {
             left_number = mul_numbers(left_number, right_number);
-        } else if (node->op_token.c_type == lex::TokenType::DIV) {
+        } else if (node->op_token.c_type == lex::TokenType::DIVIDE) {
             left_number = div_numbers(left_number, right_number);
         } else {
             throw std::runtime_error("Unexpected token in Interpreter visit_binary_node()!");

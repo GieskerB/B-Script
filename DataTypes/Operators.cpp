@@ -307,4 +307,5 @@ namespace num {
         dec1 /= addend;
         return dec1;
     }
+
 }

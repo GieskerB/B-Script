@@ -99,6 +99,20 @@ namespace num {
 
         Integer &operator=(const Integer &);
 
+////       friend Integer  operator+(const Integer&, const Integer&);
+//
+//        template<typename Other>
+//        friend auto operator+(const Integer&, const Other&)
+//        {
+//            return nullptr;
+//        }
+//
+//        template<typename Other>
+//        friend auto inline operator+(const Other& o, const Integer& i) {
+//            return i+o;
+//        }
+
+        
         friend Integer operator+(const Integer &, const Integer &);
         friend Integer operator+=(Integer &, const Integer &);
 

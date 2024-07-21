@@ -2,7 +2,6 @@
 #include <bitset>
 #include "Parser.hpp"
 
-#include "../Lexer/Token.hpp"
 #include "../Error/Error.hpp"
 
 namespace par {
@@ -75,65 +74,52 @@ namespace par {
         return static_cast<short>(key);
     }
 
-    std::shared_ptr<Node> Parser::factor(short key) {
-
-        if (m_current_token.c_type == lex::TokenType::PLUS or m_current_token.c_type == lex::TokenType::MINUS) {
-            lex::Token temp_token = m_current_token;
-            advance();
-            std::shared_ptr<Node> right = factor(key);
-            return std::make_shared<UnaryOperatorNode>(temp_token, right);
-        } else if (m_current_token.c_type == lex::TokenType::NUM) {
-            lex::Token temp_token = m_current_token;
-            advance();
-            return std::make_shared<NumberNode>(temp_token, key);
-        } else if (m_current_token.c_type == lex::TokenType::IDENTIFIER) {
-            lex::Token temp_token = m_current_token;
-            advance();
-            return std::make_shared<VariableAccessNode>(temp_token);
-        } else if (m_current_token.c_type == lex::TokenType::LPAREN) {
-            advance();
-            std::shared_ptr<Node> expr = expression(key);
-            if (m_current_token.c_type == lex::TokenType::RPAREN) {
-                advance();
-                return expr;
-            } else {
-                throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
-                                              "Expected ')' here.");
-            }
+    std::shared_ptr<Node> Parser::next_call(NextFunctionCall next_function, short key) {
+        switch (next_function) {
+            case EXPRESSION:
+                return expression(key);
+            case COMP_EXPR:
+                return comparison_expression(key);
+            case ARITH_EXPR:
+                return arithmetic_expression(key);
+            case TERM:
+                return term(key);
+            case FACTOR:
+                return factor(key);
         }
-
-        throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
-                                      "Expected INT or DEC here.");
+        throw std::runtime_error("Unknown next function call in next_call().");
     }
 
-    std::shared_ptr<Node> Parser::term(short key) {
-        std::shared_ptr<Node> left = factor(key);
-
-        while (m_current_token.c_type == lex::TokenType::MUL or m_current_token.c_type == lex::TokenType::DIV) {
+    std::shared_ptr<Node>
+    Parser::binary_operator(NextFunctionCall next_function, const std::vector<lex::TokenType> &operator_tokens,
+                            short key) {
+        std::shared_ptr<Node> left = next_call(next_function, key);
+        while (std::find(operator_tokens.begin(), operator_tokens.end(), m_current_token.c_type) !=
+               operator_tokens.end()) {
             lex::Token op_token = m_current_token;
             advance();
-            std::shared_ptr<Node> right = factor(key);
+            std::shared_ptr<Node> right = next_call(next_function, key);
             left = std::make_shared<BinaryOperatorNode>(left, op_token, right);
         }
-
         return left;
     }
 
-    std::shared_ptr<Node> Parser::expression(short key) {
-        std::shared_ptr<Node> left = term(key);
-
-        while (m_current_token.c_type == lex::TokenType::PLUS or m_current_token.c_type == lex::TokenType::MINUS) {
-            lex::Token op_token = m_current_token;
-            advance();
-            std::shared_ptr<Node> right = term(key);
-            left = std::make_shared<BinaryOperatorNode>(left, op_token, right);
+    std::shared_ptr<Node>
+    Parser::unary_operator(NextFunctionCall next_function, const std::vector<lex::TokenType> &operator_tokens,
+                           short key) {
+        lex::Token operator_token = m_current_token;
+        if (std::find(operator_tokens.begin(), operator_tokens.end(), m_current_token.c_type) ==
+            operator_tokens.end()) {
+            throw std::runtime_error("Unexpected Token in unary_operator()");
         }
-
-        return left;
+        advance();
+        auto right = next_call(next_function, key);
+        return std::make_shared<UnaryOperatorNode>(operator_token, right);
     }
 
-    std::shared_ptr<Node> Parser::declaration(short key) {
-        key = type_to_key(m_current_token.c_value);
+
+    std::shared_ptr<Node> Parser::declaration() {
+        short key = type_to_key(m_current_token.c_value);
 
         advance();
         if (m_current_token.c_type != lex::TokenType::IDENTIFIER) {
@@ -159,7 +145,7 @@ namespace par {
         return std::make_shared<VariableAssignNode>(identifier, expr);
     }
 
-    std::shared_ptr<Node> Parser::assignment(short key) {
+    std::shared_ptr<Node> Parser::assignment() {
 
         auto identifier = m_current_token;
         auto ident_name = identifier.c_value;
@@ -168,7 +154,7 @@ namespace par {
                                           "Variable '" + ident_name +
                                           "' is not defined."); //TODO CUSTOM ERROR HERE
         }
-        key = m_key_map[ident_name];
+        short key = m_key_map[ident_name];
         advance();
         if (m_current_token.c_type != lex::TokenType::EQUALS) {
             throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
@@ -178,6 +164,66 @@ namespace par {
         auto expr = expression(key);
         return std::make_shared<VariableAssignNode>(identifier, expr);
     }
+
+    std::shared_ptr<Node> Parser::expression(short key) {
+        return binary_operator(NextFunctionCall::COMP_EXPR, {lex::TokenType::LOGIC_AND, lex::TokenType::LOGIC_OR}, key);
+    }
+
+    std::shared_ptr<Node> Parser::comparison_expression(short key) {
+        if (m_current_token.c_type == lex::TokenType::LOGIC_NOT) {
+            return unary_operator(NextFunctionCall::COMP_EXPR, {lex::TokenType::LOGIC_NOT}, key);
+//            auto operator_token = m_current_token;
+//            advance();
+//            auto result = comparison_expression(key);
+//            return std::make_shared<UnaryOperatorNode>(operator_token, result);
+        } else {
+            return binary_operator(NextFunctionCall::ARITH_EXPR,
+                                   {lex::TokenType::DOUBLE_EQUALS, lex::TokenType::NOT_EQUALS,
+                                    lex::TokenType::LESS_THEN, lex::TokenType::LESS_THEN_OR_EQUALS,
+                                    lex::TokenType::GREATER_THEN, lex::TokenType::GREATER_THEN_OR_EQUALS,}, key);
+        }
+    }
+
+    std::shared_ptr<Node> Parser::arithmetic_expression(short key) {
+        return binary_operator(NextFunctionCall::TERM, {lex::TokenType::PLUS, lex::TokenType::MINUS}, key);
+    }
+
+    std::shared_ptr<Node> Parser::term(short key) {
+        return binary_operator(NextFunctionCall::FACTOR, {lex::TokenType::MULTIPLY, lex::TokenType::DIVIDE}, key);
+    }
+
+    std::shared_ptr<Node> Parser::factor(short key) {
+
+        if (m_current_token.c_type == lex::TokenType::PLUS or m_current_token.c_type == lex::TokenType::MINUS) {
+            return unary_operator(NextFunctionCall::FACTOR, {lex::TokenType::PLUS, lex::TokenType::MINUS}, key);
+//            lex::Token temp_token = m_current_token;
+//            advance();
+//            std::shared_ptr<Node> right = factor(key);
+//            return std::make_shared<UnaryOperatorNode>(temp_token, right);
+        } else if (m_current_token.c_type == lex::TokenType::NUMBER) {
+            lex::Token temp_token = m_current_token;
+            advance();
+            return std::make_shared<NumberNode>(temp_token, key);
+        } else if (m_current_token.c_type == lex::TokenType::IDENTIFIER) {
+            lex::Token temp_token = m_current_token;
+            advance();
+            return std::make_shared<VariableAccessNode>(temp_token);
+        } else if (m_current_token.c_type == lex::TokenType::LEFT_PARENTHESES) {
+            advance();
+            std::shared_ptr<Node> expr = expression(key);
+            if (m_current_token.c_type == lex::TokenType::RIGHT_PARENTHESES) {
+                advance();
+                return expr;
+            } else {
+                throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
+                                              "Expected ')' here.");
+            }
+        }
+
+        throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
+                                      "Expected INT or DEC here.");
+    }
+
 
     Parser::Parser() : m_tokens(), m_current_token(lex::Token::NULL_TOKEN), m_key_map(), m_index(-1) {}
 
@@ -195,19 +241,20 @@ namespace par {
     std::shared_ptr<Node> Parser::parse() {
         std::shared_ptr<Node> abstract_syntax_tree;
         if (m_current_token.c_type == lex::TokenType::VAR_KEYWORD) {
-            abstract_syntax_tree = declaration(0);
+            abstract_syntax_tree = declaration();
         } else if (m_current_token.c_type == lex::TokenType::IDENTIFIER) {
-            abstract_syntax_tree = assignment(0);
+            abstract_syntax_tree = assignment();
         } else {
-            abstract_syntax_tree = expression(0);
+            abstract_syntax_tree = expression();
         }
 
-        if (m_current_token.c_type != lex::TokenType::EOL) {
+        if (m_current_token.c_type != lex::TokenType::END_OF_LINE) {
             throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
                                           "Expected '+', '-', '*' or '/' here.");
         }
 
         return abstract_syntax_tree;
     }
+
 
 } // par
