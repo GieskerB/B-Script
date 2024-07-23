@@ -7,7 +7,7 @@
 #include <array>
 
 #include "Token.hpp"
-#include "../DataTypes/Numbers.hpp"
+#include "../DataTypes/Number.hpp"
 #include "Position.hpp"
 
 namespace lex {
@@ -19,7 +19,7 @@ namespace lex {
         constexpr void generate_number_keywords(){
             VARIABLE_KEYWORDS.emplace_back("int");
             VARIABLE_KEYWORDS.emplace_back("dec");
-            for (auto& size : num::sizes) {
+            for (auto& size : dat::sizes) {
                 const char byte_to_bits{static_cast<char>(size * 8)};
                 const std::string size_string = std::to_string(byte_to_bits);
                 VARIABLE_KEYWORDS.push_back("int" + size_string);

@@ -1,10 +1,6 @@
-#include <stdexcept>
-#include "Numbers.hpp"
-#include "NumberPrinter.hpp"
+#include "Integer.hpp"
 
-namespace num {
-
-
+namespace dat {
     void Integer::fit_string(std::string &string) {
         const int MAX_INTEGER_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[c_SIZE * 8];
         if (string.size() > MAX_INTEGER_SIZE) {
@@ -12,16 +8,22 @@ namespace num {
         }
     }
 
-    Integer::Integer() : Number(Size::LONG, true, NumberType::INT), c_IS_SIGNED(false) {}
+    Integer::Integer() : Number(Size::LONG, true), c_IS_SIGNED(false) {}
 
-    Integer::Integer(const num::Decimal &other) : Number(other, NumberType::INT),
+    Integer::Integer(const Decimal &other) : Number(other),
                                                   c_IS_SIGNED(false) {
         m_storage = other.m_storage >> other.c_SCALING_FACTOR;
     }
 
-    Integer::Integer(std::string str_repr, Size size, bool is_signed) : Number(size,
-                                                                               str_repr.empty() or str_repr[0] != '-',
-                                                                               NumberType::INT),
+
+    Integer::Integer(const Integer &other) : Number(other),
+                                             c_IS_SIGNED(other.c_IS_SIGNED) {
+        m_storage = other.m_storage;
+    }
+
+
+
+    Integer::Integer(std::string str_repr, Size size, bool is_signed) : Number(size, str_repr.empty() or str_repr[0] != '-'),
                                                                         c_IS_SIGNED(is_signed) {
         if (str_repr.empty()) {
             return;
@@ -41,12 +43,19 @@ namespace num {
         clap_to_size();
     }
 
-    Integer &Integer::operator=(const num::Integer &other) {
+    Integer &Integer::operator=(const Integer &other) {
         m_storage = other.m_storage;
         m_is_positive = other.m_is_positive;
         clap_to_size();
         return *this;
     }
 
+    /*
+     * In case of Integers simply print the number with help of the number_to_string method!
+     */
+    void Integer::print(std::ostream &os) const {
+        os  << number_to_string(m_storage, m_is_positive);
+    }
 
-} // num
+
+} // dat

@@ -1,8 +1,12 @@
 #include <iostream>
-#include "Numbers.hpp"
+#include "Number.hpp"
 #include "../Error/Error.hpp"
 
-namespace num {
+#include "Boolean.hpp"
+#include "Integer.hpp"
+#include "Decimal.hpp"
+#include "String.hpp"
+namespace dat {
 
     std::pair<uint128, bool>
     storage_addition(uint128 storage1, const uint128 storage2, bool is_positive1, const bool is_positive2) {
@@ -57,6 +61,118 @@ namespace num {
         }
     }
 
+    std::shared_ptr<DataType> Boolean::operator+(const DataType &other) {
+        Boolean copy = Boolean(*this);
+        if(typeid(other) == typeid(Boolean)) {
+            auto other_boolean = dynamic_cast<const Boolean&>(other);
+        } else if(typeid(other) == typeid(Integer)) {
+            auto other_integer = dynamic_cast<const Integer&>(other);
+        }else if(typeid(other) == typeid(Decimal)) {
+            auto other_decimal = dynamic_cast<const Decimal&>(other);
+        }else if(typeid(other) == typeid(Size)) {
+            auto other_string = dynamic_cast<const String&>(other);
+        } else {
+            return nullptr;
+        }
+    }
+
+    std::shared_ptr<DataType> Boolean::operator-(const DataType &other) {
+        return std::shared_ptr<DataType>();
+    }
+
+    std::shared_ptr<DataType> Boolean::operator*(const DataType &other) {
+        return std::shared_ptr<DataType>();
+    }
+
+    std::shared_ptr<DataType> Boolean::operator/(const DataType &other) {
+        return std::shared_ptr<DataType>();
+    }
+
+    std::shared_ptr<DataType> Integer::operator+(const DataType &other) {
+        Integer copy = Integer(*this);
+        if(typeid(other) == typeid(Boolean)) {
+            auto other_boolean = dynamic_cast<const Boolean&>(other);
+        } else if(typeid(other) == typeid(Integer)) {
+            auto other_integer = dynamic_cast<const Integer&>(other);
+            auto result = storage_addition(copy.m_storage, other_integer.m_storage, copy.m_is_positive, other_integer.m_is_positive);
+            copy.m_storage = result.first;
+            copy.m_is_positive = result.second;
+            copy.clap_to_size();
+            return std::make_shared<Integer>(copy);
+        }else if(typeid(other) == typeid(Decimal)) {
+            auto other_decimal = dynamic_cast<const Decimal&>(other);
+        }else if(typeid(other) == typeid(Size)) {
+            auto other_string = dynamic_cast<const String&>(other);
+        } else {
+            return nullptr;
+        }
+    }
+
+    std::shared_ptr<DataType> Integer::operator-(const DataType &other) {
+        return std::shared_ptr<DataType>();
+    }
+
+    std::shared_ptr<DataType> Integer::operator*(const DataType &other) {
+        return std::shared_ptr<DataType>();
+    }
+
+    std::shared_ptr<DataType> Integer::operator/(const DataType &other) {
+        return std::shared_ptr<DataType>();
+    }
+
+    std::shared_ptr<DataType> Decimal::operator+(const DataType &other) {
+        Decimal copy = Decimal(*this);
+        if(typeid(other) == typeid(Boolean)) {
+            auto other_boolean = dynamic_cast<const Boolean&>(other);
+        } else if(typeid(other) == typeid(Integer)) {
+            auto other_integer = dynamic_cast<const Integer&>(other);
+        }else if(typeid(other) == typeid(Decimal)) {
+            auto other_decimal = dynamic_cast<const Decimal&>(other);
+        }else if(typeid(other) == typeid(Size)) {
+            auto other_string = dynamic_cast<const String&>(other);
+        } else {
+            return nullptr;
+        }
+    }
+
+    std::shared_ptr<DataType> Decimal::operator-(const DataType &other) {
+        return std::shared_ptr<DataType>();
+    }
+
+    std::shared_ptr<DataType> Decimal::operator*(const DataType &other) {
+        return std::shared_ptr<DataType>();
+    }
+
+    std::shared_ptr<DataType> Decimal::operator/(const DataType &other) {
+        return std::shared_ptr<DataType>();
+    }
+    std::shared_ptr<DataType> String::operator+(const DataType &other) {
+        String copy = String(*this);
+        if(typeid(other) == typeid(Boolean)) {
+            auto other_boolean = dynamic_cast<const Boolean&>(other);
+        } else if(typeid(other) == typeid(Integer)) {
+            auto other_integer = dynamic_cast<const Integer&>(other);
+        }else if(typeid(other) == typeid(Decimal)) {
+            auto other_decimal = dynamic_cast<const Decimal&>(other);
+        }else if(typeid(other) == typeid(Size)) {
+            auto other_string = dynamic_cast<const String&>(other);
+        } else {
+            return nullptr;
+        }
+    }
+
+    std::shared_ptr<DataType> String::operator-(const DataType &other) {
+        return std::shared_ptr<DataType>();
+    }
+
+    std::shared_ptr<DataType> String::operator*(const DataType &other) {
+        return std::shared_ptr<DataType>();
+    }
+
+    std::shared_ptr<DataType> String::operator/(const DataType &other) {
+        return std::shared_ptr<DataType>();
+    }
+/*
     Integer operator+(const Integer& int1, const Integer &int2) {
         Integer result(int1);
         result += int2;
@@ -306,6 +422,6 @@ namespace num {
         Decimal addend(int2, dec1.c_SCALING_FACTOR);
         dec1 /= addend;
         return dec1;
-    }
+    }*/
 
 }

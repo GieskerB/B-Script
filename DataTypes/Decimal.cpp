@@ -1,10 +1,12 @@
-#include <stdexcept>
-#include <bitset>
-#include "Numbers.hpp"
+//
+// Created by bjarn on 23.07.2024.
+//
 
-namespace num {
+#include <sstream>
+#include "Decimal.hpp"
 
-    /*
+namespace dat {
+/*
      * A simple helper function to finde the decimal point in the string representation of the number.
      * If point does not exist return -1
      */
@@ -69,11 +71,9 @@ namespace num {
 
     }
 
-    Decimal::Decimal() : Number(Size::LONG, true, NumberType::DEC), c_SCALING_FACTOR(c_SIZE * 4) {}
+    Decimal::Decimal() : Number(Size::LONG, true), c_SCALING_FACTOR(c_SIZE * 4) {}
 
-    Decimal::Decimal(const Integer &other, unsigned scaling_factor) : Number(other,
-                                                                             NumberType::DEC),
-                                                                      c_SCALING_FACTOR(scaling_factor) {
+    Decimal::Decimal(const Integer &other, unsigned scaling_factor) : Number(other), c_SCALING_FACTOR(scaling_factor) {
         m_storage = other.m_storage << c_SCALING_FACTOR;
     }
 
@@ -82,8 +82,7 @@ namespace num {
      */
     Decimal::Decimal(std::string str_repr, Size size, unsigned char scaling_factor) : Number(size,
                                                                                              str_repr.empty() or
-                                                                                             str_repr[0] != '-',
-                                                                                             NumberType::DEC),
+                                                                                             str_repr[0] != '-'),
                                                                                       c_SCALING_FACTOR(scaling_factor) {
 
         // Throw Error if format is wrong
@@ -124,6 +123,67 @@ namespace num {
         // Finally combining both parts and clamping the number to its size just to be sure.
         m_storage = integer_part | fraction_part;
         clap_to_size();
-
     }
-}
+
+    /*
+     * In case of Decimal... Print the integer part like an integer and the reconstructed the fraction part.
+     */
+    void Decimal::print(std::ostream &os) const {
+// Use the right_node bits to the right_node part when printing!
+        const uint64 DECIMAL_BIT_MAP = (static_cast<uint128>(1) << c_SCALING_FACTOR) - 1;
+        uint64 pre_decimal_part;
+        if (c_SCALING_FACTOR == c_SIZE * 8) {
+            pre_decimal_part = 0;
+        } else {
+            pre_decimal_part = m_storage >> c_SCALING_FACTOR;
+        }
+
+        uint64 decimal_part = m_storage & DECIMAL_BIT_MAP;
+
+        // Simply print the integer part:
+        os << number_to_string(pre_decimal_part, m_is_positive);
+        os << '.';
+
+        // Converts the fraction step by step into a decimal number
+        uint128 numerator = decimal_part;
+        uint128 denominator = static_cast<uint128>(1) << c_SCALING_FACTOR;
+
+        std::stringstream temporary_storage;
+        for (int i = 0; i < c_SCALING_FACTOR; ++i) {
+            numerator *= 10;
+            temporary_storage << static_cast<uint64>(numerator / denominator);
+            numerator %= denominator;
+        }
+
+        // Use some clever techniques and round a bit to reduce confusion when printing.
+        int num_of_consecutive_nines{0};
+        char last_non_nine;
+        int last_non_nine_index{-1};
+        std::string fractional_part = temporary_storage.str();
+        for (int i = 0; i < fractional_part.size(); ++i) {
+            if (fractional_part[i] == '9') {
+                ++num_of_consecutive_nines;
+            } else {
+                if (num_of_consecutive_nines > 3 and last_non_nine_index >= 0) {
+                    fractional_part[last_non_nine_index] = static_cast<char> (last_non_nine + 1);
+                    fractional_part = fractional_part.substr(0, last_non_nine_index + 1);
+                    break;
+                } else {
+                    num_of_consecutive_nines = 0;
+                }
+                last_non_nine = fractional_part[i];
+                last_non_nine_index = i;
+            }
+        }
+        int index{static_cast<int>(fractional_part.size())};
+        while( index >1 and fractional_part[index-1] == '0') {
+            --index;
+        }
+        fractional_part = fractional_part.substr(0,index);
+        // Just like before: Reduce output limit to the important part.
+        fractional_part = fractional_part.substr(0,
+                                                 CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[c_SCALING_FACTOR]);
+        os<< fractional_part;
+    }
+
+} // dat

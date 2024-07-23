@@ -1,6 +1,5 @@
 #include "Error/Error.hpp"
-#include "DataTypes/Numbers.hpp"
-#include "DataTypes/NumberPrinter.hpp"
+#include "DataTypes/Number.hpp"
 #include "FileReader/FileReader.hpp"
 #include "Lexer/Lexer.hpp"
 #include "Parser/Parser.hpp"
@@ -12,6 +11,9 @@ int main() {
 //        std::cout << lol << std::endl;
 //    }
 
+//    std::variant<>* a = nullptr;
+//    std::any b;
+
     try {
         lex::Lexer lexer("main.bs");
         par::Parser parser{};
@@ -22,12 +24,9 @@ int main() {
             auto abstract_syntax_tree = parser.parse();
             abstract_syntax_tree->print();
             auto res = itp::Interpreter::visit(abstract_syntax_tree, program_context);
-            if(res->c_NUMBER_TYPE == num::NumberType::INT) {
-                num::NumberPrinter::print(*std::dynamic_pointer_cast<num::Integer>(res));
-            } else {
-                num::NumberPrinter::print(*std::dynamic_pointer_cast<num::Decimal>(res));
-            }
-            std::cout << "\n";
+
+            std::cout << *res << '\n';
+
         }
 //        auto tokens = lexer.all();
 //        par::Parser parser(tokens);
@@ -35,9 +34,9 @@ int main() {
 //        abstract_syntax_tree->print();
 //        auto res = itp::Interpreter::visit(abstract_syntax_tree, program_context);
 //        if(res->c_NUMBER_TYPE == num::NumberType::INT) {
-//            num::NumberPrinter::print(*std::dynamic_pointer_cast<num::Integer>(res));
+//            num::Printer::print(*std::dynamic_pointer_cast<num::Integer>(res));
 //        } else {
-//            num::NumberPrinter::print(*std::dynamic_pointer_cast<num::Decimal>(res));
+//            num::Printer::print(*std::dynamic_pointer_cast<num::Decimal>(res));
 //        }
 //        std::cout << "\n";
     } catch (err::Error &error) {

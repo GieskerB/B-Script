@@ -1,9 +1,14 @@
-#include <stdexcept>
-#include <iostream>
+#include <memory>
 #include <sstream>
-#include "Numbers.hpp"
+#include <vector>
+#include <ranges>
+#include <cmath>
 
-namespace num {
+#include "Number.hpp"
+#include "Integer.hpp"
+#include "Decimal.hpp"
+
+namespace dat {
 
     /*
      * name is self-explanatory
@@ -122,21 +127,17 @@ namespace num {
     /*
      * Initialization of all base values.
      */
-    Number::Number(Size size, bool is_positive, const NumberType &number_type) : DataType(lex::Position::NULL_POSITION,
-                                                                                          lex::Position::NULL_POSITION,
-                                                                                          nullptr,
-                                                                                          dat::DataTypeType::NUMBER),
-                                                                                 c_SIZE(size), m_storage(0),
-                                                                                 m_is_positive(is_positive),
-                                                                                 c_NUMBER_TYPE(number_type) {}
+    Number::Number(Size size, bool is_positive) : DataType(lex::Position::NULL_POSITION,
+                                                           lex::Position::NULL_POSITION,
+                                                           nullptr),
+                                                  c_SIZE(size), m_storage(0),
+                                                  m_is_positive(is_positive) {}
 
-    Number::Number(const Number &other, const NumberType &number_type) : DataType(other.m_position_start,
-                                                                                  other.m_position_end,
-                                                                                  other.p_context,
-                                                                                  dat::DataTypeType::NUMBER),
-                                                                         c_SIZE(other.c_SIZE), m_storage(0),
-                                                                         m_is_positive(other.m_is_positive),
-                                                                         c_NUMBER_TYPE(number_type) {}
+    Number::Number(const Number &other) : DataType(other.m_position_start,
+                                                   other.m_position_end,
+                                                   other.p_context),
+                                          c_SIZE(other.c_SIZE), m_storage(0),
+                                          m_is_positive(other.m_is_positive) {}
 
     std::shared_ptr<Number> Number::create_form_key(const std::string &value, short key) {
         short type = key & 0b1111;
@@ -165,4 +166,4 @@ namespace num {
         return m_storage == 0;
     }
 
-}
+} // dat

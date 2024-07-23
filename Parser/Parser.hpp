@@ -10,7 +10,7 @@
 
 #include "../Lexer/Token.hpp"
 #include "Nodes.hpp"
-#include "../DataTypes/Numbers.hpp"
+#include "../DataTypes/Number.hpp"
 
 namespace par {
 
