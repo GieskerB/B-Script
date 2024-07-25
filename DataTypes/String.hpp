@@ -13,12 +13,17 @@ namespace dat {
 
         static const unsigned int MAX_LENGTH;
 
+    public:
+
+        String() = delete;
+        String(const std::string&): DataType(lex::Position::NULL_POSITION, lex::Position::NULL_POSITION, nullptr){};
+
         void print(std::ostream& os) const override;
 
-        std::shared_ptr<DataType> operator+(const DataType&) override;
-        std::shared_ptr<DataType> operator-(const DataType&) override;
-        std::shared_ptr<DataType> operator*(const DataType&) override;
-        std::shared_ptr<DataType> operator/(const DataType&) override;
+        std::shared_ptr<DataType> operator+(const DataType&)const  override;
+        std::shared_ptr<DataType> operator-(const DataType&) const override;
+        std::shared_ptr<DataType> operator*(const DataType&) const override;
+        std::shared_ptr<DataType> operator/(const DataType&) const override;
     };
 
 } // dat

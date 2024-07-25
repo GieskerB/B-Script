@@ -32,16 +32,16 @@ namespace dat {
 
     public:
 
-        Decimal(const Decimal &) = default;
+        explicit Decimal(const Decimal &);
 
-        Decimal(std::string, Size = INTEGER, unsigned char = 16);
+        explicit Decimal(std::string, Size = INTEGER, unsigned char = 16);
 
         void print(std::ostream& os) const override;
 
-        std::shared_ptr<DataType> operator+(const DataType&) override;
-        std::shared_ptr<DataType> operator-(const DataType&) override;
-        std::shared_ptr<DataType> operator*(const DataType&) override;
-        std::shared_ptr<DataType> operator/(const DataType&) override;
+        std::shared_ptr<DataType> operator+(const DataType&)const  override;
+        std::shared_ptr<DataType> operator-(const DataType&)const  override;
+        std::shared_ptr<DataType> operator*(const DataType&) const override;
+        std::shared_ptr<DataType> operator/(const DataType&)const  override;
     };
 } // dat
 

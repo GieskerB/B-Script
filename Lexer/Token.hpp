@@ -10,7 +10,7 @@ namespace lex {
 
     enum TokenType: unsigned short {
         NONE,
-        NUMBER,
+        VALUE,
         VAR_KEYWORD,
         IDENTIFIER,
         PLUS = '+',

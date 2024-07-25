@@ -8,10 +8,10 @@
 
 namespace par {
 
-    enum NodeType {
+    enum NodeType: char {
         VAR_ACCESS,
         VAR_ASSIGN,
-        NUMBER,
+        VALUE,
         UNARY,
         BINARY
     };
@@ -46,12 +46,12 @@ namespace par {
         void print() override;
     };
 
-    struct NumberNode: public Node {
+    struct ValueNode: public Node {
         lex::Token num_token;
         short key;
 
-        NumberNode() = delete;
-        explicit NumberNode(lex::Token,short);
+        ValueNode() = delete;
+        explicit ValueNode(lex::Token, short);
         void print() override;
     };
 

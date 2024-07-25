@@ -20,10 +20,10 @@ namespace dat {
 
         void print(std::ostream& os) const override;
 
-        std::shared_ptr<DataType> operator+(const DataType&) override;
-        std::shared_ptr<DataType> operator-(const DataType&) override;
-        std::shared_ptr<DataType> operator*(const DataType&) override;
-        std::shared_ptr<DataType> operator/(const DataType&) override;
+        std::shared_ptr<DataType> operator+(const DataType&)const  override;
+        std::shared_ptr<DataType> operator-(const DataType&)const  override;
+        std::shared_ptr<DataType> operator*(const DataType&)const  override;
+        std::shared_ptr<DataType> operator/(const DataType&)const  override;
     };
 
 } // dat

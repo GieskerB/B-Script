@@ -73,8 +73,15 @@ namespace dat {
 
     Decimal::Decimal() : Number(Size::LONG, true), c_SCALING_FACTOR(c_SIZE * 4) {}
 
-    Decimal::Decimal(const Integer &other, unsigned scaling_factor) : Number(other), c_SCALING_FACTOR(scaling_factor) {
+    Decimal::Decimal(const Integer &other, unsigned scaling_factor) : Number(other.c_SIZE, other.m_is_positive),
+                                                                      c_SCALING_FACTOR(scaling_factor) {
         m_storage = other.m_storage << c_SCALING_FACTOR;
+    }
+
+    Decimal::Decimal(const dat::Decimal &other): Number(other.c_SIZE, other.m_is_positive), c_SCALING_FACTOR(other.c_SCALING_FACTOR){
+        m_storage = other.m_storage;
+        set_position(other.m_position_start,other.m_position_end);
+        set_context(*other.p_context);
     }
 
     /*
@@ -176,14 +183,14 @@ namespace dat {
             }
         }
         int index{static_cast<int>(fractional_part.size())};
-        while( index >1 and fractional_part[index-1] == '0') {
+        while (index > 1 and fractional_part[index - 1] == '0') {
             --index;
         }
-        fractional_part = fractional_part.substr(0,index);
+        fractional_part = fractional_part.substr(0, index);
         // Just like before: Reduce output limit to the important part.
         fractional_part = fractional_part.substr(0,
                                                  CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[c_SCALING_FACTOR]);
-        os<< fractional_part;
+        os << fractional_part;
     }
 
 } // dat

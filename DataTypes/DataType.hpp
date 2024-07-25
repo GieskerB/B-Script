@@ -30,12 +30,12 @@ namespace dat {
     public:
 
         DataType() = delete;
+        DataType(const DataType&) = delete;
 
         void set_position(const lex::Position &, const lex::Position &);
         void set_context(itp::Context &);
 
         [[nodiscard]] std::pair<lex::Position, lex::Position> get_position() const;
-
         [[nodiscard]] itp::Context get_context() const;
 
         template<typename A, typename B>
@@ -47,10 +47,10 @@ namespace dat {
         template<typename A, typename B>
         friend auto operator/ (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
 
-        virtual std::shared_ptr<DataType> operator+(const DataType&) = 0;
-        virtual std::shared_ptr<DataType> operator-(const DataType&) = 0;
-        virtual std::shared_ptr<DataType> operator*(const DataType&) = 0;
-        virtual std::shared_ptr<DataType> operator/(const DataType&) = 0;
+        virtual std::shared_ptr<DataType> operator+(const DataType&) const = 0;
+        virtual std::shared_ptr<DataType> operator-(const DataType&)const  = 0;
+        virtual std::shared_ptr<DataType> operator*(const DataType&)const  = 0;
+        virtual std::shared_ptr<DataType> operator/(const DataType&) const = 0;
 
         virtual void print(std::ostream& os) const = 0;
 

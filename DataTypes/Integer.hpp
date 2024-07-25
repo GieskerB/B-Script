@@ -24,16 +24,15 @@ namespace dat {
 
     public:
 
-        Integer(const Integer &);
-
+        explicit Integer(const Integer &);
         explicit Integer(std::string, Size = INTEGER, bool = false);
 
         void print(std::ostream& os) const override;
 
-        std::shared_ptr<DataType> operator+(const DataType&) override;
-        std::shared_ptr<DataType> operator-(const DataType&) override;
-        std::shared_ptr<DataType> operator*(const DataType&) override;
-        std::shared_ptr<DataType> operator/(const DataType&) override;
+        std::shared_ptr<DataType> operator+(const DataType&)const  override;
+        std::shared_ptr<DataType> operator-(const DataType&) const override;
+        std::shared_ptr<DataType> operator*(const DataType&)const  override;
+        std::shared_ptr<DataType> operator/(const DataType&)const  override;
 
     };
 } // dat

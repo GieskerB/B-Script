@@ -30,7 +30,7 @@ namespace itp {
         visit_variable_assign_node(const std::shared_ptr<par::VariableAssignNode> &,  itp::Context &);
 
         static std::shared_ptr<dat::DataType>
-        visit_number_node(const std::shared_ptr<par::NumberNode> &,  itp::Context &);
+        visit_number_node(const std::shared_ptr<par::ValueNode> &, itp::Context &);
 
         static std::shared_ptr<dat::DataType>
         visit_unary_node(const std::shared_ptr<par::UnaryOperatorNode> &,  itp::Context &);

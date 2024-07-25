@@ -35,7 +35,7 @@ namespace lex {
             advance();
         }
 
-        return Token{TokenType::NUMBER, start, m_pos, number_string};
+        return Token{TokenType::VALUE, start, m_pos, number_string};
     }
 
 

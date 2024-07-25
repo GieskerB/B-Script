@@ -200,10 +200,10 @@ namespace par {
 //            advance();
 //            std::shared_ptr<Node> right = factor(key);
 //            return std::make_shared<UnaryOperatorNode>(temp_token, right);
-        } else if (m_current_token.c_type == lex::TokenType::NUMBER) {
+        } else if (m_current_token.c_type == lex::TokenType::VALUE) {
             lex::Token temp_token = m_current_token;
             advance();
-            return std::make_shared<NumberNode>(temp_token, key);
+            return std::make_shared<ValueNode>(temp_token, key);
         } else if (m_current_token.c_type == lex::TokenType::IDENTIFIER) {
             lex::Token temp_token = m_current_token;
             advance();

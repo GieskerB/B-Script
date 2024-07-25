@@ -133,11 +133,11 @@ namespace dat {
                                                   c_SIZE(size), m_storage(0),
                                                   m_is_positive(is_positive) {}
 
-    Number::Number(const Number &other) : DataType(other.m_position_start,
-                                                   other.m_position_end,
-                                                   other.p_context),
-                                          c_SIZE(other.c_SIZE), m_storage(0),
-                                          m_is_positive(other.m_is_positive) {}
+//    Number::Number(const Number &other) : DataType(other.m_position_start,
+//                                                   other.m_position_end,
+//                                                   other.p_context),
+//                                          c_SIZE(other.c_SIZE), m_storage(0),
+//                                          m_is_positive(other.m_is_positive) {}
 
     std::shared_ptr<Number> Number::create_form_key(const std::string &value, short key) {
         short type = key & 0b1111;

@@ -23,8 +23,8 @@ namespace lex {
         const std::string open{'{'}, close{'}'};
         os << open;
         switch (token.c_type) {
-            case NUMBER:
-                temp_string = "NUMBER:";
+            case VALUE:
+                temp_string = "VALUE:";
                 os << temp_string << token.c_value;
                 break;
             case VAR_KEYWORD:

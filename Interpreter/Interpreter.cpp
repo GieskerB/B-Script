@@ -141,8 +141,8 @@ namespace itp {
         std::shared_ptr<dat::DataType> result;
         switch (node->NODE_TYPE) {
 
-            case par::NUMBER:
-                result = visit_number_node(std::dynamic_pointer_cast<par::NumberNode>(node), context);
+            case par::VALUE:
+                result = visit_number_node(std::dynamic_pointer_cast<par::ValueNode>(node), context);
                 break;
             case par::UNARY:
                 result = visit_unary_node(std::dynamic_pointer_cast<par::UnaryOperatorNode>(node), context);
@@ -187,11 +187,11 @@ namespace itp {
     }
 
     std::shared_ptr<dat::DataType>
-    Interpreter::visit_number_node(const std::shared_ptr<par::NumberNode> &node, itp::Context &context) {
+    Interpreter::visit_number_node(const std::shared_ptr<par::ValueNode> &node, itp::Context &context) {
         if (node == nullptr) {
             throw std::runtime_error("Null pointer in Interpreter visit_number_node()!");
         }
-        if(node->num_token.c_type == lex::TokenType::NUMBER) {
+        if(node->num_token.c_type == lex::TokenType::VALUE) {
             auto result = dat::Number::create_form_key(node->num_token.c_value, node->key);
             result->set_position(node->pos_start, node->pos_end);
             result->set_context(context);

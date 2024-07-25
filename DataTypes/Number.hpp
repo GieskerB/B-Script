@@ -48,14 +48,15 @@ namespace dat {
         uint64 m_storage;
         bool m_is_positive;
 
-        virtual void clap_to_size();
+        void clap_to_size();
 
         static bool check_overflow(const std::string &, unsigned char);
 
         Number(Size, bool);
-        Number(const Number &);
 
     public:
+
+        Number(const Number &) = delete;
 
         static std::shared_ptr<Number> create_form_key(const std::string &, short);
 

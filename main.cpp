@@ -5,7 +5,6 @@
 #include "Parser/Parser.hpp"
 #include "Interpreter/Interpreter.hpp"
 #include "Interpreter/Context.hpp"
-#include "Decimal.hpp"
 
 int main() {
 //    for(auto& lol : lex::CONSTANTS.VARIABLE_KEYWORDS ){
@@ -14,26 +13,6 @@ int main() {
 
 //    std::variant<>* a = nullptr;
 //    std::any b;
-
-    // TODO Keine Kopie machen! Nutze Decimal& x = ... zum Beispiel!
-
-    /*
-     * Unit Tests in c++ mit 'utest'
-     */
-//    dat::Decimal a("2.25", dat::INTEGER, 4);
-//    std::cout << a << "\n";
-//
-//    dat::DataType& b = a;
-//    std::cout << b << "\n";
-//
-//    dat::Decimal& c = dynamic_cast<dat::Decimal&>(b);
-//    std::cout << c << "\n";
-//
-//    auto* e = dynamic_cast<dat::Decimal*>(&b);
-//    std::cout << *e << "\n";
-//
-//    dat::Decimal& f = *e;
-//    std::cout << f << "\n";
 
     try {
         lex::Lexer lexer("main.bs");
