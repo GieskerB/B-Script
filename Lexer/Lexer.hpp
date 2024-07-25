@@ -16,7 +16,7 @@ namespace lex {
 
     struct Constants {
         std::vector<std::string> VARIABLE_KEYWORDS;
-        constexpr void generate_number_keywords(){
+        /*constexpr*/ void generate_number_keywords(){
             VARIABLE_KEYWORDS.emplace_back("int");
             VARIABLE_KEYWORDS.emplace_back("dec");
             for (auto& size : dat::sizes) {
@@ -33,7 +33,7 @@ namespace lex {
             }
         }
 
-        constexpr Constants() {
+        /*constexpr*/ Constants() {
             generate_number_keywords();
         }
     };

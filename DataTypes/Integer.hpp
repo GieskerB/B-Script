@@ -28,8 +28,6 @@ namespace dat {
 
         explicit Integer(std::string, Size = INTEGER, bool = false);
 
-        Integer& operator=(const Integer&);
-
         void print(std::ostream& os) const override;
 
         std::shared_ptr<DataType> operator+(const DataType&) override;

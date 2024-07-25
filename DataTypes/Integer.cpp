@@ -43,13 +43,6 @@ namespace dat {
         clap_to_size();
     }
 
-    Integer &Integer::operator=(const Integer &other) {
-        m_storage = other.m_storage;
-        m_is_positive = other.m_is_positive;
-        clap_to_size();
-        return *this;
-    }
-
     /*
      * In case of Integers simply print the number with help of the number_to_string method!
      */
