@@ -15,6 +15,13 @@ namespace dat {
         p_context = & context;
     }
 
+    std::pair<lex::Position, lex::Position> DataType::get_position() const{
+        return {m_position_start, m_position_end};
+    }
+
+    itp::Context DataType::get_context()  const{
+        return *p_context;
+    }
 
 
 

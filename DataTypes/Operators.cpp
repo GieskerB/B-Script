@@ -6,6 +6,14 @@
 #include "Integer.hpp"
 #include "Decimal.hpp"
 #include "String.hpp"
+
+/*
+ * All operators are commutative. Therefor A+B = B+A.
+ * There are currently 4 Operators [Boolean, Integer, Decimal, String]
+ * This ordner denotes the direction of implementation:
+ * e.g. I'll implment Boolean + String, but if String + Boolean is called, I simply "calculate" Boolean + String!
+ */
+
 namespace dat {
 
     std::pair<uint128, bool>
@@ -62,81 +70,142 @@ namespace dat {
     }
 
     std::shared_ptr<DataType> Boolean::operator+(const DataType &other) {
-        Boolean copy = Boolean(*this);
-        if(typeid(other) == typeid(Boolean)) {
-            auto other_boolean = dynamic_cast<const Boolean&>(other);
-        } else if(typeid(other) == typeid(Integer)) {
-            auto other_integer = dynamic_cast<const Integer&>(other);
-        }else if(typeid(other) == typeid(Decimal)) {
-            auto other_decimal = dynamic_cast<const Decimal&>(other);
-        }else if(typeid(other) == typeid(Size)) {
-            auto other_string = dynamic_cast<const String&>(other);
-        } else {
-            return nullptr;
-        }
+        throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
     std::shared_ptr<DataType> Boolean::operator-(const DataType &other) {
-        return std::shared_ptr<DataType>();
+        throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
     std::shared_ptr<DataType> Boolean::operator*(const DataType &other) {
-        return std::shared_ptr<DataType>();
+        throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
     std::shared_ptr<DataType> Boolean::operator/(const DataType &other) {
-        return std::shared_ptr<DataType>();
+        throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
     std::shared_ptr<DataType> Integer::operator+(const DataType &other) {
         Integer copy = Integer(*this);
-        if(typeid(other) == typeid(Boolean)) {
-            auto other_boolean = dynamic_cast<const Boolean&>(other);
-        } else if(typeid(other) == typeid(Integer)) {
-            auto other_integer = dynamic_cast<const Integer&>(other);
-            auto result = storage_addition(copy.m_storage, other_integer.m_storage, copy.m_is_positive, other_integer.m_is_positive);
+        if (typeid(other) == typeid(Boolean)) {
+            throw err::InvalidSyntaxError(m_position_start, other.get_position().second,"Operator not implemented.");
+        } else if (typeid(other) == typeid(Integer)) {
+            auto other_integer = dynamic_cast<const Integer &>(other);
+            auto result = storage_addition(copy.m_storage, other_integer.m_storage, copy.m_is_positive,
+                                           other_integer.m_is_positive);
             copy.m_storage = result.first;
             copy.m_is_positive = result.second;
             copy.clap_to_size();
             return std::make_shared<Integer>(copy);
-        }else if(typeid(other) == typeid(Decimal)) {
-            auto other_decimal = dynamic_cast<const Decimal&>(other);
-        }else if(typeid(other) == typeid(Size)) {
-            auto other_string = dynamic_cast<const String&>(other);
+        } else if (typeid(other) == typeid(Decimal)) {
+            auto other_decimal = dynamic_cast<const Decimal &>(other);
+            Decimal casted_decimal(*this, other_decimal.c_SCALING_FACTOR);
+            return casted_decimal + other_decimal;
+        } else if (typeid(other) == typeid(String)) {
+            throw err::InvalidSyntaxError(m_position_start, other.get_position().second,"Operator not implemented.");
         } else {
-            return nullptr;
+            throw std::runtime_error("Unexpected type of other in operator.cpp");
         }
     }
 
     std::shared_ptr<DataType> Integer::operator-(const DataType &other) {
-        return std::shared_ptr<DataType>();
+        Integer copy = Integer(*this);
+        if (typeid(other) == typeid(Boolean)) {
+            throw err::InvalidSyntaxError(m_position_start, other.get_position().second,"Operator not implemented.");
+        } else if (typeid(other) == typeid(Integer)) {
+            auto other_integer = dynamic_cast<const Integer &>(other);
+            other_integer.m_is_positive = !other_integer.m_is_positive;
+            return copy + other_integer;
+        } else if (typeid(other) == typeid(Decimal)) {
+            auto other_decimal = dynamic_cast<const Decimal &>(other);
+            other_decimal.m_is_positive = !other_decimal.m_is_positive;
+            return copy + other_decimal;
+        } else if (typeid(other) == typeid(String)) {
+            throw err::InvalidSyntaxError(m_position_start, other.get_position().second,"Operator not implemented.");
+        } else {
+            throw std::runtime_error("Unexpected type of other in operator.cpp");
+        }
     }
 
     std::shared_ptr<DataType> Integer::operator*(const DataType &other) {
-        return std::shared_ptr<DataType>();
+        Integer copy = Integer(*this);
+        if (typeid(other) == typeid(Boolean)) {
+            throw err::InvalidSyntaxError(m_position_start, other.get_position().second,"Operator not implemented.");
+        } else if (typeid(other) == typeid(Integer)) {
+            auto other_integer = dynamic_cast<const Integer &>(other);
+            // neg times neg = pos
+            copy.m_is_positive ^= ~other_integer.m_is_positive;
+            copy.m_storage *= other_integer.m_storage;
+            copy.clap_to_size();
+            return std::make_shared<Integer>(copy);
+        } else if (typeid(other) == typeid(Decimal)) {
+            auto other_decimal = dynamic_cast<const Decimal &>(other);
+            Decimal casted_decimal(*this, other_decimal.c_SCALING_FACTOR);
+            return casted_decimal * other_decimal;
+        } else if (typeid(other) == typeid(String)) {
+            throw err::InvalidSyntaxError(m_position_start, other.get_position().second,"Operator not implemented.");
+        } else {
+            throw std::runtime_error("Unexpected type of other in operator.cpp");
+        }
     }
 
     std::shared_ptr<DataType> Integer::operator/(const DataType &other) {
-        return std::shared_ptr<DataType>();
+        Integer copy = Integer(*this);
+        if (typeid(other) == typeid(Boolean)) {
+            throw err::InvalidSyntaxError(m_position_start, other.get_position().second,"Operator not implemented.");
+        } else if (typeid(other) == typeid(Integer)) {
+            auto other_integer = dynamic_cast<const Integer &>(other);
+            if(other_integer.is_zero()) {
+                throw err::RuntimeError(other_integer.m_position_start, other_integer.m_position_end,"Division by 0 is not allowed!",*other_integer.p_context);
+            }
+            // neg times neg = pos
+            copy.m_is_positive ^= ~other_integer.m_is_positive;
+
+            copy.m_storage /= other_integer.m_storage;
+
+            copy.clap_to_size();
+            return std::make_shared<Integer>(copy);
+        } else if (typeid(other) == typeid(Decimal)) {
+            auto other_decimal = dynamic_cast<const Decimal &>(other);
+            Decimal casted_decimal(*this, other_decimal.c_SCALING_FACTOR);
+            return casted_decimal / other_decimal;
+        } else if (typeid(other) == typeid(String)) {
+            throw err::InvalidSyntaxError(m_position_start, other.get_position().second,"Operator not implemented.");
+        } else {
+            throw std::runtime_error("Unexpected type of other in operator.cpp");
+        }
     }
 
     std::shared_ptr<DataType> Decimal::operator+(const DataType &other) {
         Decimal copy = Decimal(*this);
-        if(typeid(other) == typeid(Boolean)) {
-            auto other_boolean = dynamic_cast<const Boolean&>(other);
-        } else if(typeid(other) == typeid(Integer)) {
-            auto other_integer = dynamic_cast<const Integer&>(other);
-        }else if(typeid(other) == typeid(Decimal)) {
-            auto other_decimal = dynamic_cast<const Decimal&>(other);
-        }else if(typeid(other) == typeid(Size)) {
-            auto other_string = dynamic_cast<const String&>(other);
+        if (typeid(other) == typeid(Boolean)) {
+            auto other_boolean = dynamic_cast<const Boolean &>(other);
+        } else if (typeid(other) == typeid(Integer)) {
+            auto other_integer = dynamic_cast<const Integer &>(other);
+            return other_integer + copy;
+        } else if (typeid(other) == typeid(Decimal)) {
+            auto other_decimal = dynamic_cast<const Decimal &>(other);
+            const char SCALING_DELTA = static_cast<char>(copy.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
+
+            auto shifted_storage = shift_to_equal_size(copy.m_storage, other_decimal.m_storage, SCALING_DELTA);
+
+            auto result_shifted = storage_addition(shifted_storage.first, shifted_storage.second, copy.m_is_positive,
+                                                   other_decimal.m_is_positive);
+
+            copy.m_storage = unshift_form_equal_size(result_shifted.first, SCALING_DELTA);
+            copy.m_is_positive = result_shifted.second;
+            copy.clap_to_size();
+            return std::make_shared<Decimal>(copy);
+        } else if (typeid(other) == typeid(Size)) {
+            auto other_string = dynamic_cast<const String &>(other);
         } else {
-            return nullptr;
+            throw std::runtime_error("Unexpected type of other in operator.cpp");
         }
     }
 
     std::shared_ptr<DataType> Decimal::operator-(const DataType &other) {
         return std::shared_ptr<DataType>();
+        // TODO
     }
 
     std::shared_ptr<DataType> Decimal::operator*(const DataType &other) {
@@ -146,31 +215,21 @@ namespace dat {
     std::shared_ptr<DataType> Decimal::operator/(const DataType &other) {
         return std::shared_ptr<DataType>();
     }
+
     std::shared_ptr<DataType> String::operator+(const DataType &other) {
-        String copy = String(*this);
-        if(typeid(other) == typeid(Boolean)) {
-            auto other_boolean = dynamic_cast<const Boolean&>(other);
-        } else if(typeid(other) == typeid(Integer)) {
-            auto other_integer = dynamic_cast<const Integer&>(other);
-        }else if(typeid(other) == typeid(Decimal)) {
-            auto other_decimal = dynamic_cast<const Decimal&>(other);
-        }else if(typeid(other) == typeid(Size)) {
-            auto other_string = dynamic_cast<const String&>(other);
-        } else {
-            return nullptr;
-        }
+        throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
     std::shared_ptr<DataType> String::operator-(const DataType &other) {
-        return std::shared_ptr<DataType>();
+        throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
     std::shared_ptr<DataType> String::operator*(const DataType &other) {
-        return std::shared_ptr<DataType>();
+        throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
     std::shared_ptr<DataType> String::operator/(const DataType &other) {
-        return std::shared_ptr<DataType>();
+        throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 /*
     Integer operator+(const Integer& int1, const Integer &int2) {

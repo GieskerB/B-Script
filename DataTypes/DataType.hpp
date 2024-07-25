@@ -34,6 +34,10 @@ namespace dat {
         void set_position(const lex::Position &, const lex::Position &);
         void set_context(itp::Context &);
 
+        [[nodiscard]] std::pair<lex::Position, lex::Position> get_position() const;
+
+        [[nodiscard]] itp::Context get_context() const;
+
         template<typename A, typename B>
         friend auto operator+ (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
         template<typename A, typename B>
