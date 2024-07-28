@@ -8,20 +8,26 @@ namespace dat {
         }
     }
 
-    Integer::Integer() : Number(Size::LONG, true), c_IS_SIGNED(false) {}
+//    Integer::Integer() : Number(Size::LONG, true), c_IS_SIGNED(false) {}
 
-    Integer::Integer(const Decimal &other) : Number(other.c_SIZE, other.m_is_positive),
-                                                  c_IS_SIGNED(false) {
-        m_storage = other.m_storage >> other.c_SCALING_FACTOR;
+//    Integer::Integer(const Decimal &other) : Number(other.c_SIZE, other.m_is_positive),
+//                                                  c_IS_SIGNED(false) {
+//        m_storage = other.m_storage >> other.c_SCALING_FACTOR;
+//    }
+
+    Integer Integer::copy(const dat::Integer &other) {
+        Integer result("0");
+        result.c_IS_SIGNED = other.c_IS_SIGNED;
+        result.c_SIZE = other.c_SIZE;
+        result.m_storage = other.m_storage;
+        result.m_is_positive = other.m_is_positive;
+        result.m_position_start = other.m_position_start;
+        result.m_position_end = other.m_position_end;
+        result.p_context = other.p_context;
+        return result;
     }
 
-
-    Integer::Integer(const Integer &other) : Number(other.c_SIZE, other.m_is_positive),
-                                             c_IS_SIGNED(other.c_IS_SIGNED) {
-        m_storage = other.m_storage;
-        set_position(other.m_position_start,other.m_position_end);
-        set_context(*other.p_context);
-    }
+    Integer::Integer(const Integer &&other) noexcept : Number(std::move(other)), c_IS_SIGNED(other.c_IS_SIGNED) {}
 
 
     Integer::Integer(std::string str_repr, Size size, bool is_signed) : Number(size, str_repr.empty() or str_repr[0] != '-'),

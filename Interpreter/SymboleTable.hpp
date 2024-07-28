@@ -4,28 +4,20 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
+#include <variant>
 
-
-#include  "Context.hpp"
-
-namespace dat {
-    class DataType;
-}
+#include "../DataTypes/Utility.hpp"
 
 namespace itp {
     class SymbolTable {
-
-        std::unordered_map<std::string, std::shared_ptr<dat::DataType>> m_variables{};
+        std::unordered_map<std::string, dat::VariantTypes> m_variables{};
         SymbolTable *p_parent;
 
     public:
-
         explicit SymbolTable(SymbolTable *parent = nullptr);
 
-        std::shared_ptr<dat::DataType> get(const std::string &) const;
-
-        void set(const std::string &, const std::shared_ptr<dat::DataType> &);
-
+        dat::VariantTypes& get(const std::string &);
+        void set(const std::string &,  dat::VariantTypes &);
     };
 } // itp
 

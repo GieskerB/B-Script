@@ -1,8 +1,9 @@
 #include "SymboleTable.hpp"
+
 namespace itp {
     SymbolTable::SymbolTable(SymbolTable *parent) : p_parent(parent) {}
 
-    std::shared_ptr<dat::DataType> SymbolTable::get(const std::string &var_name) const{
+    std::variant<dat::Boolean, dat::Integer, dat::Decimal, dat::String>& SymbolTable::get(const std::string & var_name)  {
         if (!m_variables.contains(var_name)) {
             if (p_parent == nullptr) {
                 throw std::runtime_error("");
@@ -13,7 +14,7 @@ namespace itp {
         return m_variables.at(var_name);
     }
 
-    void SymbolTable::set(const std::string &var_name, const std::shared_ptr<dat::DataType> &var_value) {
-        m_variables[var_name] = var_value;
+    void SymbolTable::set(const std::string & var_name,  dat::VariantTypes & var_value) {
+        m_variables.emplace(var_name,std::move(var_value));
     }
 } // itp

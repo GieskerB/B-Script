@@ -1,239 +1,109 @@
+#include <cassert>
 #include "Interpreter.hpp"
+#include "Context.hpp"
+#include "../DataTypes/Utility.hpp"
 #include "../Error/Error.hpp"
 
 namespace itp {
 
-
-    std::shared_ptr<dat::DataType>
-    Interpreter::add_numbers(std::shared_ptr<dat::DataType> &left_number,
-                             const std::shared_ptr<dat::DataType> &right_number) {
-        if (left_number == nullptr or right_number == nullptr) {
-            throw std::runtime_error("Null pointer in Interpreter add_numbers()!");
-        }
-
-        left_number =  left_number + right_number;
-
-//        if (left_number->c_NUMBER_TYPE == dat::NumberType::INT and
-//            right_number->c_NUMBER_TYPE == dat::NumberType::INT) {
-//            auto left = std::dynamic_pointer_cast<dat::Integer>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Integer>(right_number);
-//            *left += *right;
-//            left_number = left;
-//        } else if (left_number->c_NUMBER_TYPE == dat::NumberType::INT) {
-//            auto left = std::dynamic_pointer_cast<dat::Integer>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Decimal>(right_number);
-//            *left += *right;
-//            left_number = left;
-//        } else if (right_number->c_NUMBER_TYPE == dat::NumberType::INT) {
-//            auto left = std::dynamic_pointer_cast<dat::Decimal>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Integer>(right_number);
-//            *left += *right;
-//            left_number = left;
-//        } else {
-//            auto left = std::dynamic_pointer_cast<dat::Decimal>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Decimal>(right_number);
-//            *left += *right;
-//            left_number = left;
-//        }
-        return left_number;
-    }
-
-    std::shared_ptr<dat::DataType>
-    Interpreter::sub_numbers(std::shared_ptr<dat::DataType> &left_number,
-                             const std::shared_ptr<dat::DataType> &right_number) {
-        if (left_number == nullptr or right_number == nullptr) {
-            throw std::runtime_error("Null pointer in Interpreter add_numbers()!");
-        }
-        left_number =  left_number - right_number;
-
-//        std::shared_ptr<dat::Number> result;
-//        if (left_number->c_NUMBER_TYPE == dat::NumberType::INT and
-//            right_number->c_NUMBER_TYPE == dat::NumberType::INT) {
-//            auto left = std::dynamic_pointer_cast<dat::Integer>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Integer>(right_number);
-//            result = std::make_shared<dat::Integer> (*left - *right);
-//        } else if (left_number->c_NUMBER_TYPE == dat::NumberType::INT) {
-//            auto left = std::dynamic_pointer_cast<dat::Integer>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Decimal>(right_number);
-//            result = std::make_shared<dat::Decimal> (*left - *right);
-//        } else if (right_number->c_NUMBER_TYPE == dat::NumberType::INT) {
-//            auto left = std::dynamic_pointer_cast<dat::Decimal>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Integer>(right_number);
-//            result = std::make_shared<dat::Decimal> (*left - *right);
-//        } else {
-//            auto left = std::dynamic_pointer_cast<dat::Decimal>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Decimal>(right_number);
-//            result = std::make_shared<dat::Decimal> (*left - *right);
-//        }
-        return left_number;
-    }
-
-    std::shared_ptr<dat::DataType>
-    Interpreter::mul_numbers(std::shared_ptr<dat::DataType> &left_number,
-                             const std::shared_ptr<dat::DataType> &right_number) {
-        if (left_number == nullptr or right_number == nullptr) {
-            throw std::runtime_error("Null pointer in Interpreter add_numbers()!");
-        }
-        left_number =  left_number * right_number;
-
-//        if (left_number->c_NUMBER_TYPE == dat::NumberType::INT and
-//            right_number->c_NUMBER_TYPE == dat::NumberType::INT) {
-//            auto left = std::dynamic_pointer_cast<dat::Integer>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Integer>(right_number);
-//            *left *= *right;
-//            left_number = left;
-//        } else if (left_number->c_NUMBER_TYPE == dat::NumberType::INT) {
-//            auto left = std::dynamic_pointer_cast<dat::Integer>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Decimal>(right_number);
-//            *left *= *right;
-//            left_number = left;
-//        } else if (right_number->c_NUMBER_TYPE == dat::NumberType::INT) {
-//            auto left = std::dynamic_pointer_cast<dat::Decimal>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Integer>(right_number);
-//            *left *= *right;
-//            left_number = left;
-//        } else {
-//            auto left = std::dynamic_pointer_cast<dat::Decimal>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Decimal>(right_number);
-//            *left *= *right;
-//            left_number = left;
-//        }
-        return left_number;
-    }
-
-    std::shared_ptr<dat::DataType>
-    Interpreter::div_numbers(std::shared_ptr<dat::DataType> &left_number,
-                             const std::shared_ptr<dat::DataType> &right_number) {
-        if (left_number == nullptr or right_number == nullptr) {
-            throw std::runtime_error("Null pointer in Interpreter add_numbers()!");
-        }
-        left_number =  left_number / right_number;
-//        if (left_number->c_NUMBER_TYPE == dat::NumberType::INT and
-//            right_number->c_NUMBER_TYPE == dat::NumberType::INT) {
-//            auto left = std::dynamic_pointer_cast<dat::Integer>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Integer>(right_number);
-//            *left /= *right;
-//            left_number = left;
-//        } else if (left_number->c_NUMBER_TYPE == dat::NumberType::INT) {
-//            auto left = std::dynamic_pointer_cast<dat::Integer>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Decimal>(right_number);
-//            *left /= *right;
-//            left_number = left;
-//        } else if (right_number->c_NUMBER_TYPE == dat::NumberType::INT) {
-//            auto left = std::dynamic_pointer_cast<dat::Decimal>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Integer>(right_number);
-//            *left /= *right;
-//            left_number = left;
-//        } else {
-//            auto left = std::dynamic_pointer_cast<dat::Decimal>(left_number);
-//            auto right = std::dynamic_pointer_cast<dat::Decimal>(right_number);
-//            *left /= *right;
-//            left_number = left;
-//        }
-        return left_number;
-    }
-
-    std::shared_ptr<dat::DataType>
-    Interpreter::visit(const std::shared_ptr<par::Node> &node, itp::Context &context) {
-        if (node == nullptr) {
-            throw std::runtime_error("Null pointer in Interpreter visit()!");
-        }
-        std::shared_ptr<dat::DataType> result;
-        switch (node->NODE_TYPE) {
-
-            case par::VALUE:
-                result = visit_number_node(std::dynamic_pointer_cast<par::ValueNode>(node), context);
-                break;
-            case par::UNARY:
-                result = visit_unary_node(std::dynamic_pointer_cast<par::UnaryOperatorNode>(node), context);
-                break;
-            case par::BINARY:
-                result = visit_binary_node(std::dynamic_pointer_cast<par::BinaryOperatorNode>(node), context);
-                break;
-            case par::VAR_ASSIGN:
-                result = visit_variable_assign_node(std::dynamic_pointer_cast<par::VariableAssignNode>(node), context);
-                break;
-            case par::VAR_ACCESS:
-                result = visit_variable_access_node(std::dynamic_pointer_cast<par::VariableAccessNode>(node), context);
-                break;
+    dat::DataType& get_variant_content(VariantTypes& variant) {
+        switch (variant.index()) {
+            case 0:
+                return std::get<dat::Boolean>(variant);
+            case 1:
+                return std::get<dat::Integer>(variant);
+            case 2:
+                return std::get<dat::Decimal>(variant);
+            case 3:
+                return std::get<dat::String>(variant);
             default:
-                throw std::runtime_error("Unknown Node in Interpreter visit()!");
+                throw std::runtime_error("std::variant error in get_variant_content()");
         }
-        return result;
     }
 
+    VariantTypes Interpreter::visit(const  par::OmegaNode & node, Context & context) {
+        switch (node.get_node_type()) {
+            case par::NodeType::BINARY:
+                return visit_binary_node(node,context);
+            case par::NodeType::UNARY:
+                return visit_unary_node(node,context);
+            case par::NodeType::VALUE:
+                return visit_value_node(node, context);
+            case par::NodeType::VARIABLE_ACCESS:
+                return visit_variable_access_node(node,context);
+            case par::NodeType::VARIABLE_ASSIGN:
+                return visit_variable_assign_node(node,context);
+            default:
+                throw std::runtime_error("Invalid NodeType in Interpreter::visit()");
+        }
+    }
 
-    std::shared_ptr<dat::DataType>
-    Interpreter::visit_variable_access_node(const std::shared_ptr<par::VariableAccessNode> &node,
-                                            itp::Context &context) {
-        auto var_name = node->identifier_token.c_value;
+    VariantTypes Interpreter::visit_variable_access_node(const par::OmegaNode & node, Context & context) {
+        auto var_name = node.get_token().c_value;
         try {
-            auto var_value = context.get_symbole_table().get(var_name);
-            var_value->set_position(node->pos_start, node->pos_end);
-            return std::dynamic_pointer_cast<dat::Number>(var_value);
+            VariantTypes& var_value = context.get_symbole_table().get(var_name);
+            dat::DataType& x = get_variant_content(var_value);
+            x.set_position(node.get_start_position(), node.get_end_position());
+            return std::move(var_value);
         } catch (std::runtime_error &error) {
-            throw err::RuntimeError(node->pos_start, node->pos_start, "'" + var_name + "' is not defined.", context);
+            throw err::RuntimeError(node.get_start_position(), node.get_end_position(), "'" + var_name + "' is not defined.", context);
         }
-
     }
 
-    std::shared_ptr<dat::DataType>
-    Interpreter::visit_variable_assign_node(const std::shared_ptr<par::VariableAssignNode> &node,
-                                            itp::Context &context) {
-        auto var_name = node->identifier_token.c_value;
-        auto var_value = visit(node->value_node, context);
+    VariantTypes Interpreter::visit_variable_assign_node(const par::OmegaNode & node, Context & context) {
+        std::string var_name = node.get_token().c_value;
+        VariantTypes var_value = visit(node.get_right(), context);
         context.get_symbole_table().set(var_name, var_value);
         return var_value;
     }
 
-    std::shared_ptr<dat::DataType>
-    Interpreter::visit_number_node(const std::shared_ptr<par::ValueNode> &node, itp::Context &context) {
-        if (node == nullptr) {
-            throw std::runtime_error("Null pointer in Interpreter visit_number_node()!");
-        }
-        if(node->num_token.c_type == lex::TokenType::VALUE) {
-            auto result = dat::Number::create_form_key(node->num_token.c_value, node->key);
-            result->set_position(node->pos_start, node->pos_end);
-            result->set_context(context);
-            return result;
+    VariantTypes Interpreter::visit_value_node(const par::OmegaNode & node, Context & context) {
+        if(node.get_token().c_type == lex::TokenType::VALUE) {
+            auto result = dat::Utility::create_form_key(node.get_token().c_value, node.get_variable_key());
+
+            auto start = node.get_start_position();
+            auto end = node.get_end_position();
+
+            auto set_position = [&](auto& datatype) {
+                datatype.set_position(start, end);
+            };
+            auto set_context = [&](auto& datatype) {
+                datatype.set_context(context);
+            };
+
+            std::visit(set_position, result);
+            std::visit(set_context, result);
+            return std::move(result);
         } else {
-            throw std::runtime_error("Unexpected token in Interpreter visit_number_node()!");
+            throw std::runtime_error("Unexpected token in Interpreter visit_value_node()!");
         }
     }
 
-    std::shared_ptr<dat::DataType>
-    Interpreter::visit_unary_node(const std::shared_ptr<par::UnaryOperatorNode> &node, itp::Context &context) {
-        if (node == nullptr) {
-            throw std::runtime_error("Null pointer in Interpreter visit_unary_node()!");
-        }
-        auto number = visit(node->right_node, context);
-        if (node->op_token.c_type == lex::TokenType::MINUS) {
+
+    VariantTypes Interpreter::visit_unary_node(const par::OmegaNode & node, Context & context) {
+        auto number = visit(node.get_right(), context);
+        if (node.get_token().c_type == lex::TokenType::MINUS) {
 //            number->invert(); TODO
-        } else if (node->op_token.c_type != lex::TokenType::PLUS) {
+        } else if (node.get_token().c_type != lex::TokenType::PLUS) {
             throw std::runtime_error("Unexpected token in Interpreter visit_unary_node()!");
         }
         return number;
     }
 
-    std::shared_ptr<dat::DataType>
-    Interpreter::visit_binary_node(const std::shared_ptr<par::BinaryOperatorNode> &node, itp::Context &context) {
-        if (node == nullptr) {
-            throw std::runtime_error("Null pointer in Interpreter visit_binary_node()!");
-        }
-        auto left_number = visit(node->left_node, context);
-        auto right_number = visit(node->right_node, context);
-        if (node->op_token.c_type == lex::TokenType::PLUS) {
-            left_number = add_numbers(left_number, right_number);
-        } else if (node->op_token.c_type == lex::TokenType::MINUS) {
-            left_number = sub_numbers(left_number, right_number);
-        } else if (node->op_token.c_type == lex::TokenType::MULTIPLY) {
-            left_number = mul_numbers(left_number, right_number);
-        } else if (node->op_token.c_type == lex::TokenType::DIVIDE) {
-            left_number = div_numbers(left_number, right_number);
+    VariantTypes Interpreter::visit_binary_node(const par::OmegaNode & node, Context & context) {
+        auto left_number = visit(node.get_left(), context);
+        auto right_number = visit(node.get_right(), context);
+        if (node.get_token().c_type == lex::TokenType::PLUS) {
+            return left_number + right_number;
+        } else if (node.get_token().c_type == lex::TokenType::MINUS) {
+            return left_number - right_number;
+        } else if (node.get_token().c_type == lex::TokenType::MULTIPLY) {
+            return left_number * right_number;
+        } else if (node.get_token().c_type == lex::TokenType::DIVIDE) {
+            return left_number / right_number;
         } else {
             throw std::runtime_error("Unexpected token in Interpreter visit_binary_node()!");
         }
-        return left_number;
     }
 
 } // itp

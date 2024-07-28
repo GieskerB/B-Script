@@ -1,9 +1,7 @@
-
 #ifndef B_SHARP_DATATYPE_HPP
 #define B_SHARP_DATATYPE_HPP
 
-#include <variant>
-#include "../Interpreter/Context.hpp"
+#include <memory>
 #include "../Lexer/Position.hpp"
 
 namespace itp {
@@ -11,12 +9,6 @@ namespace itp {
 }
 
 namespace dat {
-
-    class Boolean;
-    class Integer;
-    class Decimal;
-    class String;
-
 
     class DataType {
 
@@ -31,26 +23,27 @@ namespace dat {
 
         DataType() = delete;
         DataType(const DataType&) = delete;
+        DataType(const DataType&&) noexcept ;
 
         void set_position(const lex::Position &, const lex::Position &);
         void set_context(itp::Context &);
 
         [[nodiscard]] std::pair<lex::Position, lex::Position> get_position() const;
-        [[nodiscard]] itp::Context get_context() const;
 
-        template<typename A, typename B>
-        friend auto operator+ (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
-        template<typename A, typename B>
-        friend auto operator- (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
-        template<typename A, typename B>
-        friend auto operator* (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
-        template<typename A, typename B>
-        friend auto operator/ (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
 
-        virtual std::shared_ptr<DataType> operator+(const DataType&) const = 0;
-        virtual std::shared_ptr<DataType> operator-(const DataType&)const  = 0;
-        virtual std::shared_ptr<DataType> operator*(const DataType&)const  = 0;
-        virtual std::shared_ptr<DataType> operator/(const DataType&) const = 0;
+//        template<typename A, typename B>
+//        friend auto operator+ (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
+//        template<typename A, typename B>
+//        friend auto operator- (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
+//        template<typename A, typename B>
+//        friend auto operator* (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
+//        template<typename A, typename B>
+//        friend auto operator/ (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
+
+//        virtual std::shared_ptr<DataType> operator+(const DataType&) const = 0;
+//        virtual std::shared_ptr<DataType> operator-(const DataType&)const  = 0;
+//        virtual std::shared_ptr<DataType> operator*(const DataType&)const  = 0;
+//        virtual std::shared_ptr<DataType> operator/(const DataType&) const = 0;
 
         virtual void print(std::ostream& os) const = 0;
 
@@ -61,22 +54,22 @@ namespace dat {
 
     };
 
-    template<typename A, typename B>
-    auto operator+(const std::shared_ptr<A> &a, const std::shared_ptr<B> &b) {
-        return std::shared_ptr<DataType>(*a + *b);
-    }
-    template<typename A, typename B>
-    auto operator-(const std::shared_ptr<A> &a, const std::shared_ptr<B> &b) {
-        return std::shared_ptr<DataType>(*a - *b);
-    }
-    template<typename A, typename B>
-    auto operator*(const std::shared_ptr<A> &a, const std::shared_ptr<B> &b) {
-        return std::shared_ptr<DataType>(*a * *b);
-    }
-    template<typename A, typename B>
-    auto operator/(const std::shared_ptr<A> &a, const std::shared_ptr<B> &b) {
-        return std::shared_ptr<DataType>(*a / *b);
-    }
+//    template<typename A, typename B>
+//    auto operator+(const std::shared_ptr<A> &a, const std::shared_ptr<B> &b) {
+//        return std::shared_ptr<DataType>(*a + *b);
+//    }
+//    template<typename A, typename B>
+//    auto operator-(const std::shared_ptr<A> &a, const std::shared_ptr<B> &b) {
+//        return std::shared_ptr<DataType>(*a - *b);
+//    }
+//    template<typename A, typename B>
+//    auto operator*(const std::shared_ptr<A> &a, const std::shared_ptr<B> &b) {
+//        return std::shared_ptr<DataType>(*a * *b);
+//    }
+//    template<typename A, typename B>
+//    auto operator/(const std::shared_ptr<A> &a, const std::shared_ptr<B> &b) {
+//        return std::shared_ptr<DataType>(*a / *b);
+//    }
 
 
 } // dat

@@ -1,13 +1,22 @@
 #ifndef B_SHARP_INTEGER_HPP
 #define B_SHARP_INTEGER_HPP
 
+namespace dat {
+    class Integer;
+}
+
 #include <string>
+#include <variant>
 #include "Number.hpp"
+#include "Boolean.hpp"
+#include "Integer.hpp"
 #include "Decimal.hpp"
+#include "String.hpp"
+//#include "Utility.hpp"
 
 namespace dat {
 
-    class Decimal;
+    typedef std::variant<Boolean, Integer, Decimal, String> VariantTypes;
 
     class Integer : public Number {
 
@@ -18,21 +27,28 @@ namespace dat {
 
         void fit_string(std::string &);
 
-        Integer();
 
-        explicit Integer(const Decimal &);
+//        explicit Integer(const Decimal &);
 
     public:
 
-        explicit Integer(const Integer &);
+        Integer() = delete;
+        Integer(const Integer &)= delete;
+        Integer(const Integer &&) noexcept;
         explicit Integer(std::string, Size = INTEGER, bool = false);
+
+        static Integer copy(const Integer& other);
+
+        static Integer cast(const Boolean& other);
+        static Integer cast(const Decimal& other);
+        static Integer cast(const String& other);
 
         void print(std::ostream& os) const override;
 
-        std::shared_ptr<DataType> operator+(const DataType&)const  override;
-        std::shared_ptr<DataType> operator-(const DataType&) const override;
-        std::shared_ptr<DataType> operator*(const DataType&)const  override;
-        std::shared_ptr<DataType> operator/(const DataType&)const  override;
+        VariantTypes operator+(const VariantTypes &) const;
+        VariantTypes operator-(const VariantTypes &) const;
+        VariantTypes operator*(const VariantTypes &) const;
+        VariantTypes operator/(const VariantTypes &) const;
 
     };
 } // dat

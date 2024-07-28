@@ -6,6 +6,7 @@
 #include "Integer.hpp"
 #include "Decimal.hpp"
 #include "String.hpp"
+#include "Utility.hpp"
 
 /*
  * All operators are commutative. Therefor A+B = B+A.
@@ -26,7 +27,7 @@ namespace dat {
             if (storage1 < storage2) {
                 // Idea is: 2 - 5 = - (5 - 2)
                 is_positive1 = false;
-                storage1 = storage2 - storage2;
+                storage1 = storage2 - storage1;
             } else {
                 storage1 -= storage2;
             }
@@ -69,23 +70,30 @@ namespace dat {
         }
     }
 
+    std::pair<lex::Position, lex::Position> get_position_form_variant(const VariantTypes &variant) {
+        auto get_pos = [](const auto &v) -> auto {
+            return v.get_position();
+        };
+        return std::visit(get_pos, variant);
+    }
+
     /*
      * All Operators for Boolean 'op' ***
      */
 
-    std::shared_ptr<DataType> Boolean::operator+(const DataType &other) const {
+    VariantTypes Boolean::operator+(const VariantTypes &other) const {
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
-    std::shared_ptr<DataType> Boolean::operator-(const DataType &other) const {
+    VariantTypes Boolean::operator-(const VariantTypes &other) const {
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
-    std::shared_ptr<DataType> Boolean::operator*(const DataType &other) const {
+    VariantTypes Boolean::operator*(const VariantTypes &other) const {
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
-    std::shared_ptr<DataType> Boolean::operator/(const DataType &other) const {
+    VariantTypes Boolean::operator/(const VariantTypes &other) const {
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
@@ -94,242 +102,302 @@ namespace dat {
      * - Integer 'op' Boolean will be changed to Boolean 'op' Integer
      */
 
-    std::shared_ptr<DataType> Integer::operator+(const DataType &other) const {
-        Integer copy{*this};
-        if (typeid(other) == typeid(Boolean)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else if (typeid(other) == typeid(Integer)) {
-            auto &other_integer = dynamic_cast<const Integer &>(other);
-            auto result = storage_addition(copy.m_storage, other_integer.m_storage, copy.m_is_positive,
-                                           other_integer.m_is_positive);
-            copy.m_storage = result.first;
-            copy.m_is_positive = result.second;
-            copy.clap_to_size();
-            return std::make_shared<Integer>(copy);
-        } else if (typeid(other) == typeid(Decimal)) {
-            auto &other_decimal = dynamic_cast<const Decimal &>(other);
-            Decimal casted_decimal(*this, other_decimal.c_SCALING_FACTOR);
-            return casted_decimal + other_decimal;
-        } else if (typeid(other) == typeid(String)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else {
-            throw std::runtime_error("Unexpected type of other in operator.cpp");
-        }
-    }
-
-    std::shared_ptr<DataType> Integer::operator-(const DataType &other) const {
-        Integer copy{*this};
-        if (typeid(other) == typeid(Boolean)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else if (typeid(other) == typeid(Integer)) {
-            Integer other_integer{dynamic_cast<const Integer &>(other)};
-            other_integer.m_is_positive = !other_integer.m_is_positive;
-            return copy + other_integer;
-        } else if (typeid(other) == typeid(Decimal)) {
-            Decimal other_decimal{dynamic_cast<const Decimal &>(other)};
-            other_decimal.m_is_positive = !other_decimal.m_is_positive;
-            return copy + other_decimal;
-        } else if (typeid(other) == typeid(String)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else {
-            throw std::runtime_error("Unexpected type of other in operator.cpp");
-        }
-    }
-
-    std::shared_ptr<DataType> Integer::operator*(const DataType &other) const {
-        Integer copy{*this};
-        if (typeid(other) == typeid(Boolean)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else if (typeid(other) == typeid(Integer)) {
-            auto &other_integer = dynamic_cast<const Integer &>(other);
-            // neg times neg = pos
-            copy.m_is_positive ^= ~other_integer.m_is_positive;
-            copy.m_storage *= other_integer.m_storage;
-            copy.clap_to_size();
-            return std::make_shared<Integer>(copy);
-        } else if (typeid(other) == typeid(Decimal)) {
-            auto &other_decimal = dynamic_cast<const Decimal &>(other);
-            Decimal casted_decimal(*this, other_decimal.c_SCALING_FACTOR);
-            return casted_decimal * other_decimal;
-        } else if (typeid(other) == typeid(String)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else {
-            throw std::runtime_error("Unexpected type of other in operator.cpp");
-        }
-    }
-
-    std::shared_ptr<DataType> Integer::operator/(const DataType &other) const {
-        Integer copy{*this};
-        if (typeid(other) == typeid(Boolean)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else if (typeid(other) == typeid(Integer)) {
-            auto &other_integer = dynamic_cast<const Integer &>(other);
-            if (other_integer.is_zero()) {
-                throw err::RuntimeError(other_integer.m_position_start, other_integer.m_position_end,
-                                        "Division by 0 is not allowed!", *other_integer.p_context);
+    VariantTypes Integer::operator+(const VariantTypes &other) const {
+        Integer copy = Integer::copy(*this);
+        switch (other.index()) {
+            case 0: /* === Boolean === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
+                                              "Operator not implemented.");
+            case 1: /* === Integer === */ {
+                const auto &other_integer = (std::get<Integer>(other));
+                auto result = storage_addition(copy.m_storage, other_integer.m_storage, copy.m_is_positive,
+                                               other_integer.m_is_positive);
+                copy.m_storage = result.first;
+                copy.m_is_positive = result.second;
+                copy.clap_to_size();
+                return copy;
             }
-            // neg times neg = pos
-            copy.m_is_positive ^= ~other_integer.m_is_positive;
-
-            copy.m_storage /= other_integer.m_storage;
-
-            copy.clap_to_size();
-            return std::make_shared<Integer>(copy);
-        } else if (typeid(other) == typeid(Decimal)) {
-            auto &other_decimal = dynamic_cast<const Decimal &>(other);
-            Decimal casted_decimal(*this, other_decimal.c_SCALING_FACTOR);
-            return casted_decimal / other_decimal;
-        } else if (typeid(other) == typeid(String)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else {
-            throw std::runtime_error("Unexpected type of other in operator.cpp");
-        }
-    }
-
-    /*
-     * All Operators for Decimal 'op' ***
-     * - Decimal 'op' Boolean will be changed to Boolean 'op' Decimal
-     * - Decimal 'op' Integer will be changed to Integer 'op' Decimal
-     */
-
-    std::shared_ptr<DataType> Decimal::operator+(const DataType &other) const {
-        Decimal copy{*this};
-        if (typeid(other) == typeid(Boolean)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else if (typeid(other) == typeid(Integer)) {
-            auto &other_integer = dynamic_cast<const Integer &>(other);
-            return other_integer + copy;
-        } else if (typeid(other) == typeid(Decimal)) {
-            auto &other_decimal = dynamic_cast<const Decimal &>(other);
-            const char SCALING_DELTA = static_cast<char>(copy.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
-
-            auto shifted_storage = shift_to_equal_size(copy.m_storage, other_decimal.m_storage, SCALING_DELTA);
-
-            auto result_shifted = storage_addition(shifted_storage.first, shifted_storage.second, copy.m_is_positive,
-                                                   other_decimal.m_is_positive);
-
-            copy.m_storage = unshift_form_equal_size(result_shifted.first, SCALING_DELTA);
-            copy.m_is_positive = result_shifted.second;
-            copy.clap_to_size();
-            return std::make_shared<Decimal>(copy);
-        } else if (typeid(other) == typeid(String)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else {
-            throw std::runtime_error("Unexpected type of other in operator.cpp");
-        }
-    }
-
-    std::shared_ptr<DataType> Decimal::operator-(const DataType &other) const {
-        Decimal copy{*this};
-        if (typeid(other) == typeid(Boolean)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else if (typeid(other) == typeid(Integer)) {
-            auto &other_integer = dynamic_cast<const Integer &>(other);
-            return other_integer - copy;
-        } else if (typeid(other) == typeid(Decimal)) {
-            Decimal other_decimal{ dynamic_cast<const Decimal &>(other)};
-            other_decimal.m_is_positive = !other_decimal.m_is_positive;
-            return copy + other_decimal;
-        } else if (typeid(other) == typeid(String)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else {
-            throw std::runtime_error("Unexpected type of other in operator.cpp");
-        }
-    }
-
-    std::shared_ptr<DataType> Decimal::operator*(const DataType &other) const {
-        Decimal copy{*this};
-        if (typeid(other) == typeid(Boolean)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else if (typeid(other) == typeid(Integer)) {
-            auto &other_integer = dynamic_cast<const Integer &>(other);
-            return other_integer * copy;
-        } else if (typeid(other) == typeid(Decimal)) {
-            auto &other_decimal = dynamic_cast<const Decimal &>(other);
-            const char SCALING_DELTA = static_cast<char>(copy.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
-
-            auto shifted_storage = shift_to_equal_size(copy.m_storage, other_decimal.m_storage, SCALING_DELTA);
-
-            copy.m_is_positive ^= ~other_decimal.m_is_positive;
-
-            shifted_storage.first *= shifted_storage.second;
-
-            if (SCALING_DELTA > 0) {
-                shifted_storage.first >>= copy.c_SCALING_FACTOR;
-            } else {
-                shifted_storage.first >>= other_decimal.c_SCALING_FACTOR;
+            case 2: /* === Decimal === */ {
+                const auto &other_decimal = std::get<Decimal>(other);
+                Decimal casted_decimal = Decimal::cast(*this, other_decimal.c_SCALING_FACTOR);
+                return casted_decimal + std::move(other_decimal);
             }
 
-            copy.m_storage = unshift_form_equal_size(shifted_storage.first, SCALING_DELTA);
-            copy.clap_to_size();
-            return std::make_shared<Decimal>(copy);
-        } else if (typeid(other) == typeid(String)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else {
-            throw std::runtime_error("Unexpected type of other in operator.cpp");
+            case 3: /* === String === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                                                      .second,
+                                              "Operator not implemented.");
+            default:
+                throw std::runtime_error("Unexpected type of other in operator.cpp");
+
         }
     }
 
-    std::shared_ptr<DataType> Decimal::operator/(const DataType &other) const {
-        Decimal copy{*this};
-        if (typeid(other) == typeid(Boolean)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else if (typeid(other) == typeid(Integer)) {
-            auto &other_integer = dynamic_cast<const Integer &>(other);
-            return other_integer * copy;
-        } else if (typeid(other) == typeid(Decimal)) {
-            auto &other_decimal = dynamic_cast<const Decimal &>(other);
-            if (other_decimal.is_zero()) {
-                throw err::RuntimeError(other_decimal.m_position_start, other_decimal.m_position_end,
-                                        "Division by 0 is not allowed!", *other_decimal.p_context);
+    VariantTypes Integer::operator-(const VariantTypes &other) const {
+        Integer copy = Integer::copy(*this);
+        switch (other.index()) {
+            case 0: /* === Boolean === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
+                                              "Operator not implemented.");
+            case 1: /* === Integer === */ {
+                Integer other_integer = Integer::copy(std::get<Integer>(other));
+                other_integer.m_is_positive = !other_integer.m_is_positive;
+                return copy + std::move(other_integer);
+            }
+            case 2: /* === Decimal === */ {
+                Decimal other_decimal = Decimal::copy(std::get<Decimal>(other));
+                other_decimal.m_is_positive = !other_decimal.m_is_positive;
+                return copy + std::move(other_decimal);
             }
 
-            const char SCALING_DELTA = static_cast<char>(copy.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
-
-            auto shifted_storage = shift_to_equal_size(copy.m_storage, other_decimal.m_storage, SCALING_DELTA);
-
-            copy.m_is_positive ^= ~other_decimal.m_is_positive;
-
-            if (SCALING_DELTA > 0) {
-                shifted_storage.first <<= copy.c_SCALING_FACTOR;
-            } else {
-                shifted_storage.first <<= other_decimal.c_SCALING_FACTOR;
-            }
-
-            shifted_storage.first /= shifted_storage.second;
-
-            copy.m_storage = unshift_form_equal_size(shifted_storage.first, SCALING_DELTA);
-            copy.clap_to_size();
-            return std::make_shared<Decimal>(copy);
-        } else if (typeid(other) == typeid(String)) {
-            throw err::InvalidSyntaxError(m_position_start, other.get_position().second, "Operator not implemented.");
-        } else {
-            throw std::runtime_error("Unexpected type of other in operator.cpp");
+            case 3: /* === String === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                                                      .second,
+                                              "Operator not implemented.");
+            default:
+                throw std::runtime_error("Unexpected type of other in operator.cpp");
         }
     }
 
-    /*
-     * All Operators for String 'op' ***
-     * - String 'op' Boolean will be changed to Boolean 'op' String
-     * - String 'op' Integer will be changed to Integer 'op' String
-     * - String 'op' Decimal will be changed to Decimal 'op' String
-     */
+    VariantTypes Integer::operator*(const VariantTypes &other) const {
+        Integer copy = Integer::copy(*this);
+        switch (other.index()) {
+            case 0: /* === Boolean === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
+                                              "Operator not implemented.");
+            case 1: /* === Integer === */ {
+                const auto &other_integer = std::get<Integer>(other);
+                // neg times neg = pos
+                copy.m_is_positive ^= ~other_integer.m_is_positive;
+                copy.m_storage *= other_integer.m_storage;
+                copy.clap_to_size();
+                return copy;
+            }
+            case 2: /* === Decimal === */ {
+                const auto &other_decimal = std::get<Decimal>(other);
+                const auto &casted_decimal = Decimal::cast(*this, other_decimal.c_SCALING_FACTOR);
+                return casted_decimal * std::move(other_decimal);
+            }
 
-    std::shared_ptr<DataType> String::operator+(const DataType &other) const {
+            case 3: /* === String === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                                                      .second,
+                                              "Operator not implemented.");
+            default:
+                throw std::runtime_error("Unexpected type of other in operator.cpp");
+        }
+    }
+
+    VariantTypes Integer::operator/(const VariantTypes &other) const {
+        Integer copy = Integer::copy(*this);
+        switch (other.index()) {
+            case 0: /* === Boolean === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
+                                              "Operator not implemented.");
+            case 1: /* === Integer === */ {
+                const auto &other_integer = std::get<Integer>(other);
+                if (other_integer.is_zero()) {
+                    throw err::RuntimeError(other_integer.m_position_start, other_integer.m_position_end,
+                                            "Division by 0 is not allowed!", *other_integer.p_context);
+                }
+                // neg times neg = pos
+                copy.m_is_positive ^= ~other_integer.m_is_positive;
+
+                copy.m_storage /= other_integer.m_storage;
+
+                copy.clap_to_size();
+                return copy;
+            }
+            case 2: /* === Decimal === */ {
+                const auto &other_decimal = std::get<Decimal>(other);
+                Decimal casted_decimal = Decimal::cast(*this, other_decimal.c_SCALING_FACTOR);
+                return casted_decimal / std::move(other_decimal);
+            }
+
+            case 3: /* === String === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                                                      .second,
+                                              "Operator not implemented.");
+            default:
+                throw std::runtime_error("Unexpected type of other in operator.cpp");
+        }
+    }
+
+/*
+ * All Operators for Decimal 'op' ***
+ * - Decimal 'op' Boolean will be changed to Boolean 'op' Decimal
+ * - Decimal 'op' Integer will be changed to Integer 'op' Decimal
+ */
+
+    VariantTypes Decimal::operator+(const VariantTypes &other) const {
+        Decimal copy = Decimal::copy(*this);
+        switch (other.index()) {
+            case 0: /* === Boolean === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
+                                              "Operator not implemented.");
+            case 1: /* === Integer === */ {
+                const auto &other_integer = std::get<Integer>(other);
+                return other_integer + std::move(copy);
+            }
+            case 2: /* === Decimal === */ {
+                const auto &other_decimal = std::get<Decimal>(other);
+                const char SCALING_DELTA = static_cast<char>(copy.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
+
+                auto shifted_storage = shift_to_equal_size(copy.m_storage, other_decimal.m_storage, SCALING_DELTA);
+
+                auto result_shifted = storage_addition(shifted_storage.first, shifted_storage.second,
+                                                       copy.m_is_positive,
+                                                       other_decimal.m_is_positive);
+
+                copy.m_storage = unshift_form_equal_size(result_shifted.first, SCALING_DELTA);
+                copy.m_is_positive = result_shifted.second;
+                copy.clap_to_size();
+                return copy;
+            }
+
+            case 3: /* === String === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                                                      .second,
+                                              "Operator not implemented.");
+            default:
+                throw std::runtime_error("Unexpected type of other in operator.cpp");
+        }
+    }
+
+    VariantTypes Decimal::operator-(const VariantTypes &other) const {
+        Decimal copy = Decimal::copy(*this);
+        switch (other.index()) {
+            case 0: /* === Boolean === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
+                                              "Operator not implemented.");
+            case 1: /* === Integer === */ {
+                const auto &other_integer = std::get<Integer>(other);
+                return other_integer - std::move(copy);
+            }
+            case 2: /* === Decimal === */ {
+                auto other_decimal = Decimal::copy(std::get<Decimal>(other));
+                other_decimal.m_is_positive = !other_decimal.m_is_positive;
+                return copy + std::move(other_decimal);
+            }
+
+            case 3: /* === String === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                                                      .second,
+                                              "Operator not implemented.");
+            default:
+                throw std::runtime_error("Unexpected type of other in operator.cpp");
+        }
+    }
+
+    VariantTypes Decimal::operator*(const VariantTypes &other) const {
+        Decimal copy = Decimal::copy(*this);
+        switch (other.index()) {
+            case 0: /* === Boolean === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
+                                              "Operator not implemented.");
+            case 1: /* === Integer === */ {
+                const auto &other_integer = std::get<Integer>(other);
+                return other_integer * std::move(copy);
+            }
+            case 2: /* === Decimal === */ {
+                const auto &other_decimal = std::get<Decimal>(other);
+                const char SCALING_DELTA = static_cast<char>(copy.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
+
+                auto shifted_storage = shift_to_equal_size(copy.m_storage, other_decimal.m_storage, SCALING_DELTA);
+
+                copy.m_is_positive ^= ~other_decimal.m_is_positive;
+
+                shifted_storage.first *= shifted_storage.second;
+
+                if (SCALING_DELTA > 0) {
+                    shifted_storage.first >>= copy.c_SCALING_FACTOR;
+                } else {
+                    shifted_storage.first >>= other_decimal.c_SCALING_FACTOR;
+                }
+
+                copy.m_storage = unshift_form_equal_size(shifted_storage.first, SCALING_DELTA);
+                copy.clap_to_size();
+                return copy;
+            }
+
+            case 3: /* === String === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                                                      .second,
+                                              "Operator not implemented.");
+            default:
+                throw std::runtime_error("Unexpected type of other in operator.cpp");
+        }
+    }
+
+    VariantTypes Decimal::operator/(const VariantTypes &other) const {
+        Decimal copy = Decimal::copy(*this);
+        switch (other.index()) {
+            case 0: /* === Boolean === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
+                                              "Operator not implemented.");
+            case 1: /* === Integer === */ {
+                const auto &other_integer = std::get<Integer>(other);
+                return other_integer * std::move(copy);
+            }
+            case 2: /* === Decimal === */ {
+                const auto &other_decimal = std::get<Decimal>(other);
+                if (other_decimal.is_zero()) {
+                    throw err::RuntimeError(other_decimal.m_position_start, other_decimal.m_position_end,
+                                            "Division by 0 is not allowed!", *other_decimal.p_context);
+                }
+
+                const char SCALING_DELTA = static_cast<char>(copy.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
+
+                auto shifted_storage = shift_to_equal_size(copy.m_storage, other_decimal.m_storage, SCALING_DELTA);
+
+                copy.m_is_positive ^= ~other_decimal.m_is_positive;
+
+                if (SCALING_DELTA > 0) {
+                    shifted_storage.first <<= copy.c_SCALING_FACTOR;
+                } else {
+                    shifted_storage.first <<= other_decimal.c_SCALING_FACTOR;
+                }
+
+                shifted_storage.first /= shifted_storage.second;
+
+                copy.m_storage = unshift_form_equal_size(shifted_storage.first, SCALING_DELTA);
+                copy.clap_to_size();
+                return copy;
+            }
+
+            case 3: /* === String === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                                                      .second,
+                                              "Operator not implemented.");
+            default:
+                throw std::runtime_error("Unexpected type of other in operator.cpp");
+        }
+    }
+
+
+/*
+ * All Operators for String 'op' ***
+ * - String 'op' Boolean will be changed to Boolean 'op' String
+ * - String 'op' Integer will be changed to Integer 'op' String
+ * - String 'op' Decimal will be changed to Decimal 'op' String
+ */
+
+    VariantTypes String::operator+(const VariantTypes &other) const {
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
-    std::shared_ptr<DataType> String::operator-(const DataType &other) const {
+    VariantTypes String::operator-(const VariantTypes &other) const {
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
-    std::shared_ptr<DataType> String::operator*(const DataType &other) const {
+    VariantTypes String::operator*(const VariantTypes &other) const {
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
-    std::shared_ptr<DataType> String::operator/(const DataType &other) const {
+    VariantTypes String::operator/(const VariantTypes &other) const {
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
+
 /*
     Integer operator+(const Integer& int1, const Integer &int2) {
         Integer result(int1);

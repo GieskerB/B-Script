@@ -1,20 +1,16 @@
-//
-// Created by bjarn on 21.06.2024.
-//
-
 #ifndef B_SHARP_PARSER_HPP
 #define B_SHARP_PARSER_HPP
 
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
-#include "../Lexer/Token.hpp"
-#include "Nodes.hpp"
+#include "OmegaNode.hpp"
 #include "../DataTypes/Number.hpp"
 
 namespace par {
 
-    enum NextFunctionCall {
+    enum NextFunctionCall: char {
         EXPRESSION,
         COMP_EXPR,
         ARITH_EXPR,
@@ -33,17 +29,17 @@ namespace par {
 
         static short type_to_key(const std::string&);
 
-        std::shared_ptr<Node> next_call(NextFunctionCall,short);
-        std::shared_ptr<Node> binary_operator(NextFunctionCall,const std::vector<lex::TokenType>&,short);
-        std::shared_ptr<Node> unary_operator(NextFunctionCall,const std::vector<lex::TokenType>&,short);
+        OmegaNode next_call(NextFunctionCall,short);
+        OmegaNode binary_operator(NextFunctionCall,const std::vector<lex::TokenType>&,short);
+        OmegaNode unary_operator(NextFunctionCall,const std::vector<lex::TokenType>&,short);
 
-        std::shared_ptr<Node> declaration();
-        std::shared_ptr<Node> assignment();
-        std::shared_ptr<Node> expression(short = 0);
-        std::shared_ptr<Node> comparison_expression(short);
-        std::shared_ptr<Node> arithmetic_expression(short);
-        std::shared_ptr<Node> term(short);
-        std::shared_ptr<Node> factor(short);
+        OmegaNode declaration();
+        OmegaNode assignment();
+        OmegaNode expression(short = 0);
+        OmegaNode comparison_expression(short);
+        OmegaNode arithmetic_expression(short);
+        OmegaNode term(short);
+        OmegaNode factor(short);
 
 
     public:
@@ -52,7 +48,7 @@ namespace par {
 
         void import_tokens(const std::vector<lex::Token> &);
 
-        std::shared_ptr<Node> parse();
+        OmegaNode parse();
 
     };
 } // par

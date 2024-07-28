@@ -3,6 +3,7 @@
 //
 
 #include <sstream>
+#include "Integer.hpp"
 #include "Decimal.hpp"
 
 namespace dat {
@@ -71,18 +72,43 @@ namespace dat {
 
     }
 
-    Decimal::Decimal() : Number(Size::LONG, true), c_SCALING_FACTOR(c_SIZE * 4) {}
+//    Decimal::Decimal() : Number(Size::LONG, true), c_SCALING_FACTOR(c_SIZE * 4) {}
 
-    Decimal::Decimal(const Integer &other, unsigned scaling_factor) : Number(other.c_SIZE, other.m_is_positive),
-                                                                      c_SCALING_FACTOR(scaling_factor) {
-        m_storage = other.m_storage << c_SCALING_FACTOR;
+//    Decimal::Decimal(const Integer &other, unsigned scaling_factor) : Number(other.c_SIZE, other.m_is_positive),
+//                                                                      c_SCALING_FACTOR(scaling_factor) {
+//        m_storage = other.m_storage << c_SCALING_FACTOR;
+//    }
+
+
+    Decimal Decimal::cast(const Integer &other, unsigned char scaling_factor) {
+        Decimal result("0");
+        result.c_SCALING_FACTOR = scaling_factor;
+        result.c_SIZE = other.c_SIZE;
+        result.m_storage = other.m_storage << scaling_factor;
+        result.m_is_positive = other.m_is_positive;
+        result.m_position_start = other.m_position_start;
+        result.m_position_end = other.m_position_end;
+        result.p_context = other.p_context;
+        return result;
     }
 
-    Decimal::Decimal(const dat::Decimal &other): Number(other.c_SIZE, other.m_is_positive), c_SCALING_FACTOR(other.c_SCALING_FACTOR){
-        m_storage = other.m_storage;
-        set_position(other.m_position_start,other.m_position_end);
-        set_context(*other.p_context);
+    Decimal Decimal::copy(const Decimal &other) {
+        Decimal result("0");
+        result.c_SCALING_FACTOR = other.c_SCALING_FACTOR;
+        result.c_SIZE = other.c_SIZE;
+        result.m_storage = other.m_storage;
+        result.m_is_positive = other.m_is_positive;
+        result.m_position_start = other.m_position_start;
+        result.m_position_end = other.m_position_end;
+        result.p_context = other.p_context;
+        return result;
     }
+
+    Decimal::Decimal(const dat::Decimal &&other) noexcept: Number(std::move(other)), c_SCALING_FACTOR(other.c_SCALING_FACTOR){}
+
+//    Decimal::Decimal(const Decimal &&) {
+//
+//    }
 
     /*
      * Constructs a FixedPoint decimal number with variable size and accuracy!

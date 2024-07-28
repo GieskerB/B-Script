@@ -74,7 +74,7 @@ namespace par {
         return static_cast<short>(key);
     }
 
-    std::shared_ptr<Node> Parser::next_call(NextFunctionCall next_function, short key) {
+    OmegaNode Parser::next_call(NextFunctionCall next_function, short key) {
         switch (next_function) {
             case EXPRESSION:
                 return expression(key);
@@ -90,23 +90,22 @@ namespace par {
         throw std::runtime_error("Unknown next function call in next_call().");
     }
 
-    std::shared_ptr<Node>
+    OmegaNode
     Parser::binary_operator(NextFunctionCall next_function, const std::vector<lex::TokenType> &operator_tokens,
                             short key) {
-        std::shared_ptr<Node> left = next_call(next_function, key);
+        OmegaNode left = next_call(next_function, key);
         while (std::find(operator_tokens.begin(), operator_tokens.end(), m_current_token.c_type) !=
                operator_tokens.end()) {
             lex::Token op_token = m_current_token;
             advance();
-            std::shared_ptr<Node> right = next_call(next_function, key);
-            left = std::make_shared<BinaryOperatorNode>(left, op_token, right);
+            OmegaNode right = next_call(next_function, key);
+            left = OmegaNode(NodeType::BINARY, op_token, left, right);
         }
         return left;
     }
 
-    std::shared_ptr<Node>
-    Parser::unary_operator(NextFunctionCall next_function, const std::vector<lex::TokenType> &operator_tokens,
-                           short key) {
+    OmegaNode Parser::unary_operator(NextFunctionCall next_function, const std::vector<lex::TokenType> &operator_tokens,
+                                     short key) {
         lex::Token operator_token = m_current_token;
         if (std::find(operator_tokens.begin(), operator_tokens.end(), m_current_token.c_type) ==
             operator_tokens.end()) {
@@ -114,11 +113,11 @@ namespace par {
         }
         advance();
         auto right = next_call(next_function, key);
-        return std::make_shared<UnaryOperatorNode>(operator_token, right);
+        return {NodeType::UNARY, operator_token, right};
     }
 
 
-    std::shared_ptr<Node> Parser::declaration() {
+    OmegaNode Parser::declaration() {
         short key = type_to_key(m_current_token.c_value);
 
         advance();
@@ -142,10 +141,10 @@ namespace par {
         }
         advance();
         auto expr = expression(key);
-        return std::make_shared<VariableAssignNode>(identifier, expr);
+        return {NodeType::VARIABLE_ASSIGN, identifier, expr};
     }
 
-    std::shared_ptr<Node> Parser::assignment() {
+    OmegaNode Parser::assignment() {
 
         auto identifier = m_current_token;
         auto ident_name = identifier.c_value;
@@ -162,20 +161,16 @@ namespace par {
         }
         advance();
         auto expr = expression(key);
-        return std::make_shared<VariableAssignNode>(identifier, expr);
+        return {NodeType::VARIABLE_ASSIGN, identifier, expr};
     }
 
-    std::shared_ptr<Node> Parser::expression(short key) {
+    OmegaNode Parser::expression(short key) {
         return binary_operator(NextFunctionCall::COMP_EXPR, {lex::TokenType::LOGIC_AND, lex::TokenType::LOGIC_OR}, key);
     }
 
-    std::shared_ptr<Node> Parser::comparison_expression(short key) {
+    OmegaNode Parser::comparison_expression(short key) {
         if (m_current_token.c_type == lex::TokenType::LOGIC_NOT) {
             return unary_operator(NextFunctionCall::COMP_EXPR, {lex::TokenType::LOGIC_NOT}, key);
-//            auto operator_token = m_current_token;
-//            advance();
-//            auto result = comparison_expression(key);
-//            return std::make_shared<UnaryOperatorNode>(operator_token, result);
         } else {
             return binary_operator(NextFunctionCall::ARITH_EXPR,
                                    {lex::TokenType::DOUBLE_EQUALS, lex::TokenType::NOT_EQUALS,
@@ -184,33 +179,29 @@ namespace par {
         }
     }
 
-    std::shared_ptr<Node> Parser::arithmetic_expression(short key) {
+    OmegaNode Parser::arithmetic_expression(short key) {
         return binary_operator(NextFunctionCall::TERM, {lex::TokenType::PLUS, lex::TokenType::MINUS}, key);
     }
 
-    std::shared_ptr<Node> Parser::term(short key) {
+    OmegaNode Parser::term(short key) {
         return binary_operator(NextFunctionCall::FACTOR, {lex::TokenType::MULTIPLY, lex::TokenType::DIVIDE}, key);
     }
 
-    std::shared_ptr<Node> Parser::factor(short key) {
+    OmegaNode Parser::factor(short key) {
 
         if (m_current_token.c_type == lex::TokenType::PLUS or m_current_token.c_type == lex::TokenType::MINUS) {
             return unary_operator(NextFunctionCall::FACTOR, {lex::TokenType::PLUS, lex::TokenType::MINUS}, key);
-//            lex::Token temp_token = m_current_token;
-//            advance();
-//            std::shared_ptr<Node> right = factor(key);
-//            return std::make_shared<UnaryOperatorNode>(temp_token, right);
         } else if (m_current_token.c_type == lex::TokenType::VALUE) {
             lex::Token temp_token = m_current_token;
             advance();
-            return std::make_shared<ValueNode>(temp_token, key);
+            return {NodeType::VALUE, temp_token, key};
         } else if (m_current_token.c_type == lex::TokenType::IDENTIFIER) {
             lex::Token temp_token = m_current_token;
             advance();
-            return std::make_shared<VariableAccessNode>(temp_token);
+            return {NodeType::VARIABLE_ACCESS, temp_token};
         } else if (m_current_token.c_type == lex::TokenType::LEFT_PARENTHESES) {
             advance();
-            std::shared_ptr<Node> expr = expression(key);
+            OmegaNode expr = expression(key);
             if (m_current_token.c_type == lex::TokenType::RIGHT_PARENTHESES) {
                 advance();
                 return expr;
@@ -227,19 +218,14 @@ namespace par {
 
     Parser::Parser() : m_tokens(), m_current_token(lex::Token::NULL_TOKEN), m_key_map(), m_index(-1) {}
 
-//    Parser::Parser(const std::vector<lex::Token> &tokens) : m_tokens(tokens), m_current_token(lex::Token::NULL_TOKEN),
-//                                                            m_index(-1) {
-//        advance();
-//    }
-
     void Parser::import_tokens(const std::vector<lex::Token> &tokens) {
         m_tokens = tokens;
         m_index = -1;
         advance();
     }
 
-    std::shared_ptr<Node> Parser::parse() {
-        std::shared_ptr<Node> abstract_syntax_tree;
+    OmegaNode Parser::parse() {
+        OmegaNode abstract_syntax_tree;
         if (m_current_token.c_type == lex::TokenType::VAR_KEYWORD) {
             abstract_syntax_tree = declaration();
         } else if (m_current_token.c_type == lex::TokenType::IDENTIFIER) {

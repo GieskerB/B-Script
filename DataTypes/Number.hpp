@@ -56,9 +56,9 @@ namespace dat {
 
     public:
 
+        Number() = delete;
         Number(const Number &) = delete;
-
-        static std::shared_ptr<Number> create_form_key(const std::string &, short);
+        Number(const Number &&) noexcept;
 
         void invert();
         [[nodiscard]] bool is_zero() const;
