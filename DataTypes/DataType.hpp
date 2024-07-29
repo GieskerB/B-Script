@@ -30,21 +30,6 @@ namespace dat {
 
         [[nodiscard]] std::pair<lex::Position, lex::Position> get_position() const;
 
-
-//        template<typename A, typename B>
-//        friend auto operator+ (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
-//        template<typename A, typename B>
-//        friend auto operator- (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
-//        template<typename A, typename B>
-//        friend auto operator* (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
-//        template<typename A, typename B>
-//        friend auto operator/ (const std::shared_ptr<A>&, const std::shared_ptr<B>&);
-
-//        virtual std::shared_ptr<DataType> operator+(const DataType&) const = 0;
-//        virtual std::shared_ptr<DataType> operator-(const DataType&)const  = 0;
-//        virtual std::shared_ptr<DataType> operator*(const DataType&)const  = 0;
-//        virtual std::shared_ptr<DataType> operator/(const DataType&) const = 0;
-
         virtual void print(std::ostream& os) const = 0;
 
         friend std::ostream& operator<<(std::ostream& os, const DataType& dt) {
@@ -53,24 +38,6 @@ namespace dat {
         }
 
     };
-
-//    template<typename A, typename B>
-//    auto operator+(const std::shared_ptr<A> &a, const std::shared_ptr<B> &b) {
-//        return std::shared_ptr<DataType>(*a + *b);
-//    }
-//    template<typename A, typename B>
-//    auto operator-(const std::shared_ptr<A> &a, const std::shared_ptr<B> &b) {
-//        return std::shared_ptr<DataType>(*a - *b);
-//    }
-//    template<typename A, typename B>
-//    auto operator*(const std::shared_ptr<A> &a, const std::shared_ptr<B> &b) {
-//        return std::shared_ptr<DataType>(*a * *b);
-//    }
-//    template<typename A, typename B>
-//    auto operator/(const std::shared_ptr<A> &a, const std::shared_ptr<B> &b) {
-//        return std::shared_ptr<DataType>(*a / *b);
-//    }
-
 
 } // dat
 

@@ -129,9 +129,9 @@ namespace par {
         auto identifier = m_current_token;
         auto ident_name = identifier.c_value;
         if (m_key_map.contains(ident_name)) {
-            throw err::InvalidSyntaxError(identifier.c_start_pos, identifier.c_end_pos,
+            throw err::VariableAccessError(identifier.c_start_pos, identifier.c_end_pos,
                                           "Redefinition of variable '" + ident_name +
-                                          "'."); //TODO CUSTOM ERROR HERE
+                                          "'.");
         }
         m_key_map[ident_name] = key;
         advance();
@@ -149,9 +149,9 @@ namespace par {
         auto identifier = m_current_token;
         auto ident_name = identifier.c_value;
         if (!m_key_map.contains(ident_name)) {
-            throw err::InvalidSyntaxError(identifier.c_start_pos, identifier.c_end_pos,
+            throw err::VariableAccessError(identifier.c_start_pos, identifier.c_end_pos,
                                           "Variable '" + ident_name +
-                                          "' is not defined."); //TODO CUSTOM ERROR HERE
+                                          "' is not defined.");
         }
         short key = m_key_map[ident_name];
         advance();

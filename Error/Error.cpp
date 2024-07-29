@@ -55,9 +55,11 @@ namespace err {
             "IllegalCharError", pos, pos, std::move(message)) {}
 
     InvalidSyntaxError::InvalidSyntaxError(const lex::Position &start, const lex::Position &end, std::string message)
-            : Error(
-            "IllegalCharError", start, end, std::move(message)) {}
+            : Error("IllegalCharError", start, end, std::move(message)) {}
 
+    VariableAccessError::VariableAccessError(const lex::Position &start, const lex::Position &end,
+                                             std::string message)
+            : Error("VariableAccessError", start, end, std::move(message)) {}
 
     RuntimeError::RuntimeError(const lex::Position &start, const lex::Position &end, std::string message,
                                const itp::Context &context) : Error(

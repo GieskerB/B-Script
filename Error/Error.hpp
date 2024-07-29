@@ -53,6 +53,12 @@ namespace err {
 
     };
 
+    class VariableAccessError : public Error{
+    public:
+        VariableAccessError() = delete;
+        explicit VariableAccessError(const lex::Position &, const lex::Position &, std::string);
+    };
+
     class RuntimeError: public Error {
          itp::Context* p_context;
 

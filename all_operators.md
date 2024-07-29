@@ -73,3 +73,12 @@ This file will hold a table for each datatype of this language.
 |  !=  |  n.a.   |  n.a.   |  n.a.   | Boolean |
 |  &&  |  n.a.   |  n.a.   |  n.a.   |  n.a.   |
 | \|\| |  n.a.   |  n.a.   |  n.a.   |  n.a.   |
+
+## Unary-Operators
+
+|   | Boolean | Integer | Decimal | String |
+|:-:|:-------:|:-------:|:-------:|:------:|
+| + | Boolean | Integer | Decimal | String |
+| - |  n.a.   | Integer | Decimal |  n.a.  |
+| ! | Boolean |   n.a   |  n.a.   |  n.a.  |
+

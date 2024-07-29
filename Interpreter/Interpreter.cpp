@@ -81,26 +81,26 @@ namespace itp {
 
 
     VariantTypes Interpreter::visit_unary_node(const par::OmegaNode & node, Context & context) {
-        auto number = visit(node.get_right(), context);
+        auto value = visit(node.get_right(), context);
         if (node.get_token().c_type == lex::TokenType::MINUS) {
-//            number->invert(); TODO
+//            value->invert(); TODO
         } else if (node.get_token().c_type != lex::TokenType::PLUS) {
             throw std::runtime_error("Unexpected token in Interpreter visit_unary_node()!");
         }
-        return number;
+        return value;
     }
 
     VariantTypes Interpreter::visit_binary_node(const par::OmegaNode & node, Context & context) {
-        auto left_number = visit(node.get_left(), context);
-        auto right_number = visit(node.get_right(), context);
+        auto left_value = visit(node.get_left(), context);
+        auto right_value = visit(node.get_right(), context);
         if (node.get_token().c_type == lex::TokenType::PLUS) {
-            return left_number + right_number;
+            return left_value + right_value;
         } else if (node.get_token().c_type == lex::TokenType::MINUS) {
-            return left_number - right_number;
+            return left_value - right_value;
         } else if (node.get_token().c_type == lex::TokenType::MULTIPLY) {
-            return left_number * right_number;
+            return left_value * right_value;
         } else if (node.get_token().c_type == lex::TokenType::DIVIDE) {
-            return left_number / right_number;
+            return left_value / right_value;
         } else {
             throw std::runtime_error("Unexpected token in Interpreter visit_binary_node()!");
         }
