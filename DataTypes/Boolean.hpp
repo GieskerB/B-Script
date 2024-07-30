@@ -18,21 +18,26 @@ namespace dat {
 
     class Boolean : public DataType {
 
-        bool m_storage;
+        friend class String;
 
+        enum TriState: char {
+            TRUE = 1, FALSE = 0, NEUTRAL = -1
+        };
+
+        TriState m_storage;
+
+        explicit Boolean(TriState);
     public:
 
         Boolean() = delete;
         Boolean(const Boolean&) = delete;
         Boolean(const Boolean&&) noexcept;
-
-        explicit Boolean(bool);
+        explicit Boolean(const std::string&);
 
         static Boolean copy(const Boolean& other);
 
         static Boolean cast(const Integer& other);
         static Boolean cast(const Decimal& other);
-        static Boolean cast(const String& other);
 
         void print(std::ostream& os) const override;
 

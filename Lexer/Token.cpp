@@ -45,6 +45,7 @@ namespace lex {
             case LESS_THEN:
             case GREATER_THEN:
             case LOGIC_NOT:
+            case END_OF_LINE:
                 temp_string = static_cast<char>(token.c_type);
                 os << temp_string;
                 break;
@@ -62,10 +63,6 @@ namespace lex {
                 break;
             case NONE:
                 temp_string = "NULL";
-                os << temp_string;
-                break;
-            case END_OF_LINE:
-                temp_string = "\n";
                 os << temp_string;
                 break;
         }

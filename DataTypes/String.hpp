@@ -19,7 +19,9 @@ namespace dat {
 
     class String : public DataType {
 
-        static const unsigned int MAX_LENGTH;
+        static const uint64 MAX_LENGTH;
+
+        std::string m_storage;
 
     public:
 
@@ -27,7 +29,7 @@ namespace dat {
         String(const String&) = delete;
         String(const String&&) noexcept;
 
-        String(const std::string&);
+        explicit String(const std::string&);
 
         static String copy(const String& other);
 

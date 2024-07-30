@@ -1,66 +1,14 @@
-#include <memory>
 #include <sstream>
 #include <vector>
 #include <ranges>
 #include <cmath>
 
 #include "Number.hpp"
-#include "Integer.hpp"
-#include "Decimal.hpp"
+#include "Utility.hpp"
 
 namespace dat {
 
-    /*
-     * name is self-explanatory
-     */
-    std::string number_to_string(uint64 number, bool is_positive) {
-        std::vector<char> digits;
 
-        if (number == 0) {
-            digits.push_back('0');
-        }
-        while (number != 0) {
-            unsigned char digit = number % 10;
-            number /= 10;
-            digits.push_back(static_cast<char>(digit + '0'));
-        }
-        if (!is_positive) {
-            digits.push_back(static_cast<char>('-'));
-        }
-
-        std::stringstream result;
-        for (char &digit: std::ranges::reverse_view(digits)) {
-            result << digit;
-        }
-        return result.str();
-    }
-
-    /*
-     * name is self-explanatory
-     */
-    uint64 string_to_number(const std::string &str_repr, unsigned char bit_length) {
-        const char start = str_repr[0] == '-' ? 1 : 0;
-
-        if (str_repr.empty() or str_repr == "0") {
-            return 0;
-        }
-
-        uint64 result{0}, base{1};
-
-        for (int i = static_cast<int>(str_repr.size() - 1); i >= start; --i) {
-            char digit = str_repr[i];
-            if (digit < '0' or digit > '9') {
-                throw std::runtime_error("Invalid number format2: '" + str_repr + "'\n");
-            }
-            digit -= '0';
-            if (result + digit * base < result) {
-                break;
-            }
-            result += digit * base;
-            base *= 10;
-        }
-        return result;
-    }
 
     /*
      * To further make sure a number does not get too big when initialized, just compare it to the biggest number

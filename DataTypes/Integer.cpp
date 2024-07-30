@@ -1,4 +1,5 @@
 #include "Integer.hpp"
+#include "Utility.hpp"
 
 namespace dat {
     void Integer::fit_string(std::string &string) {
@@ -7,13 +8,6 @@ namespace dat {
             string = std::string("9", MAX_INTEGER_SIZE);
         }
     }
-
-//    Integer::Integer() : Number(Size::LONG, true), c_IS_SIGNED(false) {}
-
-//    Integer::Integer(const Decimal &other) : Number(other.c_SIZE, other.m_is_positive),
-//                                                  c_IS_SIGNED(false) {
-//        m_storage = other.m_storage >> other.c_SCALING_FACTOR;
-//    }
 
     Integer Integer::copy(const dat::Integer &other) {
         Integer result("0");
@@ -50,11 +44,15 @@ namespace dat {
         clap_to_size();
     }
 
+    std::string Integer::to_string() const {
+        return number_to_string(m_storage, m_is_positive);
+    }
+
     /*
      * In case of Integers simply print the number with help of the number_to_string method!
      */
     void Integer::print(std::ostream &os) const {
-        os  << number_to_string(m_storage, m_is_positive);
+        os  << to_string();
     }
 
 

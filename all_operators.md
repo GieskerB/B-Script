@@ -78,7 +78,15 @@ This file will hold a table for each datatype of this language.
 
 |   | Boolean | Integer | Decimal | String |
 |:-:|:-------:|:-------:|:-------:|:------:|
-| + | Boolean | Integer | Decimal | String |
-| - |  n.a.   | Integer | Decimal |  n.a.  |
+| + | Integer | Integer | Decimal |  n.a.  |
+| - | Integer | Integer | Decimal |  n.a.  |
 | ! | Boolean |   n.a   |  n.a.   |  n.a.  |
 
+## Cast
+
+| To\\From | Boolean | Integer | Decimal | String |
+|:--------:|:-------:|:-------:|:-------:|:------:|
+| Boolean  |    -    |   yes   |   yes   |   no   |
+| Integer  |   yes   |    -    |   yes   |   no   |
+| Decimal  |   yes   |   yes   |    -    |   no   |
+|  String  |   yes   |   yes   |   yes   |   -    |

@@ -12,10 +12,10 @@ namespace itp {
 }
 
 namespace dat {
-
-    std::string number_to_string(uint64, bool);
-
-    uint64 string_to_number(const std::string &, unsigned char);
+//
+//    std::string number_to_string(uint64, bool);
+//
+//    uint64 string_to_number(const std::string &, unsigned char);
 
     template<unsigned char N>
     struct Constants {

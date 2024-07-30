@@ -1,13 +1,11 @@
-//
-// Created by bjarn on 23.07.2024.
-//
-
 #include <sstream>
+
 #include "Integer.hpp"
 #include "Decimal.hpp"
+#include "Utility.hpp"
 
 namespace dat {
-/*
+    /*
      * A simple helper function to finde the decimal point in the string representation of the number.
      * If point does not exist return -1
      */
@@ -72,50 +70,13 @@ namespace dat {
 
     }
 
-//    Decimal::Decimal() : Number(Size::LONG, true), c_SCALING_FACTOR(c_SIZE * 4) {}
+    // Move Constructor
+    Decimal::Decimal(const dat::Decimal &&other) noexcept: Number(std::move(other)),
+                                                           c_SCALING_FACTOR(other.c_SCALING_FACTOR) {}
 
-//    Decimal::Decimal(const Integer &other, unsigned scaling_factor) : Number(other.c_SIZE, other.m_is_positive),
-//                                                                      c_SCALING_FACTOR(scaling_factor) {
-//        m_storage = other.m_storage << c_SCALING_FACTOR;
-//    }
-
-
-    Decimal Decimal::cast(const Integer &other, unsigned char scaling_factor) {
-        Decimal result("0");
-        result.c_SCALING_FACTOR = scaling_factor;
-        result.c_SIZE = other.c_SIZE;
-        result.m_storage = other.m_storage << scaling_factor;
-        result.m_is_positive = other.m_is_positive;
-        result.m_position_start = other.m_position_start;
-        result.m_position_end = other.m_position_end;
-        result.p_context = other.p_context;
-        return result;
-    }
-
-    Decimal Decimal::copy(const Decimal &other) {
-        Decimal result("0");
-        result.c_SCALING_FACTOR = other.c_SCALING_FACTOR;
-        result.c_SIZE = other.c_SIZE;
-        result.m_storage = other.m_storage;
-        result.m_is_positive = other.m_is_positive;
-        result.m_position_start = other.m_position_start;
-        result.m_position_end = other.m_position_end;
-        result.p_context = other.p_context;
-        return result;
-    }
-
-    Decimal::Decimal(const dat::Decimal &&other) noexcept: Number(std::move(other)), c_SCALING_FACTOR(other.c_SCALING_FACTOR){}
-
-//    Decimal::Decimal(const Decimal &&) {
-//
-//    }
-
-    /*
-     * Constructs a FixedPoint decimal number with variable size and accuracy!
-     */
-    Decimal::Decimal(std::string str_repr, Size size, unsigned char scaling_factor) : Number(size,
-                                                                                             str_repr.empty() or
-                                                                                             str_repr[0] != '-'),
+    // Constructs a Decimal form a string
+    Decimal::Decimal(std::string str_repr, Size size, unsigned char scaling_factor) : Number(size, str_repr.empty() or
+                                                                                                   str_repr[0] != '-'),
                                                                                       c_SCALING_FACTOR(scaling_factor) {
 
         // Throw Error if format is wrong
@@ -158,11 +119,37 @@ namespace dat {
         clap_to_size();
     }
 
+    Decimal Decimal::copy(const Decimal &other) {
+        Decimal result("0");
+        result.c_SCALING_FACTOR = other.c_SCALING_FACTOR;
+        result.c_SIZE = other.c_SIZE;
+        result.m_storage = other.m_storage;
+        result.m_is_positive = other.m_is_positive;
+        result.m_position_start = other.m_position_start;
+        result.m_position_end = other.m_position_end;
+        result.p_context = other.p_context;
+        return result;
+    }
+
+    Decimal Decimal::cast(const Integer &other, unsigned char scaling_factor) {
+        Decimal result("0");
+        result.c_SCALING_FACTOR = scaling_factor;
+        result.c_SIZE = other.c_SIZE;
+        result.m_storage = other.m_storage << scaling_factor;
+        result.m_is_positive = other.m_is_positive;
+        result.m_position_start = other.m_position_start;
+        result.m_position_end = other.m_position_end;
+        result.p_context = other.p_context;
+        return result;
+    }
+
+
+
     /*
      * In case of Decimal... Print the integer part like an integer and the reconstructed the fraction part.
      */
-    void Decimal::print(std::ostream &os) const {
-// Use the right_node bits to the right_node part when printing!
+    std::string Decimal::to_string() const {
+        // Use the right_node bits to the right_node part when printing!
         const uint64 DECIMAL_BIT_MAP = (static_cast<uint128>(1) << c_SCALING_FACTOR) - 1;
         uint64 pre_decimal_part;
         if (c_SCALING_FACTOR == c_SIZE * 8) {
@@ -174,8 +161,9 @@ namespace dat {
         uint64 decimal_part = m_storage & DECIMAL_BIT_MAP;
 
         // Simply print the integer part:
-        os << number_to_string(pre_decimal_part, m_is_positive);
-        os << '.';
+        std::stringstream result;
+        result << number_to_string(pre_decimal_part, m_is_positive);
+        result << '.';
 
         // Converts the fraction step by step into a decimal number
         uint128 numerator = decimal_part;
@@ -216,7 +204,12 @@ namespace dat {
         // Just like before: Reduce output limit to the important part.
         fractional_part = fractional_part.substr(0,
                                                  CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[c_SCALING_FACTOR]);
-        os << fractional_part;
+        result << fractional_part;
+        return result.str();
+    }
+
+    void Decimal::print(std::ostream &os) const {
+        os << to_string();
     }
 
 } // dat

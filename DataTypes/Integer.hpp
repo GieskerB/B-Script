@@ -27,9 +27,6 @@ namespace dat {
 
         void fit_string(std::string &);
 
-
-//        explicit Integer(const Decimal &);
-
     public:
 
         Integer() = delete;
@@ -43,6 +40,7 @@ namespace dat {
         static Integer cast(const Decimal& other);
         static Integer cast(const String& other);
 
+        [[nodiscard]] std::string to_string() const;
         void print(std::ostream& os) const override;
 
         VariantTypes operator+(const VariantTypes &) const;
