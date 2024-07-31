@@ -18,6 +18,8 @@ namespace dat {
 
     class Boolean : public DataType {
 
+        friend class Integer;
+        friend class Decimal;
         friend class String;
 
         enum TriState: char {
@@ -27,6 +29,8 @@ namespace dat {
         TriState m_storage;
 
         explicit Boolean(TriState);
+        explicit Boolean(bool);
+
     public:
 
         Boolean() = delete;

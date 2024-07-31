@@ -19,11 +19,13 @@ namespace dat {
     class Decimal : public Number {
         friend class Boolean;
         friend class Integer;
+        friend class String;
 
         unsigned char c_SCALING_FACTOR;
 
         static std::pair<std::string, std::string> slip(const std::string &);
         void fit_string(std::pair<std::string, std::string> &);
+        bool has_decimal_places() const;
 
     public:
         Decimal() = delete;

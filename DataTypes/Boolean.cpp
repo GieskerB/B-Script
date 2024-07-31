@@ -2,12 +2,15 @@
 
 namespace dat {
 
-    Boolean::Boolean(TriState value): DataType(lex::Position::NULL_POSITION, lex::Position::NULL_POSITION,
-                                               nullptr), m_storage(value) {}
+    Boolean::Boolean(TriState value) : DataType(lex::Position::NULL_POSITION, lex::Position::NULL_POSITION,
+                                                nullptr), m_storage(value) {}
+
+    Boolean::Boolean(bool value) : DataType(lex::Position::NULL_POSITION, lex::Position::NULL_POSITION,
+                                            nullptr), m_storage(value ? TriState::TRUE : TriState::FALSE) {}
 
     Boolean::Boolean(const std::string &value) : DataType(lex::Position::NULL_POSITION, lex::Position::NULL_POSITION,
                                                           nullptr) {
-        if (value == "true" ) {
+        if (value == "true") {
             m_storage = TriState::TRUE;
         } else if (value == "false") {
             m_storage = TriState::FALSE;
@@ -43,7 +46,7 @@ namespace dat {
     }
 
     Boolean Boolean::cast(const Integer &other) {
-        if(other.is_zero()) {
+        if (other.is_zero()) {
             return Boolean(TriState::FALSE);
         } else {
             return Boolean(TriState::TRUE);
@@ -51,7 +54,7 @@ namespace dat {
     }
 
     Boolean Boolean::cast(const Decimal &other) {
-        if(other.is_zero()) {
+        if (other.is_zero()) {
             return Boolean(TriState::FALSE);
         } else {
             return Boolean(TriState::TRUE);

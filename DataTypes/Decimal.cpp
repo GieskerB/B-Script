@@ -70,6 +70,10 @@ namespace dat {
 
     }
 
+    bool Decimal::has_decimal_places() const {
+        return ((1l << c_SCALING_FACTOR) -1) & m_storage;
+    }
+
     // Move Constructor
     Decimal::Decimal(const dat::Decimal &&other) noexcept: Number(std::move(other)),
                                                            c_SCALING_FACTOR(other.c_SCALING_FACTOR) {}
@@ -130,6 +134,18 @@ namespace dat {
         result.p_context = other.p_context;
         return result;
     }
+
+//    Decimal Decimal::cast(const Boolean &other, unsigned char scaling_factor) {
+//        Decimal result("0");
+//        result.c_SCALING_FACTOR = scaling_factor;
+//        result.c_SIZE = other.c_SIZE;
+//        result.m_storage = other.m_storage << scaling_factor;
+//        result.m_is_positive = other.m_is_positive;
+//        result.m_position_start = other.m_position_start;
+//        result.m_position_end = other.m_position_end;
+//        result.p_context = other.p_context;
+//        return result;
+//    }
 
     Decimal Decimal::cast(const Integer &other, unsigned char scaling_factor) {
         Decimal result("0");

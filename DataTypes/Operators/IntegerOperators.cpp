@@ -145,17 +145,41 @@ namespace dat {
 
 
     VariantTypes Integer::operator+() const{
-        throw std::runtime_error("Unexpected type of other in operator.cpp");
+        return Integer::copy(*this);
     }
     VariantTypes Integer::operator-() const{
-        throw std::runtime_error("Unexpected type of other in operator.cpp");
+        auto copy = Integer::copy(*this);
+        copy.invert();
+        return copy;
     }
     VariantTypes Integer::operator!() const{
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
+    // TODO ACHTUNG pos vs. neg !
+
     Boolean Integer::operator<( const VariantTypes& other){
-        throw std::runtime_error("Unexpected type of other in operator.cpp");
+        Integer copy = Integer::copy(*this);
+        switch (other.index()) {
+            case 0: /* === Boolean === */
+            case 3: /* === String === */
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                                                      .second,
+                                              "Operators not implemented.");
+            case 1: /* === Integer === */ {
+                const auto & other_integer = std::get<Integer>(other);
+                return Boolean(m_storage < other_integer.m_storage);
+            }
+            case 2: /* === Decimal === */ {
+                const auto & other_decimal = std::get<Decimal>(other);
+                if(copy.m_is_positive != other_decimal.m_is_positive) {
+                    return Boolean(false);
+                }
+                return Boolean(m_storage < other_decimal.m_storage);
+            }
+            default:
+                throw std::runtime_error("Unexpected type of other in operator.cpp");
+        }
     }
     Boolean Integer::operator>( const VariantTypes& other){
         throw std::runtime_error("Unexpected type of other in operator.cpp");
