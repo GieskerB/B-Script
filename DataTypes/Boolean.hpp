@@ -54,14 +54,14 @@ namespace dat {
         VariantTypes operator-() const;
         VariantTypes operator!() const;
 
-        Boolean operator<( const VariantTypes&);
-        Boolean operator>( const VariantTypes&);
-        Boolean operator<=( const VariantTypes&);
-        Boolean operator>=( const VariantTypes&);
-        Boolean operator==( const VariantTypes&);
-        Boolean operator!=( const VariantTypes&);
-        Boolean operator&&( const VariantTypes&);
-        Boolean operator||( const VariantTypes&);
+        Boolean operator<( const VariantTypes&) const;
+        Boolean operator>( const VariantTypes&) const;
+        Boolean operator<=( const VariantTypes&) const;
+        Boolean operator>=( const VariantTypes&) const;
+        Boolean operator==( const VariantTypes&) const;
+        Boolean operator!=( const VariantTypes&) const;
+        Boolean operator&&( const VariantTypes&) const;
+        Boolean operator||( const VariantTypes&) const;
     };
 
 } // dat

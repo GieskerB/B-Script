@@ -16,9 +16,12 @@ namespace lex {
 
     struct Constants {
         std::vector<std::string> VARIABLE_KEYWORDS;
+        std::vector<std::string> CONSTANTS_KEYWORDS;
         /*constexpr*/ void generate_number_keywords(){
             VARIABLE_KEYWORDS.emplace_back("int");
             VARIABLE_KEYWORDS.emplace_back("dec");
+            VARIABLE_KEYWORDS.emplace_back("bool");
+            VARIABLE_KEYWORDS.emplace_back("str");
             for (auto& size : dat::sizes) {
                 const char byte_to_bits{static_cast<char>(size * 8)};
                 const std::string size_string = std::to_string(byte_to_bits);
@@ -33,8 +36,15 @@ namespace lex {
             }
         }
 
+        /*constexpr*/ void generate_constants_keywords(){
+            CONSTANTS_KEYWORDS.emplace_back("true");
+            CONSTANTS_KEYWORDS.emplace_back("false");
+            CONSTANTS_KEYWORDS.emplace_back("neutral");
+        }
+
         /*constexpr*/ Constants() {
             generate_number_keywords();
+            generate_constants_keywords();
         }
     };
 
@@ -54,6 +64,7 @@ namespace lex {
 
         [[nodiscard]] Token make_number_token();
         [[nodiscard]] Token make_word_token();
+        [[nodiscard]] Token make_string_token();
 
         Token make_two_char_token(char, char, TokenType  ,  TokenType );
 

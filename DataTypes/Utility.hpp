@@ -18,6 +18,8 @@ namespace dat {
     VariantTypes create_form_key(const std::string &, short);
     std::pair<uint128, bool>storage_addition(uint128 , uint128 , bool , bool );
     std::pair<uint64, bool>storage_addition(uint64 , uint64 , bool , bool );
+    std::tuple<bool,bool,bool>storage_comparison(uint128 , uint128 , bool , bool );
+    std::tuple<bool,bool,bool>storage_comparison(uint64 , uint64 , bool , bool );
     std::pair<uint128, uint128>shift_to_equal_size( uint64 ,  uint64 ,  char );
     uint64 unshift_form_equal_size( uint128 ,  char ) ;
     std::pair<lex::Position, lex::Position> get_position_form_variant(const VariantTypes &);

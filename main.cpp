@@ -14,6 +14,7 @@ int main() {
         lex::Lexer lexer("main.bs");
         par::Parser parser{};
         itp::Context program_context("<program>");
+        int line_counter{0};
         while(lexer.can_lex()){
             auto tokens = lexer.next_line();
             for(auto& tok: tokens) {
@@ -24,6 +25,9 @@ int main() {
             abstract_syntax_tree.print();
             auto res = itp::Interpreter::visit(abstract_syntax_tree, program_context);
             std::cout << res << '\n';
+            if(++line_counter % 4 == 0) {
+                std::cout << '\n';
+            }
         }
     } catch (err::Error &error) {
         error.print();

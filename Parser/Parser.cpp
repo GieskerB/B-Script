@@ -68,6 +68,12 @@ namespace par {
                 key |= extra_number; // extra = scaling factor
                 key |= 2; // type = dec
                 break;
+            case 'b':
+                key |= 3; // type = bool
+                break;
+            case 's':
+                key |= 4; // type = bool
+                break;
             default:
                 throw std::runtime_error("Unknown variable type name in type_to_key()");
         }

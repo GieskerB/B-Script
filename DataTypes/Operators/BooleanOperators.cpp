@@ -131,7 +131,7 @@ namespace dat {
         return copy;
     }
 
-    Boolean Boolean::operator<(const VariantTypes &other) {
+    Boolean Boolean::operator<(const VariantTypes &other) const {
         Boolean copy = Boolean::copy(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
@@ -156,7 +156,7 @@ namespace dat {
         }
     }
 
-    Boolean Boolean::operator>(const VariantTypes &other) {
+    Boolean Boolean::operator>(const VariantTypes &other) const {
         Boolean copy = Boolean::copy(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
@@ -181,7 +181,7 @@ namespace dat {
         }
     }
 
-    Boolean Boolean::operator<=(const VariantTypes &other) {
+    Boolean Boolean::operator<=(const VariantTypes &other) const {
         Boolean copy = Boolean::copy(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
@@ -206,7 +206,7 @@ namespace dat {
         }
     }
 
-    Boolean Boolean::operator>=(const VariantTypes &other) {
+    Boolean Boolean::operator>=(const VariantTypes &other) const {
         Boolean copy = Boolean::copy(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
@@ -231,7 +231,7 @@ namespace dat {
         }
     }
 
-    Boolean Boolean::operator==(const VariantTypes &other) {
+    Boolean Boolean::operator==(const VariantTypes &other) const {
         Boolean copy = Boolean::copy(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
@@ -253,7 +253,7 @@ namespace dat {
         }
     }
 
-    Boolean Boolean::operator!=(const VariantTypes &other) {
+    Boolean Boolean::operator!=(const VariantTypes &other) const {
         Boolean copy = Boolean::copy(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
@@ -275,7 +275,7 @@ namespace dat {
         }
     }
 
-    Boolean Boolean::operator&&(const VariantTypes &other) {
+    Boolean Boolean::operator&&(const VariantTypes &other) const {
         Boolean copy = Boolean::copy(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
@@ -299,7 +299,7 @@ namespace dat {
         }
     }
 
-    Boolean Boolean::operator||(const VariantTypes &other) {
+    Boolean Boolean::operator||(const VariantTypes &other) const {
         Boolean copy = Boolean::copy(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {

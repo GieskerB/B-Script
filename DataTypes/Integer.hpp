@@ -38,7 +38,6 @@ namespace dat {
 
         static Integer cast(const Boolean& other);
         static Integer cast(const Decimal& other);
-        static Integer cast(const String& other);
 
         [[nodiscard]] std::string to_string() const;
         void print(std::ostream& os) const override;
@@ -52,14 +51,14 @@ namespace dat {
         VariantTypes operator-() const;
         VariantTypes operator!() const;
 
-        Boolean operator<( const VariantTypes&);
-        Boolean operator>( const VariantTypes&);
-        Boolean operator<=( const VariantTypes&);
-        Boolean operator>=( const VariantTypes&);
-        Boolean operator==( const VariantTypes&);
-        Boolean operator!=( const VariantTypes&);
-        Boolean operator&&( const VariantTypes&);
-        Boolean operator||( const VariantTypes&);
+        Boolean operator<( const VariantTypes&) const;
+        Boolean operator>( const VariantTypes&) const;
+        Boolean operator<=( const VariantTypes&) const;
+        Boolean operator>=( const VariantTypes&) const;
+        Boolean operator==( const VariantTypes&) const;
+        Boolean operator!=( const VariantTypes&) const;
+        Boolean operator&&( const VariantTypes&) const;
+        Boolean operator||( const VariantTypes&) const;
 
     };
 } // dat

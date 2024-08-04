@@ -69,6 +69,10 @@ namespace dat {
             return Integer{value, static_cast<Size>(size), extra != 0};
         } else if (type == 2) {
             return Decimal(value, static_cast<Size>(size), extra);
+        } else if (type == 3) {
+            return Boolean(value);
+        } else if (type == 4) {
+            return String(value);
         } else {
             if (value.find('.') == std::string::npos) {
                 return Integer(value);
@@ -110,6 +114,22 @@ namespace dat {
         return static_cast<std::pair<uint64, bool>> (storage_addition(static_cast<uint128>(storage1),
                                                                       static_cast<uint128>(storage2),
                                                                       is_positiv1, is_positive2));
+    }
+
+    std::tuple<bool, bool, bool>
+    storage_comparison(const uint128 storage1, const uint128 storage2, const bool is_positiv1, const bool is_positiv2) {
+        bool is_smaller, is_equals, is_bigger;
+        is_smaller = (!is_positiv1 and is_positiv2) or (is_positiv1 == is_positiv2 and storage1 < storage2);
+        is_equals = storage1 == storage2 and is_positiv1 == is_positiv2;
+        is_bigger = (is_positiv1 and !is_positiv2) or (is_positiv1 == is_positiv2 and storage1 > storage2);
+
+        return std::tuple{is_smaller, is_equals, is_bigger};
+    }
+
+    std::tuple<bool, bool, bool>
+    storage_comparison(const uint64 storage1, const uint64 storage2, const bool is_positiv1, const bool is_positiv2) {
+        return storage_comparison(static_cast<uint128>(storage1), static_cast<uint128>(storage2), is_positiv1,
+                                  is_positiv2);
     }
 
     std::pair<uint128, uint128>
@@ -202,6 +222,117 @@ namespace dat {
         throw std::runtime_error("std::variant error in Utility operator");
     }
 
+    Boolean operator<(const VariantTypes &variable_one, const VariantTypes &variable_two) {
+        switch (variable_one.index()) {
+            case 0:
+                return std::get<Boolean>(variable_one) < std::move(variable_two);
+            case 1:
+                return std::get<Integer>(variable_one) < std::move(variable_two);
+            case 2:
+                return std::get<Decimal>(variable_one) < std::move(variable_two);
+            case 3:
+                return std::get<String>(variable_one) < std::move(variable_two);
+        }
+        throw std::runtime_error("std::variant error in Utility operator");
+    }
+
+    Boolean operator<=(const VariantTypes &variable_one, const VariantTypes &variable_two) {
+        switch (variable_one.index()) {
+            case 0:
+                return std::get<Boolean>(variable_one) <= std::move(variable_two);
+            case 1:
+                return std::get<Integer>(variable_one) <= std::move(variable_two);
+            case 2:
+                return std::get<Decimal>(variable_one) <= std::move(variable_two);
+            case 3:
+                return std::get<String>(variable_one) <= std::move(variable_two);
+        }
+        throw std::runtime_error("std::variant error in Utility operator");
+    }
+
+    Boolean operator>(const VariantTypes &variable_one, const VariantTypes &variable_two) {
+        switch (variable_one.index()) {
+            case 0:
+                return std::get<Boolean>(variable_one) > std::move(variable_two);
+            case 1:
+                return std::get<Integer>(variable_one) > std::move(variable_two);
+            case 2:
+                return std::get<Decimal>(variable_one) > std::move(variable_two);
+            case 3:
+                return std::get<String>(variable_one) > std::move(variable_two);
+        }
+        throw std::runtime_error("std::variant error in Utility operator");
+    }
+
+    Boolean operator>=(const VariantTypes &variable_one, const VariantTypes &variable_two) {
+        switch (variable_one.index()) {
+            case 0:
+                return std::get<Boolean>(variable_one) >= std::move(variable_two);
+            case 1:
+                return std::get<Integer>(variable_one) >= std::move(variable_two);
+            case 2:
+                return std::get<Decimal>(variable_one) >= std::move(variable_two);
+            case 3:
+                return std::get<String>(variable_one) >= std::move(variable_two);
+        }
+        throw std::runtime_error("std::variant error in Utility operator");
+    }
+
+    Boolean operator==(const VariantTypes &variable_one, const VariantTypes &variable_two) {
+        switch (variable_one.index()) {
+            case 0:
+                return std::get<Boolean>(variable_one) == std::move(variable_two);
+            case 1:
+                return std::get<Integer>(variable_one) == std::move(variable_two);
+            case 2:
+                return std::get<Decimal>(variable_one) == std::move(variable_two);
+            case 3:
+                return std::get<String>(variable_one) == std::move(variable_two);
+        }
+        throw std::runtime_error("std::variant error in Utility operator");
+    }
+
+    Boolean operator!=(const VariantTypes &variable_one, const VariantTypes &variable_two) {
+        switch (variable_one.index()) {
+            case 0:
+                return std::get<Boolean>(variable_one) != std::move(variable_two);
+            case 1:
+                return std::get<Integer>(variable_one) != std::move(variable_two);
+            case 2:
+                return std::get<Decimal>(variable_one) != std::move(variable_two);
+            case 3:
+                return std::get<String>(variable_one) != std::move(variable_two);
+        }
+        throw std::runtime_error("std::variant error in Utility operator");
+    }
+
+    Boolean operator&&(const VariantTypes &variable_one, const VariantTypes &variable_two) {
+        switch (variable_one.index()) {
+            case 0:
+                return std::get<Boolean>(variable_one) && std::move(variable_two);
+            case 1:
+                return std::get<Integer>(variable_one) && std::move(variable_two);
+            case 2:
+                return std::get<Decimal>(variable_one) && std::move(variable_two);
+            case 3:
+                return std::get<String>(variable_one) && std::move(variable_two);
+        }
+        throw std::runtime_error("std::variant error in Utility operator");
+    }
+
+    Boolean operator||(const VariantTypes &variable_one, const VariantTypes &variable_two) {
+        switch (variable_one.index()) {
+            case 0:
+                return std::get<Boolean>(variable_one) || std::move(variable_two);
+            case 1:
+                return std::get<Integer>(variable_one) || std::move(variable_two);
+            case 2:
+                return std::get<Decimal>(variable_one) || std::move(variable_two);
+            case 3:
+                return std::get<String>(variable_one) || std::move(variable_two);
+        }
+        throw std::runtime_error("std::variant error in Utility operator");
+    }
 
     VariantTypes operator+(const VariantTypes &variable) {
         switch (variable.index()) {

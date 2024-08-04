@@ -16,12 +16,6 @@
  */
 
 namespace dat {
-/*
- * All Operators for String 'op' ***
- * - String 'op' Boolean will be changed to Boolean 'op' String
- * - String 'op' Integer will be changed to Integer 'op' String
- * - String 'op' Decimal will be changed to Decimal 'op' String
- */
 
     VariantTypes String::operator+(const VariantTypes &other) const {
         throw std::runtime_error("Unexpected type of other in operator.cpp");
@@ -50,28 +44,28 @@ namespace dat {
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
-    Boolean String::operator<( const VariantTypes& other){
+    Boolean String::operator<( const VariantTypes& other) const{
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
-    Boolean String::operator>( const VariantTypes& other){
+    Boolean String::operator>( const VariantTypes& other) const{
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
-    Boolean String::operator<=( const VariantTypes& other){
+    Boolean String::operator<=( const VariantTypes& other) const{
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
-    Boolean String::operator>=( const VariantTypes& other){
+    Boolean String::operator>=( const VariantTypes& other) const{
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
-    Boolean String::operator==( const VariantTypes& other){
+    Boolean String::operator==( const VariantTypes& other) const{
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
-    Boolean String::operator!=( const VariantTypes& other){
+    Boolean String::operator!=( const VariantTypes& other) const{
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
-    Boolean String::operator&&( const VariantTypes& other){
+    Boolean String::operator&&( const VariantTypes& other) const{
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
-    Boolean String::operator||( const VariantTypes& other){
+    Boolean String::operator||( const VariantTypes& other) const{
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 }

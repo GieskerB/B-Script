@@ -83,10 +83,10 @@ namespace itp {
 
     VariantTypes Interpreter::visit_unary_node(const par::OmegaNode &node, Context &context) {
         auto value = visit(node.get_right(), context);
-        if (node.get_token().c_type == lex::TokenType::MINUS) {
-            return -value;
-        } else if (node.get_token().c_type == lex::TokenType::PLUS) {
+        if (node.get_token().c_type == lex::TokenType::PLUS) {
             return +value;
+        } else if (node.get_token().c_type == lex::TokenType::MINUS) {
+            return -value;
         } else if (node.get_token().c_type == lex::TokenType::LOGIC_NOT) {
             return !value;
         }
@@ -104,6 +104,22 @@ namespace itp {
             return left_value * right_value;
         } else if (node.get_token().c_type == lex::TokenType::DIVIDE) {
             return left_value / right_value;
+        } else if (node.get_token().c_type == lex::TokenType::LESS_THEN) {
+            return left_value < right_value;
+        } else if (node.get_token().c_type == lex::TokenType::LESS_THEN_OR_EQUALS) {
+            return left_value <= right_value;
+        } else if (node.get_token().c_type == lex::TokenType::GREATER_THEN) {
+            return left_value > right_value;
+        } else if (node.get_token().c_type == lex::TokenType::GREATER_THEN_OR_EQUALS) {
+            return left_value >= right_value;
+        } else if (node.get_token().c_type == lex::TokenType::DOUBLE_EQUALS) {
+            return left_value == right_value;
+        } else if (node.get_token().c_type == lex::TokenType::NOT_EQUALS) {
+            return left_value != right_value;
+        } else if (node.get_token().c_type == lex::TokenType::LOGIC_AND) {
+            return left_value && right_value;
+        } else if (node.get_token().c_type == lex::TokenType::LOGIC_OR) {
+            return left_value || right_value;
         } else {
             throw std::runtime_error("Unexpected token in Interpreter visit_binary_node()!");
         }
