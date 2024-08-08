@@ -59,7 +59,7 @@ namespace dat {
                                                                                          c_SCALING_FACTOR];
         const int MAX_FRACTION_PART_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[c_SCALING_FACTOR];
         if (string_pair.first.size() > MAX_INTEGER_PART_SIZE) {
-            // If string representation for integer part is too big, clap it to the max size and set all digits to 9.
+            // If string representation for integer part is too big, clap it to the max size and set lex_all digits to 9.
             string_pair.first = std::string("9", MAX_INTEGER_PART_SIZE);
         }
         if (string_pair.second.size() > MAX_INTEGER_PART_SIZE) {

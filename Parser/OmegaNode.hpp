@@ -9,7 +9,7 @@
 namespace par {
 
     enum NodeType: char {
-        NONE,BINARY, UNARY,VALUE, VARIABLE_ACCESS, VARIABLE_ASSIGN
+        NONE,BINARY, UNARY,VALUE, VARIABLE_ACCESS, VARIABLE_ASSIGN, CONDITION
     };
 
     class OmegaNode {

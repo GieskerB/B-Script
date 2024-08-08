@@ -33,9 +33,15 @@ namespace itp {
                 return visit_variable_access_node(node, context);
             case par::NodeType::VARIABLE_ASSIGN:
                 return visit_variable_assign_node(node, context);
+            case par::NodeType::CONDITION:
+                return visit_condition_node(node, context);
             default:
                 throw std::runtime_error("Invalid NodeType in Interpreter::visit()");
         }
+    }
+
+    VariantTypes Interpreter::visit_condition_node(const par::OmegaNode &, itp::Context &) {
+
     }
 
     VariantTypes Interpreter::visit_variable_access_node(const par::OmegaNode &node, Context &context) {

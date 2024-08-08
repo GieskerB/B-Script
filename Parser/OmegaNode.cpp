@@ -36,7 +36,7 @@ namespace par {
               m_variable_key(0) {}
 
     void OmegaNode::print() const {
-
+        std::cout << "\\/NODE PRINT NOT IMPLEMENTED\\/\n";
     }
 
     NodeType OmegaNode::get_node_type() const {

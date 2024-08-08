@@ -7,7 +7,7 @@ __B-Script is my own programming language. It is interpreted via this C++26 prog
 Back in spring 2024 I had to create a "Fixed-Point" class for one of my computer science courses at university. After
 I got hooked and expanded the class to not only support the __+__, __-__ and __*__ operator with a fixed scaling-factor
 with was set at compile time.\
-Now the class supports all default arithmetic operations with their assignment operator as well (e.g.: __+__
+Now the class supports lex_all default arithmetic operations with their assignment operator as well (e.g.: __+__
 \rightarrow __+=__). Also, the scaling factor is now set at runtime, the size of a given Fixed-Point variable in Bytes
 can also be chosen at runtime and these different FixedPoint object can be used in one arithmetic expression.
 
@@ -23,7 +23,7 @@ of} floats or double!
 As a simple name for the Fixed-Point variable I chose 'dec' as in decimal number. Not to be confused with decimal as a 
 base 10 number also that is true, too.
 
-In addition to the Fixed-Point class, I have created a custom Integer class to make if easier for me to implement all
+In addition to the Fixed-Point class, I have created a custom Integer class to make if easier for me to implement lex_all
 the different operators. Since floats and doubles are missing, currently only two datatypes exists: int, dec (bool, str
 and maybe char may follow)\
 But both int and dec can be stored as a 1, 2, 4 or 8 Byte variable. This will be set by the variable type. In addition,
@@ -45,6 +45,9 @@ compromise of having to choose the accuracy yourself!
 ## Grammar
 
 ``` c++
+
+condition   : 'if' BOOL '{' (assignment | expression) '}'
+
 assignment  : VAR_KEYWORD[int/dec/...] IDENTIFIER '=' expression
             : IDENTIFIER '=' expression
 
@@ -57,7 +60,7 @@ arith-expr  : term (('+'|'-') term)*
 
 term        : factor (('*'|'/') factor)*
 
-factor      : INT | DEC | IDENTIFIER
+factor      : INT | DEC | BOOL | STR | IDENTIFIER
               ('+'/'-') factor
               '(' expression ')'
 ```

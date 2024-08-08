@@ -16,6 +16,10 @@ namespace lex {
                '_' == m_current_char or m_current_char == ':';
     }
 
+    bool Lexer::can_lex() const {
+        return m_current_char != '\0';
+    }
+
     /**
      * From a sequence of digits and at mose one dot create a number token.
      */
@@ -55,9 +59,12 @@ namespace lex {
         if (CONSTANTS.VARIABLE_KEYWORDS.end() !=
             std::find(CONSTANTS.VARIABLE_KEYWORDS.begin(), CONSTANTS.VARIABLE_KEYWORDS.end(), word_string)) {
             return Token{TokenType::VAR_KEYWORD, start, m_pos, word_string};
-        }else if (CONSTANTS.CONSTANTS_KEYWORDS.end() !=
-                  std::find(CONSTANTS.CONSTANTS_KEYWORDS.begin(), CONSTANTS.CONSTANTS_KEYWORDS.end(), word_string)) {
+        } else if (CONSTANTS.CONSTANTS_KEYWORDS.end() !=
+                   std::find(CONSTANTS.CONSTANTS_KEYWORDS.begin(), CONSTANTS.CONSTANTS_KEYWORDS.end(), word_string)) {
             return Token{TokenType::VALUE, start, m_pos, word_string};
+        } else if (CONSTANTS.BUILD_IN_KEYWORDS.end() !=
+                   std::find(CONSTANTS.BUILD_IN_KEYWORDS.begin(), CONSTANTS.BUILD_IN_KEYWORDS.end(), word_string)) {
+            return Token{TokenType::IF, start, m_pos, word_string};
         } else {
             if (has_colon) {
                 throw err::IllegalCharError(m_pos, "':' not allowed in identifier");
@@ -70,16 +77,17 @@ namespace lex {
         Position start = Position(m_pos);
         advance(); // Skip the "
         std::string string;
-        while(m_current_char != '\0' and m_current_char!= '"' ){
+        while (m_current_char != '\0' and m_current_char != '"') {
             string.push_back(m_current_char);
             advance();
         }
-        if(m_current_char != '\0') {
-            err::InvalidSyntaxError(start,m_pos, "Missing '\"' to close to string.");
+        if (m_current_char != '\0') {
+            throw err::InvalidSyntaxError(start, m_pos, "Missing '\"' to close to string.");
         }
         advance(); // Skip the "
         return Token{TokenType::VALUE, start, m_pos, string};
     }
+
     Token Lexer::make_two_char_token(char first_char, char second_char, TokenType single_token_type,
                                      TokenType double_token_type) {
         auto start = Position(m_pos);
@@ -104,15 +112,13 @@ namespace lex {
     }
 
 
-    Lexer::Lexer(const std::string &file_name) : m_pos{-1, 0, -1, file_name}, m_current_char('\0') {
-
+    Lexer::Lexer(const std::string &file_name) : m_pos{-1, 0, -1, 0, file_name}, m_current_char('\0') {
         FileReader fr{};
         fr.open_file(file_name);
 
         while (fr.can_read()) {
             m_text += (fr.read_line() + '\n');
         }
-
         advance();
     }
 
@@ -126,28 +132,11 @@ namespace lex {
         }
     }
 
-    bool Lexer::can_lex() const {
-        return m_current_char != '\0';
-    }
 
-    std::vector<Token> Lexer::all() {
+    std::vector<Token> Lexer::lex_all() {
         std::vector<Token> tokens;
         while (can_lex()) {
-            auto line_tokens = next_line();
-            tokens.insert(tokens.end(), line_tokens.begin(), line_tokens.end());
-        }
-        return tokens;
-    }
-
-    std::vector<Token> Lexer::next_line() {
-        std::vector<Token> tokens;
-        while (can_lex()) {
-            if (m_current_char == '\n') {
-                do {
-                    advance();
-                } while (m_current_char == '\n');
-                return tokens;
-            } else if (m_current_char == ' ' or m_current_char == '\t') {
+            if (m_current_char == ' ' or m_current_char == '\t' or m_current_char == '\n') {
                 advance();
             } else if (is_digit()) {
                 tokens.push_back(make_number_token());
@@ -168,10 +157,24 @@ namespace lex {
                 tokens.emplace_back(TokenType::DIVIDE, m_pos);
                 advance();
             } else if (m_current_char == '(') {
-                tokens.emplace_back(TokenType::LEFT_PARENTHESES, m_pos);
+                tokens.emplace_back(TokenType::LEFT_ROUND_PARENTHESES, m_pos);
                 advance();
             } else if (m_current_char == ')') {
-                tokens.emplace_back(TokenType::RIGHT_PARENTHESES, m_pos);
+                tokens.emplace_back(TokenType::RIGHT_ROUND_PARENTHESES, m_pos);
+                advance();
+            }  else if (m_current_char == '{') {
+                tokens.emplace_back(TokenType::LEFT_CURVED_PARENTHESES, m_pos);
+                advance();
+                m_pos.enter_scope();
+            } else if (m_current_char == '}') {
+                tokens.emplace_back(TokenType::RIGHT_CURVED_PARENTHESES, m_pos);
+                advance();
+                m_pos.leave_scope();
+            }  else if (m_current_char == '[') {
+                tokens.emplace_back(TokenType::LEFT_SQUARED_PARENTHESES, m_pos);
+                advance();
+            } else if (m_current_char == ']') {
+                tokens.emplace_back(TokenType::RIGHT_SQUARED_PARENTHESES, m_pos);
                 advance();
             } else if (m_current_char == ';') {
                 tokens.emplace_back(TokenType::END_OF_LINE, m_pos);
@@ -193,13 +196,8 @@ namespace lex {
                 throw err::IllegalCharError(m_pos, "Character " + std::string{m_current_char} + " not allowed here");
             }
         }
-
         return tokens;
     }
-
-
-
-
 }
 
 // lex

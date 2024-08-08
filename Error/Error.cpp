@@ -39,7 +39,7 @@ namespace err {
             std::move(name)), m_message(std::move(message)), m_start_pos(std::move(start)), m_end_pos(std::move(end)) {}
 
     /**
-     *  Prints all given information to the error output.
+     *  Prints lex_all given information to the error output.
      */
     void Error::print() {
         std::cerr << '\n' << m_name << ": " << m_message << '\n'
@@ -48,7 +48,7 @@ namespace err {
     }
 
     /*
-     * Collection of all the different errors this language might encounter.
+     * Collection of lex_all the different errors this language might encounter.
      */
 
     IllegalCharError::IllegalCharError(const lex::Position &pos, std::string message) : Error(

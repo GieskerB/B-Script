@@ -44,12 +44,10 @@ namespace par {
 
     public:
 
-        Parser();
+        Parser() = delete;
+        explicit Parser(const std::vector<lex::Token>&);
 
-        void import_tokens(const std::vector<lex::Token> &);
-
-        OmegaNode parse();
-
+        std::vector<OmegaNode> parse_all();
     };
 } // par
 

@@ -13,12 +13,17 @@ namespace lex {
         VALUE,
         VAR_KEYWORD,
         IDENTIFIER,
+        IF,
         PLUS = '+',
         MINUS = '-',
         MULTIPLY = '*',
         DIVIDE = '/',
-        LEFT_PARENTHESES = '(',
-        RIGHT_PARENTHESES = ')',
+        LEFT_ROUND_PARENTHESES = '(' + 'p', // Added a 'p' here to prevent conflicts in enum values
+        RIGHT_ROUND_PARENTHESES = ')' + 'p',
+        LEFT_CURVED_PARENTHESES = '{' + 'p',
+        RIGHT_CURVED_PARENTHESES = '}' + 'p',
+        LEFT_SQUARED_PARENTHESES = '[' + 'p',
+        RIGHT_SQUARED_PARENTHESES = ']' + 'p',
         EQUALS = '=',
         END_OF_LINE = ';',
         LESS_THEN = '<',
@@ -44,6 +49,7 @@ namespace lex {
 
         Token();
         explicit Token(TokenType, const Position&, const Position& = Position::NULL_POSITION, std::string = "");
+
 
         friend std::ostream &operator<<(std::ostream &, const Token &);
 

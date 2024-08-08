@@ -28,7 +28,7 @@ namespace dat {
             }
 
         }
-        // If all equals it's okay and right_node on the limit.
+        // If lex_all equals it's okay and right_node on the limit.
         return true;
     }
 
@@ -73,7 +73,7 @@ namespace dat {
     }
 
     /*
-     * Initialization of all base values.
+     * Initialization of lex_all base values.
      */
     Number::Number(Size size, bool is_positive) : DataType(lex::Position::NULL_POSITION,
                                                            lex::Position::NULL_POSITION,

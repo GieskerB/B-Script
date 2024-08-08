@@ -136,8 +136,8 @@ namespace par {
         auto ident_name = identifier.c_value;
         if (m_key_map.contains(ident_name)) {
             throw err::VariableAccessError(identifier.c_start_pos, identifier.c_end_pos,
-                                          "Redefinition of variable '" + ident_name +
-                                          "'.");
+                                           "Redefinition of variable '" + ident_name +
+                                           "'.");
         }
         m_key_map[ident_name] = key;
         advance();
@@ -156,8 +156,8 @@ namespace par {
         auto ident_name = identifier.c_value;
         if (!m_key_map.contains(ident_name)) {
             throw err::VariableAccessError(identifier.c_start_pos, identifier.c_end_pos,
-                                          "Variable '" + ident_name +
-                                          "' is not defined.");
+                                           "Variable '" + ident_name +
+                                           "' is not defined.");
         }
         short key = m_key_map[ident_name];
         advance();
@@ -205,10 +205,10 @@ namespace par {
             lex::Token temp_token = m_current_token;
             advance();
             return {NodeType::VARIABLE_ACCESS, temp_token};
-        } else if (m_current_token.c_type == lex::TokenType::LEFT_PARENTHESES) {
+        } else if (m_current_token.c_type == lex::TokenType::LEFT_ROUND_PARENTHESES) {
             advance();
             OmegaNode expr = expression(key);
-            if (m_current_token.c_type == lex::TokenType::RIGHT_PARENTHESES) {
+            if (m_current_token.c_type == lex::TokenType::RIGHT_ROUND_PARENTHESES) {
                 advance();
                 return expr;
             } else {
@@ -216,21 +216,37 @@ namespace par {
                                               "Expected ')' here.");
             }
         }
-
         throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
                                       "Expected INT or DEC here.");
     }
 
 
-    Parser::Parser() : m_tokens(), m_current_token(lex::Token::NULL_TOKEN), m_key_map(), m_index(-1) {}
-
-    void Parser::import_tokens(const std::vector<lex::Token> &tokens) {
-        m_tokens = tokens;
-        m_index = -1;
+    Parser::Parser(const std::vector<lex::Token> &tokens) : m_tokens(tokens), m_current_token(lex::Token::NULL_TOKEN),
+                                                            m_key_map(), m_index(-1) {
         advance();
     }
 
-    OmegaNode Parser::parse() {
+
+    std::vector<OmegaNode> Parser::parse_all() {
+        std::vector<OmegaNode> statements;
+        while (m_index < m_tokens.size()) {
+            switch (m_current_token.c_type) {
+                case lex::VAR_KEYWORD:
+                    statements.push_back(declaration());
+                    break;
+                case lex::IDENTIFIER:
+                    statements.push_back(assignment());
+                    break;
+                default:
+                    statements.push_back(expression());
+            }
+            if (m_current_token.c_type != lex::TokenType::END_OF_LINE) {
+                throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
+                                              "Expected ';' at end of expression.");
+            }
+            advance();
+        }
+        return statements;
         OmegaNode abstract_syntax_tree;
         if (m_current_token.c_type == lex::TokenType::VAR_KEYWORD) {
             abstract_syntax_tree = declaration();
@@ -240,12 +256,8 @@ namespace par {
             abstract_syntax_tree = expression();
         }
 
-        if (m_current_token.c_type != lex::TokenType::END_OF_LINE) {
-            throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
-                                          "Expected '+', '-', '*' or '/' here.");
-        }
 
-        return abstract_syntax_tree;
+        return {abstract_syntax_tree};
     }
 
 

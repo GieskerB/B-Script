@@ -6,23 +6,26 @@
 
 namespace lex {
     class Position {
-    private:
-        int m_index, m_line, m_column;
+
+        int m_index, m_line, m_column, m_indentation;
         std::string m_file_name;
+
 
     public:
 
         static const Position NULL_POSITION;
 
         Position() = delete;
-        Position(int, int, int, std::string);
+        Position(int, int, int,int, std::string);
         Position(const Position&) =default;
 
         [[nodiscard]]  int index() const;
-
-        [[nodiscard]]  int column() const;
-
         [[nodiscard]]  int line() const;
+        [[nodiscard]]  int column() const;
+        [[nodiscard]]  int indentation() const;
+
+        void enter_scope();
+        void leave_scope();
 
         [[nodiscard]]  std::string file_name() const;
 

@@ -17,7 +17,8 @@ namespace lex {
     struct Constants {
         std::vector<std::string> VARIABLE_KEYWORDS;
         std::vector<std::string> CONSTANTS_KEYWORDS;
-        /*constexpr*/ void generate_number_keywords(){
+        std::vector<std::string> BUILD_IN_KEYWORDS;
+         void generate_number_keywords(){
             VARIABLE_KEYWORDS.emplace_back("int");
             VARIABLE_KEYWORDS.emplace_back("dec");
             VARIABLE_KEYWORDS.emplace_back("bool");
@@ -36,15 +37,20 @@ namespace lex {
             }
         }
 
-        /*constexpr*/ void generate_constants_keywords(){
+         void generate_constants_keywords(){
             CONSTANTS_KEYWORDS.emplace_back("true");
             CONSTANTS_KEYWORDS.emplace_back("false");
             CONSTANTS_KEYWORDS.emplace_back("neutral");
         }
 
-        /*constexpr*/ Constants() {
+        void generate_build_in_keywords() {
+            BUILD_IN_KEYWORDS.emplace_back("if");
+         }
+
+         Constants() {
             generate_number_keywords();
             generate_constants_keywords();
+            generate_build_in_keywords();
         }
     };
 
@@ -61,6 +67,7 @@ namespace lex {
 
         [[nodiscard]] bool is_digit() const;
         [[nodiscard]] bool is_letter() const;
+        [[nodiscard]] bool can_lex() const;
 
         [[nodiscard]] Token make_number_token();
         [[nodiscard]] Token make_word_token();
@@ -74,11 +81,7 @@ namespace lex {
 
         void advance();
 
-        bool can_lex() const;
-
-        std::vector<Token> all();
-
-        std::vector<Token> next_line();
+        std::vector<Token> lex_all();
 
     };
 
