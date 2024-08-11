@@ -27,15 +27,21 @@ namespace dat {
         void fit_string(std::pair<std::string, std::string> &);
         bool has_decimal_places() const;
 
+        explicit Decimal(const Boolean&);
+        explicit Decimal(const Integer&);
+        explicit Decimal(const Decimal&);
+        explicit Decimal(const String&);
+
     public:
         Decimal() = delete;
-        Decimal(const Decimal &) = delete;
         Decimal(const Decimal &&) noexcept ;
         explicit Decimal(std::string, Size = INTEGER, unsigned char = 16);
 
-        static Decimal copy(const Decimal& other);
-        static Decimal cast(const Boolean& other, unsigned char scaling_factor);
-        static Decimal cast(const Integer& other, unsigned char scaling_factor);
+        static Decimal cast(const Boolean& );
+        static Decimal cast(const Integer&);
+        static Decimal copy(const Decimal&);
+        static Decimal cast(const String&);
+        static Decimal cast(const VariantTypes & );
 
         [[nodiscard]] std::string to_string() const;
         void print(std::ostream& os) const override;

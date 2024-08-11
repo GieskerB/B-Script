@@ -12,7 +12,6 @@ namespace dat {
 #include "Integer.hpp"
 #include "Decimal.hpp"
 #include "String.hpp"
-//#include "Utility.hpp"
 
 namespace dat {
 
@@ -20,24 +19,30 @@ namespace dat {
 
     class Integer : public Number {
 
-        friend class Printer;
+        friend class Boolean;
         friend class Decimal;
+        friend class String;
 
         bool c_IS_SIGNED;
 
         void fit_string(std::string &);
 
+        explicit Integer(const Boolean&);
+        explicit Integer(const Integer&);
+        explicit Integer(const Decimal&);
+        explicit Integer(const String&);
+
     public:
 
         Integer() = delete;
-        Integer(const Integer &)= delete;
         Integer(const Integer &&) noexcept;
         explicit Integer(std::string, Size = INTEGER, bool = false);
 
-        static Integer copy(const Integer& other);
-
-        static Integer cast(const Boolean& other);
-        static Integer cast(const Decimal& other);
+        static Integer cast(const Boolean& );
+        static Integer copy(const Integer& );
+        static Integer cast(const Decimal& );
+        static Integer cast(const String& );
+        static Integer cast(const VariantTypes & );
 
         [[nodiscard]] std::string to_string() const;
         void print(std::ostream& os) const override;

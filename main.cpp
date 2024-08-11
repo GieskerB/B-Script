@@ -21,7 +21,7 @@ int main() {
 
         // 2. Break down lex_all Tokens into each single statement via the Parser.
         par::Parser parser{tokens};
-        std::vector<par::OmegaNode> statements = parser.parse_all();
+        std::vector<par::MegaNode> statements = parser.parse_all();
         for (const auto &statement: statements) {
             statement.print();
         }

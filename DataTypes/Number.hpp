@@ -12,10 +12,6 @@ namespace itp {
 }
 
 namespace dat {
-//
-//    std::string number_to_string(uint64, bool);
-//
-//    uint64 string_to_number(const std::string &, unsigned char);
 
     template<unsigned char N>
     struct Constants {
@@ -38,7 +34,6 @@ namespace dat {
 
     class Number : public DataType {
 
-        friend class Printer;
         friend class Integer;
         friend class Decimal;
 

@@ -8,127 +8,131 @@
 #include "../String.hpp"
 #include "../Utility.hpp"
 
-/*
- * All operators are commutative. Therefor A+B = B+A.
- * There are currently 4 Operators [Boolean, Integer, Decimal, String]
- * This ordner denotes the direction of implementation:
- * e.g. I'll implement Boolean + String, but if String + Boolean is called, I simply "calculate" Boolean + String!
- */
-
 namespace dat {
 
-    VariantTypes Boolean::operator+(const VariantTypes &other) const {
-        Boolean copy = Boolean::copy(*this);
-        switch (other.index()) {
+    VariantTypes Boolean::operator+(const VariantTypes &right_variant) const {
+        Boolean left = Boolean::copy(*this);
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
-                const auto &other_boolean = std::get<Boolean>(other);
-                const auto &copy_cast = Integer::cast(copy);
-                return other_boolean + std::move(copy_cast);
+                // Boolean + Boolean -> Integer + Bool = Integer
+                const auto &left_casted = Integer::cast(left);
+                const auto &right = std::get<Boolean>(right_variant);
+                return left_casted + std::move(right);
             }
             case 1: /* === Integer === */ {
-                const auto &other_integer = std::get<Integer>(other);
-                const auto &copy_cast = Integer::cast(copy);
-                return other_integer + std::move(copy_cast);
+                // Boolean + Integer -> Integer + Integer = Integer
+                const auto &left_casted = Integer::cast(left);
+                const auto &right = std::get<Integer>(right_variant);
+                return left_casted + std::move(right);
             }
             case 2: /* === Decimal === */ {
-                const auto &other_decimal = std::get<Decimal>(other);
-                const auto &copy_cast = Integer::cast(copy);
-                return other_decimal + std::move(copy_cast);
+                // Boolean + Decimal -> Decimal + Decimal = Decimal
+                const auto &left_casted = Integer::cast(left);
+                const auto &right = std::get<Decimal>(right_variant);
+                return left_casted + std::move(right);
             }
             case 3: /* === String === */{
-                const auto &other_string = std::get<String>(other);
-                const auto &copy_cast = String::cast(copy);
-                return other_string + std::move(copy_cast);
+                // Boolean + String -> String + String = String
+                const auto &left_casted = String::cast(left);
+                const auto &right = std::get<String>(right_variant);
+                return left_casted + std::move(right);
             }
             default:
-                throw std::runtime_error("Unexpected type of other in operator.cpp");
+                throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
         }
     }
 
-    VariantTypes Boolean::operator-(const VariantTypes &other) const {
-        Boolean copy = Boolean::copy(*this);
-        switch (other.index()) {
+    VariantTypes Boolean::operator-(const VariantTypes &right_variant) const {
+        Boolean left = Boolean::copy(*this);
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */{
-                const auto &other_boolean = std::get<Boolean>(other);
-                const auto &copy_cast = Integer::cast(copy);
-                return other_boolean - std::move(copy_cast);
+                // Boolean - Boolean -> Integer - Boolean = Integer
+                const auto &left_casted = Integer::cast(left);
+                const auto &right = std::get<Boolean>(right_variant);
+                return left_casted - std::move(right);
             }
             case 1: /* === Integer === */ {
-                const auto &other_integer = std::get<Integer>(other);
-                const auto &copy_cast = Integer::cast(copy);
-                return other_integer - std::move(copy_cast);
+                // Boolean - Integer -> Integer - Integer = Integer
+                const auto &left_casted = Integer::cast(left);
+                const auto &right = std::get<Integer>(right_variant);
+                return left_casted - std::move(right);
             }
             case 2: /* === Decimal === */ {
-                const auto &other_decimal = std::get<Decimal>(other);
-                const auto &copy_cast = Integer::cast(copy);
-                return other_decimal - std::move(copy_cast);
+                // Boolean - Decimal -> Decimal - Decimal = Decimal
+                const auto &left_casted = Decimal::cast(left);
+                const auto &right = std::get<Decimal>(right_variant);
+                return left_casted - std::move(right);
             }
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
-                                                      .second,
-                                              "Operators not implemented.");
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
+                        .second, "Operator not implemented.");
             default:
-                throw std::runtime_error("Unexpected type of other in operator.cpp");
+                throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
         }
     }
 
-    VariantTypes Boolean::operator*(const VariantTypes &other) const {
-        Boolean copy = Boolean::copy(*this);
-        switch (other.index()) {
+    VariantTypes Boolean::operator*(const VariantTypes &right_variant) const {
+        Boolean left = Boolean::copy(*this);
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */{
-                const auto &other_boolean = std::get<Boolean>(other);
-                const auto &copy_cast = Integer::cast(copy);
-                return other_boolean * std::move(copy_cast);
+                // Boolean * Boolean -> Integer * Boolean = Integer
+                const auto &left_casted = Integer::cast(left);
+                const auto &right = std::get<Boolean>(right_variant);
+                return left_casted * std::move(right);
             }
             case 1: /* === Integer === */ {
-                const auto &other_integer = std::get<Integer>(other);
-                const auto &copy_cast = Integer::cast(copy);
-                return other_integer * std::move(copy_cast);
+                // Boolean * Integer -> Integer * Integer = Integer
+                const auto &left_casted = Integer::cast(left);
+                const auto &right = std::get<Integer>(right_variant);
+                return left_casted * std::move(right);
             }
             case 2: /* === Decimal === */ {
-                const auto &other_decimal = std::get<Decimal>(other);
-                const auto &copy_cast = Integer::cast(copy);
-                return other_decimal * std::move(copy_cast);
+                // Boolean * Decimal -> Decimal * Decimal = Decimal
+                const auto &left_casted = Integer::cast(left);
+                const auto &right = std::get<Decimal>(right_variant);
+                return left_casted * std::move(right);
             }
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                                                       .second,
-                                              "Operators not implemented.");
+                                              "Operator not implemented.");
             default:
-                throw std::runtime_error("Unexpected type of other in operator.cpp");
+                throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
         }
     }
 
-    VariantTypes Boolean::operator/(const VariantTypes &other) const {
-        Boolean copy = Boolean::copy(*this);
-        switch (other.index()) {
+    VariantTypes Boolean::operator/(const VariantTypes &right_variant) const {
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */
             case 1: /* === Integer === */
             case 2: /* === Decimal === */
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
-                                              "Operators not implemented.");
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant).second,
+                                              "Operator not implemented.");
             default:
-                throw std::runtime_error("Unexpected type of other in operator.cpp");
+                throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
         }
     }
 
     VariantTypes Boolean::operator+() const {
-        return Integer::cast(*this);
+        // +Boolean -> +Integer = Integer
+        return +Integer::cast(*this);
     }
 
     VariantTypes Boolean::operator-() const {
+        // -Boolean -> -Integer = Integer
         return -Integer::cast(*this);
     }
 
     VariantTypes Boolean::operator!() const {
-        Boolean copy = Boolean::copy(*this);
+        // !Boolean = Boolean
+        Boolean result = Boolean::copy(*this);
         if (m_storage == TriState::TRUE) {
-            copy.m_storage = TriState::FALSE;
+            result.m_storage = TriState::FALSE;
         } else if (m_storage == TriState::FALSE) {
-            copy.m_storage = TriState::TRUE;
+            result.m_storage = TriState::TRUE;
         }
-        return copy;
+        return result;
     }
 
     Boolean Boolean::operator<(const VariantTypes &other) const {

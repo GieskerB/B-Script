@@ -8,52 +8,40 @@
 #include "../String.hpp"
 #include "../Utility.hpp"
 
-/*
- * All operators are commutative. Therefor A+B = B+A.
- * There are currently 4 Operators [Boolean, Integer, Decimal, String]
- * This ordner denotes the direction of implementation:
- * e.g. I'll implement Boolean + String, but if String + Boolean is called, I simply "calculate" Boolean + String!
- */
-
 namespace dat {
-/*
- * All Operators for Decimal 'op' ***
- * - Decimal 'op' Boolean will be changed to Boolean 'op' Decimal
- * - Decimal 'op' Integer will be changed to Integer 'op' Decimal
- */
 
-    VariantTypes Decimal::operator+(const VariantTypes &other) const {
-        Decimal copy = Decimal::copy(*this);
-        switch (other.index()) {
+    VariantTypes Decimal::operator+(const VariantTypes &right_variant) const {
+        Decimal left = Decimal::copy(*this);
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant).second,
                                               "Operators not implemented.");
             case 1: /* === Integer === */ {
-                const auto &other_integer = std::get<Integer>(other);
-                return other_integer + std::move(copy);
+                const auto &other_integer = std::get<Integer>(right_variant);
+                return other_integer + std::move(left);
             }
             case 2: /* === Decimal === */ {
-                const auto &other_decimal = std::get<Decimal>(other);
-                const char SCALING_DELTA = static_cast<char>(copy.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
+                const auto &other_decimal = std::get<Decimal>(right_variant);
+                const char SCALING_DELTA = static_cast<char>(left.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
 
-                auto shifted_storage = shift_to_equal_size(copy.m_storage, other_decimal.m_storage, SCALING_DELTA);
+                auto shifted_storage = shift_to_equal_size(left.m_storage, other_decimal.m_storage, SCALING_DELTA);
 
                 auto result_shifted = storage_addition(shifted_storage.first, shifted_storage.second,
-                                                       copy.m_is_positive,
+                                                       left.m_is_positive,
                                                        other_decimal.m_is_positive);
 
-                copy.m_storage = unshift_form_equal_size(result_shifted.first, SCALING_DELTA);
-                copy.m_is_positive = result_shifted.second;
-                copy.clap_to_size();
-                return copy;
+                left.m_storage = unshift_form_equal_size(result_shifted.first, SCALING_DELTA);
+                left.m_is_positive = result_shifted.second;
+                left.clap_to_size();
+                return left;
             }
 
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                                                       .second,
                                               "Operators not implemented.");
             default:
-                throw std::runtime_error("Unexpected type of other in operator.cpp");
+                throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
         }
     }
 

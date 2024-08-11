@@ -5,7 +5,7 @@
 #include <variant>
 
 #include "Context.hpp"
-#include "../Parser/OmegaNode.hpp"
+#include "../Parser/MegaNode.hpp"
 
 namespace dat {
     class DataType;
@@ -17,16 +17,16 @@ namespace itp {
 
     class Interpreter {
 
-        static VariantTypes visit_condition_node(const par::OmegaNode &, itp::Context &);
-        static VariantTypes visit_variable_access_node(const par::OmegaNode &, itp::Context &);
-        static VariantTypes visit_variable_assign_node(const  par::OmegaNode &, itp::Context &);
-        static VariantTypes visit_value_node(const  par::OmegaNode &, itp::Context &);
-        static VariantTypes visit_unary_node(const  par::OmegaNode &, itp::Context &);
-        static VariantTypes visit_binary_node(const  par::OmegaNode &, itp::Context &);
+        static VariantTypes visit_if_condition_node(const par::MegaNode &, itp::Context &);
+        static VariantTypes visit_variable_access_node(const par::MegaNode &, itp::Context &);
+        static VariantTypes visit_variable_assign_node(const  par::MegaNode &, itp::Context &);
+        static VariantTypes visit_value_node(const  par::MegaNode &, itp::Context &);
+        static VariantTypes visit_unary_node(const  par::MegaNode &, itp::Context &);
+        static VariantTypes visit_binary_node(const  par::MegaNode &, itp::Context &);
 
     public:
 
-        static VariantTypes visit(const  par::OmegaNode &, itp::Context &);
+        static VariantTypes visit(const  par::MegaNode &, itp::Context &);
 
     };
 

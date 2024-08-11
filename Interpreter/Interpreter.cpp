@@ -21,7 +21,7 @@ namespace itp {
         }
     }
 
-    VariantTypes Interpreter::visit(const par::OmegaNode &node, Context &context) {
+    VariantTypes Interpreter::visit(const par::MegaNode &node, Context &context) {
         switch (node.get_node_type()) {
             case par::NodeType::BINARY:
                 return visit_binary_node(node, context);
@@ -33,18 +33,19 @@ namespace itp {
                 return visit_variable_access_node(node, context);
             case par::NodeType::VARIABLE_ASSIGN:
                 return visit_variable_assign_node(node, context);
-            case par::NodeType::CONDITION:
-                return visit_condition_node(node, context);
+            case par::NodeType::IF_CONDITION:
+                return visit_if_condition_node(node, context);
             default:
                 throw std::runtime_error("Invalid NodeType in Interpreter::visit()");
         }
     }
 
-    VariantTypes Interpreter::visit_condition_node(const par::OmegaNode &, itp::Context &) {
-
+    VariantTypes Interpreter::visit_if_condition_node(const par::MegaNode &node, itp::Context &context) {
+        auto condition = node.get_left();
+        dat::Boolean aaa = dat::Boolean::cast(visit(condition,context));
     }
 
-    VariantTypes Interpreter::visit_variable_access_node(const par::OmegaNode &node, Context &context) {
+    VariantTypes Interpreter::visit_variable_access_node(const par::MegaNode &node, Context &context) {
         auto var_name = node.get_token().c_value;
         try {
             VariantTypes &var_value = context.get_symbole_table().get(var_name);
@@ -57,14 +58,14 @@ namespace itp {
         }
     }
 
-    VariantTypes Interpreter::visit_variable_assign_node(const par::OmegaNode &node, Context &context) {
+    VariantTypes Interpreter::visit_variable_assign_node(const par::MegaNode &node, Context &context) {
         std::string var_name = node.get_token().c_value;
         VariantTypes var_value = visit(node.get_right(), context);
         context.get_symbole_table().set(var_name, var_value);
         return var_value;
     }
 
-    VariantTypes Interpreter::visit_value_node(const par::OmegaNode &node, Context &context) {
+    VariantTypes Interpreter::visit_value_node(const par::MegaNode &node, Context &context) {
         if (node.get_token().c_type == lex::TokenType::VALUE) {
             auto result = dat::create_form_key(node.get_token().c_value, node.get_variable_key());
 
@@ -87,7 +88,7 @@ namespace itp {
     }
 
 
-    VariantTypes Interpreter::visit_unary_node(const par::OmegaNode &node, Context &context) {
+    VariantTypes Interpreter::visit_unary_node(const par::MegaNode &node, Context &context) {
         auto value = visit(node.get_right(), context);
         if (node.get_token().c_type == lex::TokenType::PLUS) {
             return +value;
@@ -99,7 +100,7 @@ namespace itp {
         throw std::runtime_error("Unexpected token in Interpreter visit_unary_node()!");
     }
 
-    VariantTypes Interpreter::visit_binary_node(const par::OmegaNode &node, Context &context) {
+    VariantTypes Interpreter::visit_binary_node(const par::MegaNode &node, Context &context) {
         auto left_value = visit(node.get_left(), context);
         auto right_value = visit(node.get_right(), context);
         if (node.get_token().c_type == lex::TokenType::PLUS) {

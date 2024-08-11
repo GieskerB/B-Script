@@ -3,6 +3,7 @@
 #include "Integer.hpp"
 #include "Decimal.hpp"
 #include "Utility.hpp"
+#include "../Error/Error.hpp"
 
 namespace dat {
     /*
@@ -71,7 +72,39 @@ namespace dat {
     }
 
     bool Decimal::has_decimal_places() const {
-        return ((1l << c_SCALING_FACTOR) -1) & m_storage;
+        return ((1l << c_SCALING_FACTOR) - 1) & m_storage;
+    }
+
+
+    Decimal::Decimal(const Boolean &other) : Number(Size::BYTE, true), c_SCALING_FACTOR(0) {
+        switch (other.m_storage) {
+            case Boolean::TRUE:
+                m_storage = 1;
+                break;
+            case Boolean::FALSE:
+                m_storage = 0;
+                break;
+            case Boolean::NEUTRAL: {
+                auto pos = other.get_position();
+                throw err::RuntimeError(pos.first, pos.second, "Can not convert value 'neutral' into a number",
+                                        other.get_context());
+            }
+        }
+    }
+
+    Decimal::Decimal(const Integer &other) : Number(other.c_SIZE, other.m_is_positive), c_SCALING_FACTOR(0) {
+        m_storage = other.m_storage;
+    }
+
+    Decimal::Decimal(const Decimal &other) : Number(other.c_SIZE, other.m_is_positive),
+                                             c_SCALING_FACTOR(other.c_SCALING_FACTOR) {
+        m_storage = other.m_storage;
+    }
+
+    Decimal::Decimal(const String &other) : Number(Size::LONG, false), c_SCALING_FACTOR(0) {
+        throw err::RuntimeError(other.get_position().first, other.get_position().second,
+                                "Casting error form String to Decimal.",
+                                other.get_context());
     }
 
     // Move Constructor
@@ -123,42 +156,35 @@ namespace dat {
         clap_to_size();
     }
 
-    Decimal Decimal::copy(const Decimal &other) {
-        Decimal result("0");
-        result.c_SCALING_FACTOR = other.c_SCALING_FACTOR;
-        result.c_SIZE = other.c_SIZE;
-        result.m_storage = other.m_storage;
-        result.m_is_positive = other.m_is_positive;
-        result.m_position_start = other.m_position_start;
-        result.m_position_end = other.m_position_end;
-        result.p_context = other.p_context;
-        return result;
+
+    Decimal Decimal::cast(const Boolean &other) {
+        return Decimal(other);
+    }
+    Decimal Decimal::cast(const dat::Integer & other) {
+        return Decimal(other);
+    }
+    Decimal Decimal::copy(const dat::Decimal & other) {
+        return Decimal(other);
+    }
+    Decimal Decimal::cast(const dat::String & other) {
+        return Decimal(other);
     }
 
-//    Decimal Decimal::cast(const Boolean &other, unsigned char scaling_factor) {
-//        Decimal result("0");
-//        result.c_SCALING_FACTOR = scaling_factor;
-//        result.c_SIZE = other.c_SIZE;
-//        result.m_storage = other.m_storage << scaling_factor;
-//        result.m_is_positive = other.m_is_positive;
-//        result.m_position_start = other.m_position_start;
-//        result.m_position_end = other.m_position_end;
-//        result.p_context = other.p_context;
-//        return result;
-//    }
 
-    Decimal Decimal::cast(const Integer &other, unsigned char scaling_factor) {
-        Decimal result("0");
-        result.c_SCALING_FACTOR = scaling_factor;
-        result.c_SIZE = other.c_SIZE;
-        result.m_storage = other.m_storage << scaling_factor;
-        result.m_is_positive = other.m_is_positive;
-        result.m_position_start = other.m_position_start;
-        result.m_position_end = other.m_position_end;
-        result.p_context = other.p_context;
-        return result;
+    Decimal Decimal::cast(const VariantTypes &other) {
+        switch (other.index()) {
+                case 0 :
+                    return Decimal::cast(std::get<Boolean>(other));
+                case 1 :
+                    return Decimal::cast(std::get<Integer>(other));
+                case 2 :
+                    return Decimal::copy(std::get<Decimal>(other));
+                case 3 :
+                    return Decimal::cast(std::get<String>(other));
+                default:
+                    throw std::runtime_error("Error in Decimal cast: Unexpected DataType");
+        }
     }
-
 
 
     /*

@@ -23,5 +23,9 @@ namespace dat {
         return {m_position_start, m_position_end};
     }
 
+    const itp::Context &DataType::get_context() const {
+        return * p_context;
+    }
+
 
 } // dat

@@ -28,21 +28,27 @@ namespace dat {
 
         TriState m_storage;
 
+        explicit Boolean(const Boolean&);
+        explicit Boolean(const Integer&);
+        explicit Boolean(const Decimal&);
+        explicit Boolean(const String&);
+
         explicit Boolean(TriState);
         explicit Boolean(bool);
 
     public:
 
         Boolean() = delete;
-        Boolean(const Boolean&) = delete;
         Boolean(const Boolean&&) noexcept;
         explicit Boolean(const std::string&);
 
-        static Boolean copy(const Boolean& other);
+        static Boolean copy(const Boolean& );
+        static Boolean cast(const Integer&);
+        static Boolean cast(const Decimal&);
+        static Boolean cast(const String&);
+        static Boolean cast(const VariantTypes& );
 
-        static Boolean cast(const Integer& other);
-        static Boolean cast(const Decimal& other);
-
+        [[nodiscard]] std::string to_string() const;
         void print(std::ostream& os) const override;
 
         VariantTypes operator+(const VariantTypes &) const;

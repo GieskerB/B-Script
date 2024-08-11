@@ -5,7 +5,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include "OmegaNode.hpp"
+#include "MegaNode.hpp"
 #include "../DataTypes/Number.hpp"
 
 namespace par {
@@ -29,25 +29,28 @@ namespace par {
 
         static short type_to_key(const std::string&);
 
-        OmegaNode next_call(NextFunctionCall,short);
-        OmegaNode binary_operator(NextFunctionCall,const std::vector<lex::TokenType>&,short);
-        OmegaNode unary_operator(NextFunctionCall,const std::vector<lex::TokenType>&,short);
+        MegaNode next_statement();
 
-        OmegaNode declaration();
-        OmegaNode assignment();
-        OmegaNode expression(short = 0);
-        OmegaNode comparison_expression(short);
-        OmegaNode arithmetic_expression(short);
-        OmegaNode term(short);
-        OmegaNode factor(short);
+        MegaNode next_call(NextFunctionCall, short);
+        MegaNode binary_operator(NextFunctionCall, const std::vector<lex::TokenType>&, short);
+        MegaNode unary_operator(NextFunctionCall, const std::vector<lex::TokenType>&, short);
 
+        MegaNode declaration();
+        MegaNode assignment();
+        MegaNode expression(short = 0);
+        MegaNode comparison_expression(short);
+        MegaNode arithmetic_expression(short);
+        MegaNode term(short);
+        MegaNode factor(short);
+
+        MegaNode if_block();
 
     public:
 
         Parser() = delete;
         explicit Parser(const std::vector<lex::Token>&);
 
-        std::vector<OmegaNode> parse_all();
+        std::vector<MegaNode> parse_all();
     };
 } // par
 

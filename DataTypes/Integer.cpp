@@ -10,6 +10,37 @@ namespace dat {
         }
     }
 
+    Integer::Integer(const Boolean &other) : Number(Size::BYTE, true), c_IS_SIGNED(false) {
+        switch (other.m_storage) {
+            case Boolean::TRUE:
+                m_storage = 1;
+                break;
+            case Boolean::FALSE:
+                m_storage = 0;
+                break;
+            case Boolean::NEUTRAL: {
+                auto pos = other.get_position();
+                throw err::RuntimeError(pos.first, pos.second, "Can not convert value 'neutral' into a number",
+                                        other.get_context());
+            }
+        }
+    }
+
+    Integer::Integer(const Integer &other) : Number(other.c_SIZE, other.m_is_positive), c_IS_SIGNED(other.c_IS_SIGNED) {
+        m_storage = other.m_storage;
+    }
+
+    Integer::Integer(const Decimal &other) : Number(other.c_SIZE, other.m_is_positive),
+                                             c_IS_SIGNED(false) {
+        m_storage = other.m_storage >> other.c_SCALING_FACTOR;
+    }
+
+    Integer::Integer(const String &other) : Number(Size::LONG, false), c_IS_SIGNED(false) {
+        throw err::RuntimeError(other.get_position().first, other.get_position().second,
+                                "Casting error form String to Integer.",
+                                other.get_context());
+    }
+
     Integer::Integer(const Integer &&other) noexcept: Number(std::move(other)), c_IS_SIGNED(other.c_IS_SIGNED) {}
 
 
@@ -34,40 +65,32 @@ namespace dat {
         clap_to_size();
     }
 
-    Integer Integer::copy(const dat::Integer &other) {
-        Integer result("0");
-        result.c_IS_SIGNED = other.c_IS_SIGNED;
-        result.c_SIZE = other.c_SIZE;
-        result.m_storage = other.m_storage;
-        result.m_is_positive = other.m_is_positive;
-        result.m_position_start = other.m_position_start;
-        result.m_position_end = other.m_position_end;
-        result.p_context = other.p_context;
-        return result;
+    Integer Integer::cast(const Boolean &other) {
+        return Integer(other);
+    }
+    Integer Integer::copy(const dat::Integer & other) {
+        return Integer(other);
+    }
+    Integer Integer::cast(const dat::Decimal & other) {
+        return Integer(other);
+    }
+    Integer Integer::cast(const dat::String & other) {
+        return Integer(other);
     }
 
-    Integer Integer::cast(const dat::Boolean &other) {
-        switch (other.m_storage) {
-            case Boolean::TRUE:
-                return Integer("1");
-            case Boolean::FALSE:
-                return Integer("0");
+    Integer Integer::cast(const VariantTypes &other) {
+        switch (other.index()) {
+            case 0 :
+                return Integer::cast(std::get<Boolean>(other));
+            case 1 :
+                return Integer::copy(std::get<Integer>(other));
+            case 2 :
+                return Integer::cast(std::get<Decimal>(other));
+            case 3 :
+                return Integer::cast(std::get<String>(other));
             default:
-                throw err::RuntimeError(other.m_position_start, other.m_position_end,
-                                        "Can not cast the boolean Value of Neutral into a number.",*other.p_context);
+                throw std::runtime_error("Error in Integer cast: Unexpected DataType");
         }
-    }
-
-    Integer Integer::cast(const dat::Decimal &other) {
-        Integer result("0");
-        result.c_IS_SIGNED = false;
-        result.c_SIZE = other.c_SIZE;
-        result.m_storage = other.m_storage >> other.c_SCALING_FACTOR;
-        result.m_is_positive = other.m_is_positive;
-        result.m_position_start = other.m_position_start;
-        result.m_position_end = other.m_position_end;
-        result.p_context = other.p_context;
-        return result;
     }
 
 

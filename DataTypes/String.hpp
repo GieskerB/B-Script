@@ -23,19 +23,23 @@ namespace dat {
 
         std::string m_storage;
 
+        explicit String(const Boolean&);
+        explicit String(const Integer&);
+        explicit String(const Decimal&);
+        explicit String(const String&);
+
     public:
 
         String() = delete;
-        String(const String&) = delete;
         String(const String&&) noexcept;
 
         explicit String(const std::string&);
 
-        static String copy(const String& other);
-
-        static String cast(const Boolean& other);
-        static String cast(const Integer& other);
-        static String cast(const Decimal& other);
+        static String cast(const Boolean& );
+        static String cast(const Integer& );
+        static String cast(const Decimal& );
+        static String copy(const String& );
+        static String cast(const VariantTypes & );
 
         void print(std::ostream& os) const override;
 

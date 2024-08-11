@@ -80,7 +80,30 @@ namespace par {
         return static_cast<short>(key);
     }
 
-    OmegaNode Parser::next_call(NextFunctionCall next_function, short key) {
+    MegaNode Parser::next_statement() {
+        MegaNode temp;
+        switch (m_current_token.c_type) {
+            case lex::VAR_KEYWORD:
+                temp = declaration();
+                break;
+            case lex::IDENTIFIER:
+                temp =  assignment();
+                break;
+            case lex::IF:
+                temp = if_block();
+                break;
+            default:
+                temp = expression();
+        }
+        if (m_current_token.c_type != lex::TokenType::END_OF_LINE) {
+            throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
+                                          "Expected ';' at end of expression.");
+        }
+        advance();
+        return temp;
+    }
+
+    MegaNode Parser::next_call(NextFunctionCall next_function, short key) {
         switch (next_function) {
             case EXPRESSION:
                 return expression(key);
@@ -96,22 +119,22 @@ namespace par {
         throw std::runtime_error("Unknown next function call in next_call().");
     }
 
-    OmegaNode
+    MegaNode
     Parser::binary_operator(NextFunctionCall next_function, const std::vector<lex::TokenType> &operator_tokens,
                             short key) {
-        OmegaNode left = next_call(next_function, key);
+        MegaNode left = next_call(next_function, key);
         while (std::find(operator_tokens.begin(), operator_tokens.end(), m_current_token.c_type) !=
                operator_tokens.end()) {
             lex::Token op_token = m_current_token;
             advance();
-            OmegaNode right = next_call(next_function, key);
-            left = OmegaNode(NodeType::BINARY, op_token, left, right);
+            MegaNode right = next_call(next_function, key);
+            left = MegaNode(NodeType::BINARY, op_token, left, right);
         }
         return left;
     }
 
-    OmegaNode Parser::unary_operator(NextFunctionCall next_function, const std::vector<lex::TokenType> &operator_tokens,
-                                     short key) {
+    MegaNode Parser::unary_operator(NextFunctionCall next_function, const std::vector<lex::TokenType> &operator_tokens,
+                                    short key) {
         lex::Token operator_token = m_current_token;
         if (std::find(operator_tokens.begin(), operator_tokens.end(), m_current_token.c_type) ==
             operator_tokens.end()) {
@@ -123,7 +146,7 @@ namespace par {
     }
 
 
-    OmegaNode Parser::declaration() {
+    MegaNode Parser::declaration() {
         short key = type_to_key(m_current_token.c_value);
 
         advance();
@@ -150,7 +173,7 @@ namespace par {
         return {NodeType::VARIABLE_ASSIGN, identifier, expr};
     }
 
-    OmegaNode Parser::assignment() {
+    MegaNode Parser::assignment() {
 
         auto identifier = m_current_token;
         auto ident_name = identifier.c_value;
@@ -170,11 +193,11 @@ namespace par {
         return {NodeType::VARIABLE_ASSIGN, identifier, expr};
     }
 
-    OmegaNode Parser::expression(short key) {
+    MegaNode Parser::expression(short key) {
         return binary_operator(NextFunctionCall::COMP_EXPR, {lex::TokenType::LOGIC_AND, lex::TokenType::LOGIC_OR}, key);
     }
 
-    OmegaNode Parser::comparison_expression(short key) {
+    MegaNode Parser::comparison_expression(short key) {
         if (m_current_token.c_type == lex::TokenType::LOGIC_NOT) {
             return unary_operator(NextFunctionCall::COMP_EXPR, {lex::TokenType::LOGIC_NOT}, key);
         } else {
@@ -185,15 +208,15 @@ namespace par {
         }
     }
 
-    OmegaNode Parser::arithmetic_expression(short key) {
+    MegaNode Parser::arithmetic_expression(short key) {
         return binary_operator(NextFunctionCall::TERM, {lex::TokenType::PLUS, lex::TokenType::MINUS}, key);
     }
 
-    OmegaNode Parser::term(short key) {
+    MegaNode Parser::term(short key) {
         return binary_operator(NextFunctionCall::FACTOR, {lex::TokenType::MULTIPLY, lex::TokenType::DIVIDE}, key);
     }
 
-    OmegaNode Parser::factor(short key) {
+    MegaNode Parser::factor(short key) {
 
         if (m_current_token.c_type == lex::TokenType::PLUS or m_current_token.c_type == lex::TokenType::MINUS) {
             return unary_operator(NextFunctionCall::FACTOR, {lex::TokenType::PLUS, lex::TokenType::MINUS}, key);
@@ -207,7 +230,7 @@ namespace par {
             return {NodeType::VARIABLE_ACCESS, temp_token};
         } else if (m_current_token.c_type == lex::TokenType::LEFT_ROUND_PARENTHESES) {
             advance();
-            OmegaNode expr = expression(key);
+            MegaNode expr = expression(key);
             if (m_current_token.c_type == lex::TokenType::RIGHT_ROUND_PARENTHESES) {
                 advance();
                 return expr;
@@ -220,6 +243,21 @@ namespace par {
                                       "Expected INT or DEC here.");
     }
 
+    MegaNode Parser::if_block() {
+        lex::Token if_token = m_current_token;
+        advance();
+        auto condition = expression();
+        advance();
+        if (m_current_token.c_type != lex::TokenType::LEFT_CURVED_PARENTHESES) {
+            throw err::InvalidSyntaxError(if_token.c_start_pos,m_current_token.c_end_pos,"Expected '{' after if statement");
+        }
+        advance();
+        std::vector<MegaNode> in_block_statements;
+        while (m_current_token.c_type != lex::TokenType::RIGHT_CURVED_PARENTHESES) {
+            in_block_statements.push_back(next_statement());
+        }
+        return {NodeType::IF_CONDITION, if_token, condition, in_block_statements};
+    }
 
     Parser::Parser(const std::vector<lex::Token> &tokens) : m_tokens(tokens), m_current_token(lex::Token::NULL_TOKEN),
                                                             m_key_map(), m_index(-1) {
@@ -227,37 +265,13 @@ namespace par {
     }
 
 
-    std::vector<OmegaNode> Parser::parse_all() {
-        std::vector<OmegaNode> statements;
+
+    std::vector<MegaNode> Parser::parse_all() {
+        std::vector<MegaNode> statements;
         while (m_index < m_tokens.size()) {
-            switch (m_current_token.c_type) {
-                case lex::VAR_KEYWORD:
-                    statements.push_back(declaration());
-                    break;
-                case lex::IDENTIFIER:
-                    statements.push_back(assignment());
-                    break;
-                default:
-                    statements.push_back(expression());
-            }
-            if (m_current_token.c_type != lex::TokenType::END_OF_LINE) {
-                throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
-                                              "Expected ';' at end of expression.");
-            }
-            advance();
+            statements.push_back(next_statement());
         }
         return statements;
-        OmegaNode abstract_syntax_tree;
-        if (m_current_token.c_type == lex::TokenType::VAR_KEYWORD) {
-            abstract_syntax_tree = declaration();
-        } else if (m_current_token.c_type == lex::TokenType::IDENTIFIER) {
-            abstract_syntax_tree = assignment();
-        } else {
-            abstract_syntax_tree = expression();
-        }
-
-
-        return {abstract_syntax_tree};
     }
 
 

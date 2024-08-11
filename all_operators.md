@@ -86,7 +86,7 @@ This file will hold a table for each datatype of this language.
 
 | To\\From | Boolean | Integer | Decimal | String |
 |:--------:|:-------:|:-------:|:-------:|:------:|
-| Boolean  |    -    |   yes   |   yes   |   no   |
-| Integer  |   yes   |    -    |   yes   |   no   |
-| Decimal  |   yes   |   yes   |    -    |   no   |
-|  String  |   yes   |   yes   |   yes   |   -    |
+| Boolean  | _copy_  |   yes   |   yes   |   no   |
+| Integer  |   yes   | _copy_  |   yes   |   no   |
+| Decimal  |   yes   |   yes   | _copy_  |   no   |
+|  String  |   yes   |   yes   |   yes   | _copy_ |

@@ -29,6 +29,7 @@ namespace dat {
         void set_context(itp::Context &);
 
         [[nodiscard]] std::pair<lex::Position, lex::Position> get_position() const;
+        [[nodiscard]] const itp::Context& get_context() const;
 
         virtual void print(std::ostream& os) const = 0;
 
