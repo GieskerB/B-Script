@@ -2,12 +2,6 @@
 #include "../Number.hpp"
 #include "../../Error/Error.hpp"
 
-#include "../Boolean.hpp"
-#include "../Integer.hpp"
-#include "../Decimal.hpp"
-#include "../String.hpp"
-#include "../Utility.hpp"
-
 namespace dat {
 
     VariantTypes Boolean::operator+(const VariantTypes &right_variant) const {
@@ -286,7 +280,7 @@ namespace dat {
                 const auto &other_boolean = std::get<Boolean>(other);
                 if (copy.m_storage == TriState::FALSE || other_boolean.m_storage == TriState::FALSE) {
                     return Boolean(TriState::FALSE);
-                };
+                }
                 if (copy.m_storage == TriState::TRUE && other_boolean.m_storage == TriState::TRUE) {
                     return Boolean(TriState::TRUE);
                 }
@@ -310,7 +304,7 @@ namespace dat {
                 const auto &other_boolean = std::get<Boolean>(other);
                 if (copy.m_storage == TriState::TRUE || other_boolean.m_storage == TriState::TRUE) {
                     return Boolean(TriState::TRUE);
-                };
+                }
                 if (copy.m_storage == TriState::FALSE && other_boolean.m_storage == TriState::FALSE) {
                     return Boolean(TriState::FALSE);
                 }

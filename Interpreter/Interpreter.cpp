@@ -41,8 +41,7 @@ namespace itp {
     }
 
     VariantTypes Interpreter::visit_if_condition_node(const par::MegaNode &node, itp::Context &context) {
-        auto condition = node.get_left();
-        dat::Boolean aaa = dat::Boolean::cast(visit(condition,context));
+
     }
 
     VariantTypes Interpreter::visit_variable_access_node(const par::MegaNode &node, Context &context) {

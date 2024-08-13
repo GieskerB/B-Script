@@ -25,7 +25,6 @@ namespace dat {
 
         static std::pair<std::string, std::string> slip(const std::string &);
         void fit_string(std::pair<std::string, std::string> &);
-        bool has_decimal_places() const;
 
         explicit Decimal(const Boolean&);
         explicit Decimal(const Integer&);

@@ -40,7 +40,6 @@ namespace dat {
 
     Boolean::Boolean(const Boolean &&other) noexcept: DataType(std::move(other)), m_storage(other.m_storage) {}
 
-
     Boolean Boolean::copy(const Boolean &other) {
         return Boolean(other);
     }
@@ -69,7 +68,6 @@ namespace dat {
         }
     }
 
-
     std::string Boolean::to_string() const {
         switch (m_storage) {
             case TRUE:
@@ -78,8 +76,9 @@ namespace dat {
                 return "false";
             case NEUTRAL:
                 return "neutral";
+            default:
+                throw std::runtime_error("Unknown Tri-State in Boolean::to_string");
         }
-
     }
 
     void Boolean::print(std::ostream &os) const {

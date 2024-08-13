@@ -13,14 +13,18 @@ namespace dat {
     VariantTypes Decimal::operator+(const VariantTypes &right_variant) const {
         Decimal left = Decimal::copy(*this);
         switch (right_variant.index()) {
-            case 0: /* === Boolean === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant).second,
-                                              "Operators not implemented.");
+            case 0: /* === Boolean === */ {
+                // Decimal + Boolean -> Decimal + Decimal = Decimal
+                const VariantTypes &right_casted = Decimal::cast(std::get<Boolean>(right_variant));
+                return left + std::move(right_casted);
+            }
             case 1: /* === Integer === */ {
-                const auto &other_integer = std::get<Integer>(right_variant);
-                return other_integer + std::move(left);
+                // Decimal + Integer -> Decimal + Decimal = Decimal
+                const VariantTypes &right_casted = Decimal::cast(std::get<Integer>(right_variant));
+                return left + std::move(right_casted);
             }
             case 2: /* === Decimal === */ {
+                // Decimal + Decimal = Decimal
                 const auto &other_decimal = std::get<Decimal>(right_variant);
                 const char SCALING_DELTA = static_cast<char>(left.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
 
@@ -38,35 +42,35 @@ namespace dat {
 
             case 3: /* === String === */
                 throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
-                                                      .second,
-                                              "Operators not implemented.");
+                        .second, "Operators not implemented.");
             default:
                 throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
         }
     }
 
-    VariantTypes Decimal::operator-(const VariantTypes &other) const {
-        Decimal copy = Decimal::copy(*this);
-        switch (other.index()) {
-            case 0: /* === Boolean === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
-                                              "Operators not implemented.");
+    VariantTypes Decimal::operator-(const VariantTypes &right_variant) const {
+        Decimal left = Decimal::copy(*this);
+        switch (right_variant.index()) {
+            case 0: /* === Boolean === */ {
+                // Decimal - Boolean -> Decimal - Decimal = Decimal
+                const VariantTypes &right_casted = Decimal::cast(right_variant);
+                return left - std::move(right_casted);
+            }
             case 1: /* === Integer === */ {
-                const auto &other_integer = std::get<Integer>(other);
-                return other_integer - std::move(copy);
+                // Decimal - Integer -> Decimal - Decimal = Decimal
+                const VariantTypes &right_casted = Decimal::cast(right_variant);
+                return left - std::move(right_casted);
             }
             case 2: /* === Decimal === */ {
-                auto other_decimal = Decimal::copy(std::get<Decimal>(other));
-                other_decimal.m_is_positive = !other_decimal.m_is_positive;
-                return copy + std::move(other_decimal);
+                // Decimal - Decimal -> Decimal + (-Decimal) = Decimal
+                const auto &other_decimal = Decimal::copy(std::get<Decimal>(right_variant));
+                return left + (-other_decimal);
             }
-
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
-                                                      .second,
-                                              "Operators not implemented.");
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
+                        .second, "Operator not implemented.");
             default:
-                throw std::runtime_error("Unexpected type of other in operator.cpp");
+                throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
         }
     }
 

@@ -71,10 +71,6 @@ namespace dat {
 
     }
 
-    bool Decimal::has_decimal_places() const {
-        return ((1l << c_SCALING_FACTOR) - 1) & m_storage;
-    }
-
 
     Decimal::Decimal(const Boolean &other) : Number(Size::BYTE, true), c_SCALING_FACTOR(0) {
         switch (other.m_storage) {
@@ -169,7 +165,6 @@ namespace dat {
     Decimal Decimal::cast(const dat::String & other) {
         return Decimal(other);
     }
-
 
     Decimal Decimal::cast(const VariantTypes &other) {
         switch (other.index()) {
