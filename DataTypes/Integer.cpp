@@ -12,13 +12,13 @@ namespace dat {
 
     Integer::Integer(const Boolean &other) : Number(Size::BYTE, true), c_IS_SIGNED(false) {
         switch (other.m_storage) {
-            case Boolean::TRUE:
+            case Boolean::TriState::TRUE:
                 m_storage = 1;
                 break;
-            case Boolean::FALSE:
+            case Boolean::TriState::FALSE:
                 m_storage = 0;
                 break;
-            case Boolean::NEUTRAL: {
+            case Boolean::TriState::NEUTRAL: {
                 auto pos = other.get_position();
                 throw err::RuntimeError(pos.first, pos.second, "Can not convert value 'neutral' into a number",
                                         other.get_context());

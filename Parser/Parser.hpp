@@ -27,7 +27,7 @@ namespace par {
 
         lex::Token advance();
 
-        static short type_to_key(const std::string&);
+        static short variable_type_to_extra(const std::string &var_type);
 
         MegaNode next_statement();
 

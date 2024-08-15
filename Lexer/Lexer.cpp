@@ -75,16 +75,19 @@ namespace lex {
 
     Token Lexer::make_string_token() {
         Position start = Position(m_pos);
-        advance(); // Skip the "
         std::string string;
-        while (m_current_char != '\0' and m_current_char != '"') {
+        do {
             string.push_back(m_current_char);
             advance();
-        }
-        if (m_current_char != '\0') {
+        }while (m_current_char != '\0' and m_current_char != '"');
+
+        if (m_current_char == '"') {
+            // Put in the last "
+            string.push_back(m_current_char);
+            advance();
+        } else {
             throw err::InvalidSyntaxError(start, m_pos, "Missing '\"' to close to string.");
         }
-        advance(); // Skip the "
         return Token{TokenType::VALUE, start, m_pos, string};
     }
 

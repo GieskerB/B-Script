@@ -17,8 +17,7 @@ namespace par {
 
     short get_number_from_back(const std::string &string, int end_index) {
         std::string result_number;
-        for (int i{end_index};
-             i > 0 and string[i] >= '0' and string[i] <= '9'; --i) {
+        for (int i{end_index}; i > 0 and string[i] >= '0' and string[i] <= '9'; --i) {
             result_number += string[i];
         }
         if (result_number.empty()) return -1;
@@ -26,58 +25,32 @@ namespace par {
         return static_cast<short>(std::stoi(result_number));
     }
 
-    short Parser::type_to_key(const std::string &var_type_name) {
-        /*
-         * Idea is to convert any variable type into an easy-to-read bit sequenz.
-         * e: extra
-         * s: Size
-         * t: variable type
-         *
-         * Format:
-         * eeeeeeee sssstttt
-         */
-
-        int key{0};
-        short size_number, extra_number;
-        switch (var_type_name[0]) {
-            case 'u':
-                key |= (1 << 8); // extra = 1 (unsigned)
-            case 'i':
-                size_number = get_number_from_back(var_type_name, static_cast<int>(var_type_name.size() - 1));
-                if (size_number == -1) size_number = 32; // default size = int [32]
-                size_number /= 8; // Convert form bits to bytes
-                size_number <<= 4; // move to 'ssss' segment
-                key |= size_number; // size = byte | short | int | long
-                key |= 1; // type = int
-                break;
-            case 'd':
-                size_number = get_number_from_back(var_type_name, static_cast<int>(var_type_name.size() - 1));
-                if (size_number == -1) size_number = 32; // default size = int [32]
-                if (var_type_name.find(':') != std::string::npos) {
-                    extra_number = get_number_from_back(var_type_name, static_cast<int>(var_type_name.find(':') - 1));
-                    auto swap = extra_number;
-                    extra_number = size_number;
-                    size_number = swap;
-                } else {
-                    extra_number = static_cast<short>(size_number / 2);
+    short Parser::variable_type_to_extra(const std::string &var_type) {
+        switch (var_type[0]) {
+            case 'b': // bool
+            case 's': // str
+            case 'u': // uint__
+            case 'i': // int__
+                // Neither as an impact on storing vs. creating a literal
+                return -1;
+            case 'd': { // dec__(:__)
+                // If user writes a dec variable, there are three possibilities:
+                // 1. only base type 'dec'
+                if (var_type == "dec") {
+                    return 16; // Since default size = 32 Bits -> scale factor will be half.
                 }
-                size_number /= 8;  // Convert form bits to bytes
-                size_number <<= 4; // move to 'ssss' segment
-                key |= size_number; // size = byte | short | int | long
-                extra_number <<= 8; // move to 'eeeeeeee' segment
-                key |= extra_number; // extra = scaling factor
-                key |= 2; // type = dec
-                break;
-            case 'b':
-                key |= 3; // type = bool
-                break;
-            case 's':
-                key |= 4; // type = bool
-                break;
+                if (var_type.find(':') == std::string::npos) {
+                    // 2. only size definition
+                    return static_cast<short> ( // Again: Default scale factor is half of size.
+                            get_number_from_back(var_type, static_cast<int>(var_type.size() - 1)) / 2);
+                } else {
+                    // 3. both size  and scale factor definition
+                    return get_number_from_back(var_type, static_cast<int>(var_type.size() - 1));
+                }
+            }
             default:
-                throw std::runtime_error("Unknown variable type name in type_to_key()");
+                throw std::runtime_error("Unknown variable type name in variable_type_to_extra()");
         }
-        return static_cast<short>(key);
     }
 
     MegaNode Parser::next_statement() {
@@ -87,7 +60,7 @@ namespace par {
                 temp = declaration();
                 break;
             case lex::IDENTIFIER:
-                temp =  assignment();
+                temp = assignment();
                 break;
             case lex::IF:
                 temp = if_block();
@@ -103,51 +76,51 @@ namespace par {
         return temp;
     }
 
-    MegaNode Parser::next_call(NextFunctionCall next_function, short key) {
+    MegaNode Parser::next_call(NextFunctionCall next_function, short extra) {
         switch (next_function) {
             case EXPRESSION:
-                return expression(key);
+                return expression(extra);
             case COMP_EXPR:
-                return comparison_expression(key);
+                return comparison_expression(extra);
             case ARITH_EXPR:
-                return arithmetic_expression(key);
+                return arithmetic_expression(extra);
             case TERM:
-                return term(key);
+                return term(extra);
             case FACTOR:
-                return factor(key);
+                return factor(extra);
         }
         throw std::runtime_error("Unknown next function call in next_call().");
     }
 
     MegaNode
     Parser::binary_operator(NextFunctionCall next_function, const std::vector<lex::TokenType> &operator_tokens,
-                            short key) {
-        MegaNode left = next_call(next_function, key);
+                            short extra) {
+        MegaNode left = next_call(next_function, extra);
         while (std::find(operator_tokens.begin(), operator_tokens.end(), m_current_token.c_type) !=
                operator_tokens.end()) {
             lex::Token op_token = m_current_token;
             advance();
-            MegaNode right = next_call(next_function, key);
+            MegaNode right = next_call(next_function, extra);
             left = MegaNode(NodeType::BINARY, op_token, left, right);
         }
         return left;
     }
 
     MegaNode Parser::unary_operator(NextFunctionCall next_function, const std::vector<lex::TokenType> &operator_tokens,
-                                    short key) {
+                                    short extra) {
         lex::Token operator_token = m_current_token;
         if (std::find(operator_tokens.begin(), operator_tokens.end(), m_current_token.c_type) ==
             operator_tokens.end()) {
             throw std::runtime_error("Unexpected Token in unary_operator()");
         }
         advance();
-        auto right = next_call(next_function, key);
+        auto right = next_call(next_function, extra);
         return {NodeType::UNARY, operator_token, right};
     }
 
 
     MegaNode Parser::declaration() {
-        short key = type_to_key(m_current_token.c_value);
+        short extra = variable_type_to_extra(m_current_token.c_value);
 
         advance();
         if (m_current_token.c_type != lex::TokenType::IDENTIFIER) {
@@ -162,14 +135,14 @@ namespace par {
                                            "Redefinition of variable '" + ident_name +
                                            "'.");
         }
-        m_key_map[ident_name] = key;
+        m_key_map[ident_name] = extra;
         advance();
         if (m_current_token.c_type != lex::TokenType::EQUALS) {
             throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
                                           "Expected '=' here.");
         }
         advance();
-        auto expr = expression(key);
+        auto expr = expression(extra);
         return {NodeType::VARIABLE_ASSIGN, identifier, expr};
     }
 
@@ -182,55 +155,55 @@ namespace par {
                                            "Variable '" + ident_name +
                                            "' is not defined.");
         }
-        short key = m_key_map[ident_name];
+        short extra = m_key_map[ident_name];
         advance();
         if (m_current_token.c_type != lex::TokenType::EQUALS) {
             throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
                                           "Expected '=' here.");
         }
         advance();
-        auto expr = expression(key);
+        auto expr = expression(extra);
         return {NodeType::VARIABLE_ASSIGN, identifier, expr};
     }
 
-    MegaNode Parser::expression(short key) {
-        return binary_operator(NextFunctionCall::COMP_EXPR, {lex::TokenType::LOGIC_AND, lex::TokenType::LOGIC_OR}, key);
+    MegaNode Parser::expression(short extra) {
+        return binary_operator(NextFunctionCall::COMP_EXPR, {lex::TokenType::LOGIC_AND, lex::TokenType::LOGIC_OR}, extra);
     }
 
-    MegaNode Parser::comparison_expression(short key) {
+    MegaNode Parser::comparison_expression(short extra) {
         if (m_current_token.c_type == lex::TokenType::LOGIC_NOT) {
-            return unary_operator(NextFunctionCall::COMP_EXPR, {lex::TokenType::LOGIC_NOT}, key);
+            return unary_operator(NextFunctionCall::COMP_EXPR, {lex::TokenType::LOGIC_NOT}, extra);
         } else {
             return binary_operator(NextFunctionCall::ARITH_EXPR,
                                    {lex::TokenType::DOUBLE_EQUALS, lex::TokenType::NOT_EQUALS,
                                     lex::TokenType::LESS_THEN, lex::TokenType::LESS_THEN_OR_EQUALS,
-                                    lex::TokenType::GREATER_THEN, lex::TokenType::GREATER_THEN_OR_EQUALS,}, key);
+                                    lex::TokenType::GREATER_THEN, lex::TokenType::GREATER_THEN_OR_EQUALS,}, extra);
         }
     }
 
-    MegaNode Parser::arithmetic_expression(short key) {
-        return binary_operator(NextFunctionCall::TERM, {lex::TokenType::PLUS, lex::TokenType::MINUS}, key);
+    MegaNode Parser::arithmetic_expression(short extra) {
+        return binary_operator(NextFunctionCall::TERM, {lex::TokenType::PLUS, lex::TokenType::MINUS}, extra);
     }
 
-    MegaNode Parser::term(short key) {
-        return binary_operator(NextFunctionCall::FACTOR, {lex::TokenType::MULTIPLY, lex::TokenType::DIVIDE}, key);
+    MegaNode Parser::term(short extra) {
+        return binary_operator(NextFunctionCall::FACTOR, {lex::TokenType::MULTIPLY, lex::TokenType::DIVIDE}, extra);
     }
 
-    MegaNode Parser::factor(short key) {
+    MegaNode Parser::factor(short extra) {
 
         if (m_current_token.c_type == lex::TokenType::PLUS or m_current_token.c_type == lex::TokenType::MINUS) {
-            return unary_operator(NextFunctionCall::FACTOR, {lex::TokenType::PLUS, lex::TokenType::MINUS}, key);
+            return unary_operator(NextFunctionCall::FACTOR, {lex::TokenType::PLUS, lex::TokenType::MINUS}, extra);
         } else if (m_current_token.c_type == lex::TokenType::VALUE) {
             lex::Token temp_token = m_current_token;
             advance();
-            return {NodeType::VALUE, temp_token, key};
+            return {NodeType::VALUE, temp_token, extra};
         } else if (m_current_token.c_type == lex::TokenType::IDENTIFIER) {
             lex::Token temp_token = m_current_token;
             advance();
             return {NodeType::VARIABLE_ACCESS, temp_token};
         } else if (m_current_token.c_type == lex::TokenType::LEFT_ROUND_PARENTHESES) {
             advance();
-            MegaNode expr = expression(key);
+            MegaNode expr = expression(extra);
             if (m_current_token.c_type == lex::TokenType::RIGHT_ROUND_PARENTHESES) {
                 advance();
                 return expr;
@@ -249,7 +222,8 @@ namespace par {
         auto condition = expression();
         advance();
         if (m_current_token.c_type != lex::TokenType::LEFT_CURVED_PARENTHESES) {
-            throw err::InvalidSyntaxError(if_token.c_start_pos,m_current_token.c_end_pos,"Expected '{' after if statement");
+            throw err::InvalidSyntaxError(if_token.c_start_pos, m_current_token.c_end_pos,
+                                          "Expected '{' after if statement");
         }
         advance();
         std::vector<MegaNode> in_block_statements;
@@ -264,8 +238,6 @@ namespace par {
         advance();
     }
 
-
-
     std::vector<MegaNode> Parser::parse_all() {
         std::vector<MegaNode> statements;
         while (m_index < m_tokens.size()) {
@@ -273,6 +245,5 @@ namespace par {
         }
         return statements;
     }
-
 
 } // par

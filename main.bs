@@ -1,2 +1,1 @@
-bool do_run = true;
-int a = 3;
+bool b = 3 == 3.12;

@@ -7,6 +7,7 @@
 #include <array>
 
 #include "Token.hpp"
+#include "../DataTypes/Boolean.hpp"
 #include "../DataTypes/Number.hpp"
 #include "Position.hpp"
 
@@ -38,9 +39,9 @@ namespace lex {
         }
 
          void generate_constants_keywords(){
-            CONSTANTS_KEYWORDS.emplace_back("true");
-            CONSTANTS_KEYWORDS.emplace_back("false");
-            CONSTANTS_KEYWORDS.emplace_back("neutral");
+            CONSTANTS_KEYWORDS.emplace_back( dat::Boolean::TRUE);
+            CONSTANTS_KEYWORDS.emplace_back( dat::Boolean::FALSE);
+            CONSTANTS_KEYWORDS.emplace_back( dat::Boolean::NEUTRAL);
         }
 
         void generate_build_in_keywords() {

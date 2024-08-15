@@ -66,7 +66,8 @@ namespace itp {
 
     VariantTypes Interpreter::visit_value_node(const par::MegaNode &node, Context &context) {
         if (node.get_token().c_type == lex::TokenType::VALUE) {
-            auto result = dat::create_form_key(node.get_token().c_value, node.get_variable_key());
+            auto result = dat::create_datatype_form_string_and_extra(node.get_token().c_value,
+                                                                     node.get_variable_key());
 
             auto start = node.get_start_position();
             auto end = node.get_end_position();

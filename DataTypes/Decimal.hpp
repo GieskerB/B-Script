@@ -34,7 +34,7 @@ namespace dat {
     public:
         Decimal() = delete;
         Decimal(const Decimal &&) noexcept ;
-        explicit Decimal(std::string, Size = INTEGER, unsigned char = 16);
+        explicit Decimal(std::string, Size = LONG, unsigned char = 16);
 
         static Decimal cast(const Boolean& );
         static Decimal cast(const Integer&);

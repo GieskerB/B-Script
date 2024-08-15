@@ -22,7 +22,7 @@ namespace dat {
         friend class Decimal;
         friend class String;
 
-        enum TriState: char {
+        enum class TriState: char {
             TRUE = 1, FALSE = 0, NEUTRAL = -1
         };
 
@@ -37,6 +37,10 @@ namespace dat {
         explicit Boolean(bool);
 
     public:
+
+        static constexpr std::string TRUE{"true"};
+        static constexpr std::string FALSE{"false"};
+        static constexpr std::string NEUTRAL{"neutral"};
 
         Boolean() = delete;
         Boolean(const Boolean&&) noexcept;

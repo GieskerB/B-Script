@@ -6,6 +6,19 @@
 #include "Interpreter/Context.hpp"
 
 int main() {
+
+    for( int temp: dat::CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS) {
+        std::cout << temp << " ";
+    }
+    std::cout << "\n";
+    for(unsigned long long temp: dat::CONSTANTS.MAX_NUMBER_LIMIT) {
+        std::cout << temp << " ";
+    }
+    std::cout << "\n";
+    for(const auto & temp: dat::CONSTANTS.MAX_NUMBER_LIMIT_STRING) {
+        std::cout << temp << " ";
+    }
+
     try {
         // Work in 3 steps per file:
         // 1. Read content form file and let the lexer convert it into a stream of tokens:

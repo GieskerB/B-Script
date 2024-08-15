@@ -2,6 +2,7 @@
 #include <vector>
 #include <sstream>
 #include <ranges>
+#include <algorithm>
 
 #include "Utility.hpp"
 
@@ -59,25 +60,30 @@ namespace dat {
         return result;
     }
 
-    VariantTypes create_form_key(const std::string &value, short key) {
-        short type = key & 0b1111;
-        short size = (key >> 4) & 0b1111;
-        short extra = (key >> 8) & 0b11111111;
+    VariantTypes create_datatype_form_string_and_extra(const std::string &string, short extra) {
+        if(string[0]  == '"') {
+            return String(string);
+        } else if(string == Boolean::TRUE or string ==  Boolean::FALSE or string ==  Boolean::NEUTRAL){
+            return Boolean(string);
+        }
 
-        if (type == 1) {
-            VariantTypes res = Integer{value, static_cast<Size>(size), extra != 0};
-            return Integer{value, static_cast<Size>(size), extra != 0};
-        } else if (type == 2) {
-            return Decimal(value, static_cast<Size>(size), extra);
-        } else if (type == 3) {
-            return Boolean(value);
-        } else if (type == 4) {
-            return String(value);
+        bool has_decimal_point = std::find(string.begin(), string.end(), '.') != string.end();
+        if(!has_decimal_point) {
+            return Integer(string);
         } else {
-            if (value.find('.') == std::string::npos) {
-                return Integer(value);
+            if(extra != -1) {
+                return Decimal(string, Size::LONG, extra);
+            }
+            std::stringstream string_stream{string};
+            std::pair<std::string,std::string> split;
+            std::getline(string_stream, split.first, '.');
+            std::getline(string_stream, split.second);
+            if( split.first.size() + split.second.size() <= 64) {
+                // TODO get right legth from constatns!
+                return Decimal(string, Size::LONG, 0);
             } else {
-                return Decimal(value);
+                // TODO reduce accuracy on either side to make it fit
+                return Decimal(string, Size::LONG, 0);
             }
         }
     }

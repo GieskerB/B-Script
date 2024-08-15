@@ -36,7 +36,7 @@ namespace dat {
      * A struct to store some global constants
      */
     template<unsigned char N>
-    Constants<N>::Constants() : INFORMATION_LIMIT_PER_NUMBER_OF_BITS() {
+    Constants<N>::Constants() : INFORMATION_LIMIT_PER_NUMBER_OF_BITS{0} {
         uint64 temp_value = 1ULL;
         for (unsigned char i = 0; i != N; ++i) {
             INFORMATION_LIMIT_PER_NUMBER_OF_BITS[i] = std::ceil(i / std::log2f(10.f));

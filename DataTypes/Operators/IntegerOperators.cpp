@@ -9,12 +9,12 @@ namespace dat {
         switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
                 // Integer + Boolean -> Integer + Integer = Integer
-                const VariantTypes &right_casted = Integer::cast(std::get<Boolean>(right_variant));
+                const VariantTypes &right_casted = Integer::cast(right_variant);
                 return left + std::move(right_casted);
             }
             case 1: /* === Integer === */ {
                 // Integer + Integer = Integer
-                const auto &other_integer = (std::get<Integer>(right_variant));
+                const auto &other_integer = std::get<Integer>(right_variant);
                 auto result = storage_addition(left.m_storage, other_integer.m_storage, left.m_is_positive,
                                                other_integer.m_is_positive);
                 left.m_storage = result.first;
@@ -28,7 +28,6 @@ namespace dat {
                 const auto &right = std::get<Decimal>(right_variant);
                 return left_casted + std::move(right);
             }
-
             case 3: /* === String === */
                 throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                         .second, "Operator not implemented.");
@@ -43,7 +42,7 @@ namespace dat {
         switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
                 // Integer - Boolean -> Integer - Integer = Integer
-                const VariantTypes &right_casted = Integer::cast(std::get<Boolean>(right_variant));
+                const VariantTypes &right_casted = Integer::cast(right_variant);
                 return left - std::move(right_casted);
             }
             case 1: /* === Integer === */ {
@@ -70,7 +69,7 @@ namespace dat {
         switch (right_variant.index()) {
             case 0: /* === Boolean === */{
                 // Integer - Boolean -> Integer - Integer = Integer
-                const VariantTypes &right_casted = Integer::cast(std::get<Boolean>(right_variant));
+                const VariantTypes &right_casted = Integer::cast(right_variant);
                 return left * std::move(right_casted);
             }
             case 1: /* === Integer === */ {
@@ -102,7 +101,7 @@ namespace dat {
         switch (right_variant.index()) {
             case 0: /* === Boolean === */{
                 // Integer * Boolean -> Integer * Integer = Integer
-                const VariantTypes &right_casted = Integer::cast(std::get<Boolean>(right_variant));
+                const VariantTypes &right_casted = Integer::cast(right_variant);
                 return left * std::move(right_casted);
             }
             case 1: /* === Integer === */ {
@@ -166,7 +165,7 @@ namespace dat {
             case 2: /* === Decimal === */ {
                 // Integer < Decimal -> Decimal < Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
-                const auto &left = Decimal::cast(right_variant);
+                const auto &left = Decimal::cast(*this);
 
                 return left < std::move(right);
             }
@@ -191,7 +190,7 @@ namespace dat {
             case 2: /* === Decimal === */ {
                 // Integer > Decimal -> Decimal > Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
-                const auto &left = Decimal::cast(right_variant);
+                const auto &left = Decimal::cast(*this);
 
                 return left > std::move(right);
             }
@@ -216,7 +215,7 @@ namespace dat {
             case 2: /* === Decimal === */ {
                 // Integer <= Decimal -> Decimal <= Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
-                const auto &left = Decimal::cast(right_variant);
+                const auto &left = Decimal::cast(*this);
 
                 return left <= std::move(right);
             }
@@ -241,7 +240,7 @@ namespace dat {
             case 2: /* === Decimal === */ {
                 // Integer >= Decimal -> Decimal >= Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
-                const auto &left = Decimal::cast(right_variant);
+                const auto &left = Decimal::cast(*this);
 
                 return left >= std::move(right);
             }
@@ -266,7 +265,7 @@ namespace dat {
             case 2: /* === Decimal === */ {
                 // Integer == Decimal -> Decimal == Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
-                const auto &left = Decimal::cast(right_variant);
+                const auto &left = Decimal::cast(*this);
 
                 return left == std::move(right);
             }
@@ -291,7 +290,7 @@ namespace dat {
             case 2: /* === Decimal === */ {
                 // Integer != Decimal -> Decimal != Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
-                const auto &left = Decimal::cast(right_variant);
+                const auto &left = Decimal::cast(*this);
 
                 return left != std::move(right);
             }

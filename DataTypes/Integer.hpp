@@ -36,7 +36,7 @@ namespace dat {
 
         Integer() = delete;
         Integer(const Integer &&) noexcept;
-        explicit Integer(std::string, Size = INTEGER, bool = false);
+        explicit Integer(std::string, Size = LONG, bool = false);
 
         static Integer cast(const Boolean& );
         static Integer copy(const Integer& );

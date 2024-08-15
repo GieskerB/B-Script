@@ -74,88 +74,93 @@ namespace dat {
         }
     }
 
-    VariantTypes Decimal::operator*(const VariantTypes &other) const {
-        Decimal copy = Decimal::copy(*this);
-        switch (other.index()) {
-            case 0: /* === Boolean === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
-                                              "Operators not implemented.");
+    VariantTypes Decimal::operator*(const VariantTypes &right_variant) const {
+        Decimal left = Decimal::copy(*this);
+        switch (right_variant.index()) {
+            case 0: /* === Boolean === */ {
+                // Decimal * Boolean -> Decimal * Decimal = Decimal
+                const VariantTypes &right_casted = Decimal::cast(right_variant);
+                return left * std::move(right_casted);
+            }
             case 1: /* === Integer === */ {
-                const auto &other_integer = std::get<Integer>(other);
-                return other_integer * std::move(copy);
+                // Decimal * Integer -> Decimal * Decimal = Decimal
+                const VariantTypes &right_casted = Decimal::cast(right_variant);
+                return left * std::move(right_casted);
             }
             case 2: /* === Decimal === */ {
-                const auto &other_decimal = std::get<Decimal>(other);
-                const char SCALING_DELTA = static_cast<char>(copy.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
+                // Decimal * Decimal = Decimal
+                const auto &other_decimal = std::get<Decimal>(right_variant);
+                const char SCALING_DELTA = static_cast<char>(left.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
 
-                auto shifted_storage = shift_to_equal_size(copy.m_storage, other_decimal.m_storage, SCALING_DELTA);
+                auto shifted_storage = shift_to_equal_size(left.m_storage, other_decimal.m_storage, SCALING_DELTA);
 
-                copy.m_is_positive ^= ~other_decimal.m_is_positive;
+                left.m_is_positive ^= ~other_decimal.m_is_positive;
 
                 shifted_storage.first *= shifted_storage.second;
 
                 if (SCALING_DELTA > 0) {
-                    shifted_storage.first >>= copy.c_SCALING_FACTOR;
+                    shifted_storage.first >>= left.c_SCALING_FACTOR;
                 } else {
                     shifted_storage.first >>= other_decimal.c_SCALING_FACTOR;
                 }
 
-                copy.m_storage = unshift_form_equal_size(shifted_storage.first, SCALING_DELTA);
-                copy.clap_to_size();
-                return copy;
+                left.m_storage = unshift_form_equal_size(shifted_storage.first, SCALING_DELTA);
+                left.clap_to_size();
+                return left;
             }
 
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
-                                                      .second,
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant).second,
                                               "Operators not implemented.");
             default:
                 throw std::runtime_error("Unexpected type of other in operator.cpp");
         }
     }
 
-    VariantTypes Decimal::operator/(const VariantTypes &other) const {
-        Decimal copy = Decimal::copy(*this);
-        switch (other.index()) {
-            case 0: /* === Boolean === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other).second,
-                                              "Operators not implemented.");
+    VariantTypes Decimal::operator/(const VariantTypes &right_variant) const {
+        Decimal left = Decimal::copy(*this);
+        switch (right_variant.index()) {
+            case 0: /* === Boolean === */{
+                // Decimal / Boolean -> Decimal / Decimal = Decimal
+                const VariantTypes &right_casted = Decimal::cast(right_variant);
+                return left * std::move(right_casted);
+            }
             case 1: /* === Integer === */ {
-                const auto &other_integer = std::get<Integer>(other);
-                return other_integer * std::move(copy);
+                // Decimal / Integer -> Decimal / Decimal = Decimal
+                const VariantTypes &right_casted = Decimal::cast(right_variant);
+                return left * std::move(right_casted);
             }
             case 2: /* === Decimal === */ {
-                const auto &other_decimal = std::get<Decimal>(other);
+                const auto &other_decimal = std::get<Decimal>(right_variant);
                 if (other_decimal.is_zero()) {
                     throw err::RuntimeError(other_decimal.m_position_start, other_decimal.m_position_end,
                                             "Division by 0 is not allowed!", *other_decimal.p_context);
                 }
 
-                const char SCALING_DELTA = static_cast<char>(copy.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
+                const char SCALING_DELTA = static_cast<char>(left.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
 
-                auto shifted_storage = shift_to_equal_size(copy.m_storage, other_decimal.m_storage, SCALING_DELTA);
+                auto shifted_storage = shift_to_equal_size(left.m_storage, other_decimal.m_storage, SCALING_DELTA);
 
-                copy.m_is_positive ^= ~other_decimal.m_is_positive;
+                left.m_is_positive ^= ~other_decimal.m_is_positive;
 
                 if (SCALING_DELTA > 0) {
-                    shifted_storage.first <<= copy.c_SCALING_FACTOR;
+                    shifted_storage.first <<= left.c_SCALING_FACTOR;
                 } else {
                     shifted_storage.first <<= other_decimal.c_SCALING_FACTOR;
                 }
 
                 shifted_storage.first /= shifted_storage.second;
 
-                copy.m_storage = unshift_form_equal_size(shifted_storage.first, SCALING_DELTA);
-                copy.clap_to_size();
-                return copy;
+                left.m_storage = unshift_form_equal_size(shifted_storage.first, SCALING_DELTA);
+                left.clap_to_size();
+                return left;
             }
-
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                                                       .second,
                                               "Operators not implemented.");
             default:
-                throw std::runtime_error("Unexpected type of other in operator.cpp");
+                throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
         }
     }
 
@@ -174,29 +179,29 @@ namespace dat {
         throw std::runtime_error("Unexpected type of other in operator.cpp");
     }
 
-    Boolean Decimal::operator<(const VariantTypes &other) const {
-        Decimal copy = Decimal::copy(*this);
-        switch (other.index()) {
+    Boolean Decimal::operator<(const VariantTypes &right_variant) const {
+        Decimal left = Decimal::copy(*this);
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                         .second, "Operators not implemented.");
             case 1: /* === Integer === */ {
-                const auto &other_integer = std::get<Integer>(other);
-                const auto &copy_casted = Integer::cast(copy);
-                return other < std::move(copy_casted);
+                // Decimal < Integer -> Decimal < Decimal = Boolean
+                const auto &right = std::get<Integer>(right_variant);
+                return left < std::move(right);
             }
             case 2: /* === Decimal === */ {
-                const auto &other_decimal = std::get<Decimal>(other);
-                const char SCALING_DELTA = static_cast<char>(copy.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
-                auto shifted_storage = shift_to_equal_size(copy.m_storage, other_decimal.m_storage, SCALING_DELTA);
+                const auto &other_decimal = std::get<Decimal>(right_variant);
+                const char SCALING_DELTA = static_cast<char>(left.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
+                auto shifted_storage = shift_to_equal_size(left.m_storage, other_decimal.m_storage, SCALING_DELTA);
 
-                auto comp = storage_comparison(shifted_storage.first, shifted_storage.second, copy.m_is_positive,
+                auto comp = storage_comparison(shifted_storage.first, shifted_storage.second, left.m_is_positive,
                                                other_decimal.m_is_positive);
                 return Boolean(std::get<0>(comp));
             }
             default:
-                throw std::runtime_error("Unexpected type of other in operator.cpp");
+                throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
         }
     }
 

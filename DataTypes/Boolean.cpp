@@ -27,11 +27,11 @@ namespace dat {
 
     Boolean::Boolean(const std::string &value) : DataType(lex::Position::NULL_POSITION, lex::Position::NULL_POSITION,
                                                           nullptr) {
-        if (value == "true") {
+        if (value ==  Boolean::TRUE) {
             m_storage = TriState::TRUE;
-        } else if (value == "false") {
+        } else if (value ==  Boolean::FALSE) {
             m_storage = TriState::FALSE;
-        } else if (value == "neutral") {
+        } else if (value ==  Boolean::NEUTRAL) {
             m_storage = TriState::NEUTRAL;
         } else {
             throw std::runtime_error("Invalid boolean format: " + value);
@@ -70,12 +70,12 @@ namespace dat {
 
     std::string Boolean::to_string() const {
         switch (m_storage) {
-            case TRUE:
-                return "true";
-            case FALSE:
-                return "false";
-            case NEUTRAL:
-                return "neutral";
+            case TriState::TRUE:
+                return  Boolean::TRUE;
+            case TriState::FALSE:
+                return  Boolean::FALSE;
+            case TriState::NEUTRAL:
+                return  Boolean::NEUTRAL;
             default:
                 throw std::runtime_error("Unknown Tri-State in Boolean::to_string");
         }
