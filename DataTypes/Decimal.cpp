@@ -11,13 +11,12 @@ namespace dat {
      * If point does not exist return -1
      */
     int find_decimal_point(const std::string &string) {
-        int point_index = 0;
+        int point_index{0};
         while (point_index < string.size()) {
             if (string[point_index] == '.') {
                 return point_index;
-            } else {
-                ++point_index;
             }
+            ++point_index;
         }
         return -1;
     }
@@ -25,9 +24,9 @@ namespace dat {
     /*
      * Another helper function for fast computation of powers with base ten.
      */
-    uint64 pow_base_10(int exponent) {
+    uint64 pow_base_10(size_t exponent) {
         uint64 base = 1;
-        for (int i{0}; i < exponent; ++i) {
+        for (size_t i{0}; i < exponent; ++i) {
             base *= 10;
         }
         return base;
@@ -43,32 +42,10 @@ namespace dat {
         // Integer part is the easiest. Zero to decimal point index. If not existent until the end!
         result.first = str_repr.substr(0, point_index);
         // Fraction part is simply everything after the decimal point.
-        if (point_index == -1) {
-            result.second = "";
-        } else {
-            result.second = str_repr.substr(point_index + 1, str_repr.size() - point_index);
+        if (point_index != -1) {
+            result.second = str_repr.substr(point_index + 1, str_repr.size());
         }
         return result;
-    }
-
-    /*
-     * Since there is a limit to how much information fits into a given amount of bits and base 10 numbers have a more
-     * than 3 times higher information amount per digit then base 2 number, too large or too small numbers will be cut.
-     */
-    void Decimal::fit_string(std::pair<std::string, std::string> &string_pair) {
-        const int MAX_INTEGER_PART_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[c_SIZE * 8 -
-                                                                                         c_SCALING_FACTOR];
-        const int MAX_FRACTION_PART_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[c_SCALING_FACTOR];
-        if (string_pair.first.size() > MAX_INTEGER_PART_SIZE) {
-            // If string representation for integer part is too big, clap it to the max size and set lex_all digits to 9.
-            string_pair.first = std::string("9", MAX_INTEGER_PART_SIZE);
-        }
-        if (string_pair.second.size() > MAX_INTEGER_PART_SIZE) {
-            // If string representation for fraction part is too long, cut the rest.
-            // TODO Maybe add rounding here
-            string_pair.second = string_pair.second.substr(0, MAX_FRACTION_PART_SIZE);
-        }
-
     }
 
 
@@ -121,63 +98,62 @@ namespace dat {
 
         // Prepare numbers for upcoming conversion:
         auto parts = Decimal::slip(str_repr);
-        fit_string(parts);
 
-        // At first convert the integer part into a binary number and shift it to the left to make room for the
-        // fraction part.
-        uint64 integer_part;
-        const unsigned char INTEGER_PART_BIT_SIZE{static_cast<unsigned char>(c_SIZE * 8 - c_SCALING_FACTOR)};
-        if (Number::check_overflow(parts.first, INTEGER_PART_BIT_SIZE)) {
-            integer_part = string_to_number(parts.first, INTEGER_PART_BIT_SIZE) << c_SCALING_FACTOR;
-        } else {
-            integer_part = CONSTANTS.MAX_NUMBER_LIMIT[INTEGER_PART_BIT_SIZE];
-        }
+        // Converts string to number and limits it to its given size, as well as shifting it to make room for the
+        // decimal part.
+        uint64 integer_part = string_to_number(parts.first);
+        uint64 integer_bitmap = ((1ULL << (c_SIZE * 8 - scaling_factor)) - 1);
+        integer_part &= integer_bitmap;
+        integer_part <<= c_SCALING_FACTOR;
 
-        uint64 numerator = string_to_number(parts.second, c_SCALING_FACTOR);
-        uint64 denominator = pow_base_10(static_cast<int>(parts.second.size()));
-
-        uint64 fraction_part{0};
+        uint64 decimal_part{0};
+        uint64 decimal_bitmap = ((1ULL << scaling_factor) - 1);
+        uint64 numerator = string_to_number(parts.second);
+        uint64 denominator = pow_base_10(parts.second.size());
         for (unsigned char i{0}; i < c_SCALING_FACTOR; ++i) {
             // Converting from fraction to binary like with pen and paper...
             numerator *= 2;
-            fraction_part <<= 1;
+            decimal_part <<= 1;
             if (numerator >= denominator) {
-                fraction_part |= 1;
+                decimal_part |= 1;
                 numerator -= denominator;
             }
         }
+        decimal_part &= decimal_bitmap;
 
         // Finally combining both parts and clamping the number to its size just to be sure.
-        m_storage = integer_part | fraction_part;
-        clap_to_size();
+        m_storage = integer_part | decimal_part;
     }
 
 
     Decimal Decimal::cast(const Boolean &other) {
         return Decimal(other);
     }
-    Decimal Decimal::cast(const dat::Integer & other) {
+
+    Decimal Decimal::cast(const dat::Integer &other) {
         return Decimal(other);
     }
-    Decimal Decimal::copy(const dat::Decimal & other) {
+
+    Decimal Decimal::copy(const dat::Decimal &other) {
         return Decimal(other);
     }
-    Decimal Decimal::cast(const dat::String & other) {
+
+    Decimal Decimal::cast(const dat::String &other) {
         return Decimal(other);
     }
 
     Decimal Decimal::cast(const VariantTypes &other) {
         switch (other.index()) {
-                case 0 :
-                    return Decimal::cast(std::get<Boolean>(other));
-                case 1 :
-                    return Decimal::cast(std::get<Integer>(other));
-                case 2 :
-                    return Decimal::copy(std::get<Decimal>(other));
-                case 3 :
-                    return Decimal::cast(std::get<String>(other));
-                default:
-                    throw std::runtime_error("Error in Decimal cast: Unexpected DataType");
+            case 0 :
+                return Decimal::cast(std::get<Boolean>(other));
+            case 1 :
+                return Decimal::cast(std::get<Integer>(other));
+            case 2 :
+                return Decimal::copy(std::get<Decimal>(other));
+            case 3 :
+                return Decimal::cast(std::get<String>(other));
+            default:
+                throw std::runtime_error("Error in Decimal cast: Unexpected DataType");
         }
     }
 
@@ -213,34 +189,18 @@ namespace dat {
             numerator %= denominator;
         }
 
-        // Use some clever techniques and round a bit to reduce confusion when printing.
-        int num_of_consecutive_nines{0};
-        char last_non_nine;
-        int last_non_nine_index{-1};
+        // Reduce output limit to the important part.
         std::string fractional_part = temporary_storage.str();
-        for (int i = 0; i < fractional_part.size(); ++i) {
-            if (fractional_part[i] == '9') {
-                ++num_of_consecutive_nines;
-            } else {
-                if (num_of_consecutive_nines > 3 and last_non_nine_index >= 0) {
-                    fractional_part[last_non_nine_index] = static_cast<char> (last_non_nine + 1);
-                    fractional_part = fractional_part.substr(0, last_non_nine_index + 1);
-                    break;
-                } else {
-                    num_of_consecutive_nines = 0;
-                }
-                last_non_nine = fractional_part[i];
-                last_non_nine_index = i;
-            }
-        }
-        int index{static_cast<int>(fractional_part.size())};
+        fractional_part = fractional_part.substr(0, LookUp::log_base_10_of_2_to_x[c_SCALING_FACTOR]);
+
+
+        // Strip zeros from end
+        size_t index = fractional_part.size();
         while (index > 1 and fractional_part[index - 1] == '0') {
             --index;
         }
         fractional_part = fractional_part.substr(0, index);
-        // Just like before: Reduce output limit to the important part.
-        fractional_part = fractional_part.substr(0,
-                                                 CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[c_SCALING_FACTOR]);
+
         result << fractional_part;
         return result.str();
     }

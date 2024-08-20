@@ -7,17 +7,7 @@
 
 int main() {
 
-    for( int temp: dat::CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS) {
-        std::cout << temp << " ";
-    }
-    std::cout << "\n";
-    for(unsigned long long temp: dat::CONSTANTS.MAX_NUMBER_LIMIT) {
-        std::cout << temp << " ";
-    }
-    std::cout << "\n";
-    for(const auto & temp: dat::CONSTANTS.MAX_NUMBER_LIMIT_STRING) {
-        std::cout << temp << " ";
-    }
+    //TODO next: Variable assignment
 
     try {
         // Work in 3 steps per file:

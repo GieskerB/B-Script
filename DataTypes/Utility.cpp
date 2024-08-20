@@ -36,19 +36,21 @@ namespace dat {
     /*
      * name is self-explanatory
      */
-    uint64 string_to_number(const std::string &str_repr, unsigned char bit_length) {
-        const char start = str_repr[0] == '-' ? 1 : 0;
+    uint64 string_to_number(const std::string &str_repr) {
+        const int start = str_repr[0] == '-' ? 1 : 0;
 
-        if (str_repr.empty() or str_repr == "0") {
+        if (str_repr.empty()) {
             return 0;
         }
 
         uint64 result{0}, base{1};
 
-        for (int i = static_cast<int>(str_repr.size() - 1); i >= start; --i) {
+        for (size_t i = str_repr.size() - 1; i >= start and i < str_repr.size(); --i) {
             char digit = str_repr[i];
             if (digit < '0' or digit > '9') {
-                throw std::runtime_error("Invalid number format2: '" + str_repr + "'\n");
+                throw std::runtime_error(
+                        "Invalid digit '" + std::to_string(digit) + "' in string \"" + str_repr + "\" at index " +
+                        std::to_string(i) + "\n");
             }
             digit -= '0';
             if (result + digit * base < result) {
@@ -60,31 +62,55 @@ namespace dat {
         return result;
     }
 
-    VariantTypes create_datatype_form_string_and_extra(const std::string &string, short extra) {
-        if(string[0]  == '"') {
+    VariantTypes create_datatype_form_string(const std::string &string) {
+        if (string[0] == '"') {
             return String(string);
-        } else if(string == Boolean::TRUE or string ==  Boolean::FALSE or string ==  Boolean::NEUTRAL){
+        } else if (string == Boolean::TRUE or string == Boolean::FALSE or string == Boolean::NEUTRAL) {
             return Boolean(string);
         }
 
         bool has_decimal_point = std::find(string.begin(), string.end(), '.') != string.end();
-        if(!has_decimal_point) {
+        if (!has_decimal_point) {
             return Integer(string);
         } else {
-            if(extra != -1) {
-                return Decimal(string, Size::LONG, extra);
-            }
             std::stringstream string_stream{string};
-            std::pair<std::string,std::string> split;
+            std::pair<std::string, std::string> split;
             std::getline(string_stream, split.first, '.');
             std::getline(string_stream, split.second);
-            if( split.first.size() + split.second.size() <= 64) {
-                // TODO get right legth from constatns!
-                return Decimal(string, Size::LONG, 0);
-            } else {
-                // TODO reduce accuracy on either side to make it fit
-                return Decimal(string, Size::LONG, 0);
+
+
+            char required_bits_int_part = split.first.size() > 20 ? LookUp::log_base_2_of_10_to_x[20]
+                                                                  : LookUp::log_base_2_of_10_to_x[split.first.size()];
+            char required_bits_dec_part = split.second.size() > 20 ? LookUp::log_base_2_of_10_to_x[20]
+                                                                   : LookUp::log_base_2_of_10_to_x[split.second.size()];
+
+//            required_bits_dec_part = split.second.size() * 4 +1;
+
+            if (required_bits_int_part + required_bits_dec_part > 64) {
+                required_bits_dec_part = static_cast<char> (64 - required_bits_int_part);
             }
+//            required_bits_dec_part /= 2;
+//            required_bits_dec_part += 20;
+            return Decimal(string, Size::LONG, required_bits_dec_part);
+
+//
+//            char index = static_cast<char> (CONSTANTS.SIZE -1);
+//            while (CONSTANTS.log_base_2_of_10_to_x[index] > int_part_size and index >= 0) {
+//                --index;
+//            }
+//            required_bits_int_part =index;
+//
+//            index = static_cast<char> (CONSTANTS.SIZE -1);
+//            while (CONSTANTS.log_base_2_of_10_to_x[index] > dec_part_size and index >= 0) {
+//                --index;
+//            }
+//            required_bits_dec_part = index +10;
+//
+//            if (required_bits_int_part + required_bits_dec_part > 64) {
+//                required_bits_dec_part = 64 -required_bits_int_part;
+//            }
+//            std::cerr << (int)required_bits_dec_part;
+//            return Decimal(string, Size::LONG, required_bits_dec_part);
         }
     }
 

@@ -19,13 +19,11 @@ namespace par {
         lex::Token m_token;
         std::shared_ptr<MegaNode> p_left_node, p_right_node;
         std::vector<MegaNode> m_in_block_statements;
-        short m_variable_key;
 
     public:
 
         MegaNode();
         MegaNode(NodeType, lex::Token);
-        MegaNode(NodeType, lex::Token , short);
         MegaNode(NodeType, lex::Token , const MegaNode&);
         MegaNode(NodeType, lex::Token , const MegaNode&, const MegaNode&);
         MegaNode(NodeType, lex::Token, const MegaNode&, const std::vector<MegaNode>&);
@@ -39,7 +37,6 @@ namespace par {
         [[nodiscard]] MegaNode get_left() const;
         [[nodiscard]] MegaNode get_right() const;
         [[nodiscard]] std::vector<MegaNode> get_block_statements() const;
-        [[nodiscard]] short get_variable_key() const;
 
 
     };

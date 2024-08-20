@@ -3,12 +3,6 @@
 #include "../Error/Error.hpp"
 
 namespace dat {
-    void Integer::fit_string(std::string &string) {
-        const int MAX_INTEGER_SIZE = CONSTANTS.INFORMATION_LIMIT_PER_NUMBER_OF_BITS[c_SIZE * 8];
-        if (string.size() > MAX_INTEGER_SIZE) {
-            string = std::string("9", MAX_INTEGER_SIZE);
-        }
-    }
 
     Integer::Integer(const Boolean &other) : Number(Size::BYTE, true), c_IS_SIGNED(false) {
         switch (other.m_storage) {
@@ -54,27 +48,25 @@ namespace dat {
         if (!m_is_positive and str_repr.size() == 1) {
             throw std::runtime_error("Invalid number format1: '" + str_repr + "'\n");
         }
-        fit_string(str_repr);
 
-        if (Number::check_overflow(str_repr, c_SIZE * 8)) {
-            m_storage = string_to_number(str_repr, c_SIZE * 8);
-        } else {
-            m_storage = CONSTANTS.MAX_NUMBER_LIMIT[c_SIZE * 8];
-        }
-
-        clap_to_size();
+        m_storage = string_to_number(str_repr);
+        uint64 bitmap = ((1ULL << (c_SIZE * 8)) - 1);
+        m_storage &= bitmap;
     }
 
     Integer Integer::cast(const Boolean &other) {
         return Integer(other);
     }
-    Integer Integer::copy(const dat::Integer & other) {
+
+    Integer Integer::copy(const dat::Integer &other) {
         return Integer(other);
     }
-    Integer Integer::cast(const dat::Decimal & other) {
+
+    Integer Integer::cast(const dat::Decimal &other) {
         return Integer(other);
     }
-    Integer Integer::cast(const dat::String & other) {
+
+    Integer Integer::cast(const dat::String &other) {
         return Integer(other);
     }
 

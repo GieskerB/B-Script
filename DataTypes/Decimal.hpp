@@ -24,7 +24,6 @@ namespace dat {
         unsigned char c_SCALING_FACTOR;
 
         static std::pair<std::string, std::string> slip(const std::string &);
-        void fit_string(std::pair<std::string, std::string> &);
 
         explicit Decimal(const Boolean&);
         explicit Decimal(const Integer&);
@@ -34,7 +33,7 @@ namespace dat {
     public:
         Decimal() = delete;
         Decimal(const Decimal &&) noexcept ;
-        explicit Decimal(std::string, Size = LONG, unsigned char = 16);
+        explicit Decimal(std::string, Size = Size::LONG, unsigned char = 16);
 
         static Decimal cast(const Boolean& );
         static Decimal cast(const Integer&);

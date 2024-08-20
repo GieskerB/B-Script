@@ -25,8 +25,6 @@ namespace dat {
 
         bool c_IS_SIGNED;
 
-        void fit_string(std::string &);
-
         explicit Integer(const Boolean&);
         explicit Integer(const Integer&);
         explicit Integer(const Decimal&);
@@ -36,7 +34,7 @@ namespace dat {
 
         Integer() = delete;
         Integer(const Integer &&) noexcept;
-        explicit Integer(std::string, Size = LONG, bool = false);
+        explicit Integer(std::string, Size = Size::LONG, bool = false);
 
         static Integer cast(const Boolean& );
         static Integer copy(const Integer& );

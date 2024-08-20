@@ -31,17 +31,17 @@ namespace par {
 
         MegaNode next_statement();
 
-        MegaNode next_call(NextFunctionCall, short);
-        MegaNode binary_operator(NextFunctionCall, const std::vector<lex::TokenType>&, short);
-        MegaNode unary_operator(NextFunctionCall, const std::vector<lex::TokenType>&, short);
+        MegaNode next_call(NextFunctionCall);
+        MegaNode binary_operator(NextFunctionCall, const std::vector<lex::TokenType>&);
+        MegaNode unary_operator(NextFunctionCall, const std::vector<lex::TokenType>&);
 
         MegaNode declaration();
         MegaNode assignment();
-        MegaNode expression(short = 0);
-        MegaNode comparison_expression(short);
-        MegaNode arithmetic_expression(short);
-        MegaNode term(short);
-        MegaNode factor(short);
+        MegaNode expression();
+        MegaNode comparison_expression();
+        MegaNode arithmetic_expression();
+        MegaNode term();
+        MegaNode factor();
 
         MegaNode if_block();
 
