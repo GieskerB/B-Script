@@ -50,9 +50,7 @@ namespace lex {
         Token();
         explicit Token(TokenType, const Position&, const Position& = Position::NULL_POSITION, std::string = "");
 
-
         friend std::ostream &operator<<(std::ostream &, const Token &);
-
     };
 
 } // lex

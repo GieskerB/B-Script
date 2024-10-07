@@ -1,7 +1,6 @@
 #ifndef B_SHARP_POSITION_HPP
 #define B_SHARP_POSITION_HPP
 
-
 #include <string>
 
 namespace lex {

@@ -6,21 +6,6 @@
 
 namespace itp {
 
-    dat::DataType &get_variant_content(VariantTypes &variant) {
-        switch (variant.index()) {
-            case 0:
-                return std::get<dat::Boolean>(variant);
-            case 1:
-                return std::get<dat::Integer>(variant);
-            case 2:
-                return std::get<dat::Decimal>(variant);
-            case 3:
-                return std::get<dat::String>(variant);
-            default:
-                throw std::runtime_error("std::variant error in get_variant_content()");
-        }
-    }
-
     VariantTypes Interpreter::visit(const par::MegaNode &node, Context &context) {
         switch (node.get_node_type()) {
             case par::NodeType::BINARY:
@@ -48,8 +33,7 @@ namespace itp {
         auto var_name = node.get_token().c_value;
         try {
             VariantTypes &var_value = context.get_symbole_table().get(var_name);
-            dat::DataType &x = get_variant_content(var_value);
-            x.set_position(node.get_start_position(), node.get_end_position());
+            get_variant_content(var_value).set_position(node.get_start_position(), node.get_end_position());
             return std::move(var_value);
         } catch (std::runtime_error &error) {
             throw err::RuntimeError(node.get_start_position(), node.get_end_position(),

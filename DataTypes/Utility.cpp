@@ -8,6 +8,22 @@
 
 namespace dat {
 
+
+    DataType &get_variant_content(VariantTypes &variant) {
+        switch (variant.index()) {
+            case 0:
+                return std::get<dat::Boolean>(variant);
+            case 1:
+                return std::get<dat::Integer>(variant);
+            case 2:
+                return std::get<dat::Decimal>(variant);
+            case 3:
+                return std::get<dat::String>(variant);
+            default:
+                throw std::runtime_error("std::variant error in get_variant_content()");
+        }
+    }
+
     /*
      * name is self-explanatory
      */

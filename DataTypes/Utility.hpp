@@ -13,6 +13,8 @@ namespace dat {
 
     typedef std::variant<Boolean, Integer, Decimal, String> VariantTypes;
 
+    DataType &get_variant_content(VariantTypes &variant);
+
     std::string number_to_string(uint64, bool);
     uint64 string_to_number(const std::string &);
     VariantTypes create_datatype_form_string(const std::string &);
