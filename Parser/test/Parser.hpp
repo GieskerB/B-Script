@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include <optional>
 #include "../../Lexer/Token.hpp"
 #include "Program.hpp"
 #include "Expression.hpp"
@@ -11,8 +12,8 @@ class Parser {
 
 private:
     std::vector<lex::Token> m_tokens;
-    lex::Token m_current_token;
-    uint64_t m_token_index;
+    lex::Token* p_curr_tok;
+    uint64_t m_tok_index;
 
     lex::Token advance();
 

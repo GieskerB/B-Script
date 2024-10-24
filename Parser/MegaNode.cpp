@@ -5,7 +5,7 @@
 namespace par {
 
     MegaNode::MegaNode() : c_NODE_TYPE(NodeType::NONE), m_start_position(lex::Position::NULL_POSITION),
-                           m_end_position(lex::Position::NULL_POSITION), m_token(lex::Token::NULL_TOKEN) {}
+                           m_end_position(lex::Position::NULL_POSITION), m_token(lex::TokenType::NONE,lex::Position::NULL_POSITION) {}
 
 
     MegaNode::MegaNode(NodeType node_type, lex::Token token) : c_NODE_TYPE(node_type),

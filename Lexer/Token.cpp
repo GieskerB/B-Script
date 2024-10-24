@@ -4,9 +4,7 @@
 
 namespace lex {
 
-    const Token Token::NULL_TOKEN;
-
-    Token::Token():Token(TokenType::NONE,Position::NULL_POSITION) {}
+//    Token::Token():Token(TokenType::NONE,Position::NULL_POSITION) {}
 
     Token::Token(TokenType token_type, const Position& start, const Position& end, std::string value) : c_type(token_type),
                                                                                                         c_value(std::move(value)),
@@ -17,7 +15,6 @@ namespace lex {
             c_end_pos.advance();
         }
     }
-
 
     std::ostream &operator<<(std::ostream &os, const Token &token) {
         std::string temp_string;

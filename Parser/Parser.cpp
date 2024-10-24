@@ -10,7 +10,7 @@ namespace par {
     lex::Token Parser::advance() {
         ++m_index;
         if (m_index < m_tokens.size()) {
-            m_current_token = m_tokens[m_index];
+//            m_current_token = m_tokens[m_index];
         }
         return m_current_token;
     }
@@ -75,16 +75,18 @@ namespace par {
         MegaNode temp;
         switch (m_current_token.c_type) {
             case lex::VAR_KEYWORD:
-                temp = declaration();
+//                temp = declaration();
+                __asm("nop");
                 break;
             case lex::IDENTIFIER:
-                temp = assignment();
+//                temp = assignment();
                 break;
             case lex::IF:
-                temp = if_block();
+//                temp = if_block();
                 break;
             default:
-                temp = expression();
+                __asm("nop");
+//                temp = expression();
         }
         if (m_current_token.c_type != lex::TokenType::END_OF_LINE) {
             throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
@@ -118,7 +120,7 @@ namespace par {
             lex::Token op_token = m_current_token;
             advance();
             MegaNode right = next_call(next_function);
-            left = MegaNode(NodeType::BINARY, op_token, left, right);
+//            left = MegaNode(NodeType::BINARY, op_token, left, right);
         }
         return left;
     }
@@ -249,7 +251,7 @@ namespace par {
         return {NodeType::IF_CONDITION, if_token, condition, in_block_statements};
     }
 
-    Parser::Parser(const std::vector<lex::Token> &tokens) : m_tokens(tokens), m_current_token(lex::Token::NULL_TOKEN),
+    Parser::Parser(const std::vector<lex::Token> &tokens) : m_tokens(tokens), m_current_token(lex::TokenType::NONE,lex::Position::NULL_POSITION),
                                                             m_key_map(), m_index(-1) {
         advance();
     }

@@ -42,7 +42,6 @@ namespace lex {
         return Token{TokenType::VALUE, start, m_pos, number_string};
     }
 
-
     Token Lexer::make_word_token() {
         std::stringstream word_string_stream;
         Position start = Position(m_pos);
