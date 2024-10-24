@@ -26,14 +26,14 @@ namespace dat {
         bool c_IS_SIGNED;
 
         explicit Integer(const Boolean&);
-        explicit Integer(const Integer&);
         explicit Integer(const Decimal&);
         explicit Integer(const String&);
 
     public:
 
         Integer() = delete;
-        Integer(const Integer &&) noexcept;
+        Integer(const Integer&);
+//        Integer(const Integer &&) noexcept;
         explicit Integer(std::string, Size = Size::LONG, bool = false);
 
         static Integer cast(const Boolean& );

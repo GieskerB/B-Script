@@ -28,7 +28,6 @@ namespace dat {
 
         TriState m_storage;
 
-        explicit Boolean(const Boolean&);
         explicit Boolean(const Integer&);
         explicit Boolean(const Decimal&);
         explicit Boolean(const String&);
@@ -43,7 +42,8 @@ namespace dat {
         static constexpr std::string NEUTRAL{"neutral"};
 
         Boolean() = delete;
-        Boolean(const Boolean&&) noexcept;
+        Boolean(const Boolean&);
+//        Boolean(const Boolean&&) noexcept;
         explicit Boolean(const std::string&);
 
         static Boolean copy(const Boolean& );

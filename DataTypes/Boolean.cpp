@@ -14,9 +14,9 @@ namespace dat {
 
     Boolean::Boolean(const String &other) : DataType(lex::Position::NULL_POSITION, lex::Position::NULL_POSITION,
                                                      nullptr), m_storage(TriState::NEUTRAL) {
-        throw err::RuntimeError(other.get_position().first, other.get_position().second,
+        throw err::RuntimeError(other.position().first, other.position().second,
                                 "Casting error form String to Boolean.",
-                                other.get_context());
+                                other.context());
     }
 
     Boolean::Boolean(TriState value) : DataType(lex::Position::NULL_POSITION, lex::Position::NULL_POSITION,
@@ -38,10 +38,10 @@ namespace dat {
         }
     }
 
-    Boolean::Boolean(const Boolean &&other) noexcept: DataType(std::move(other)), m_storage(other.m_storage) {}
+//    Boolean::Boolean(const Boolean &&other) noexcept: DataType(std::move(other)), m_storage(other.m_storage) {}
 
     Boolean Boolean::copy(const Boolean &other) {
-        return Boolean(other);
+        return {other};
     }
     Boolean Boolean::cast(const dat::Integer & other) {
         return Boolean(other);

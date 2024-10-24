@@ -9,8 +9,8 @@ namespace dat {
         switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
                 // Integer + Boolean -> Integer + Integer = Integer
-                const VariantTypes &right_casted = Integer::cast(right_variant);
-                return left + std::move(right_casted);
+                const VariantTypes right_casted = Integer::cast(right_variant);
+                return left + (right_casted);
             }
             case 1: /* === Integer === */ {
                 // Integer + Integer = Integer
@@ -26,7 +26,7 @@ namespace dat {
                 // Integer + Decimal -> Decimal + Decimal = Decimal
                 const auto &left_casted = Decimal::cast(left);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted + std::move(right);
+                return left_casted + (right);
             }
             case 3: /* === String === */
                 throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
@@ -43,7 +43,7 @@ namespace dat {
             case 0: /* === Boolean === */ {
                 // Integer - Boolean -> Integer - Integer = Integer
                 const VariantTypes &right_casted = Integer::cast(right_variant);
-                return left - std::move(right_casted);
+                return left - (right_casted);
             }
             case 1: /* === Integer === */ {
                 // Integer - Integer -> Integer + (-Integer) = Integer
@@ -54,7 +54,7 @@ namespace dat {
                 // Integer - Decimal -> Decimal - Decimal = Decimal
                 const auto &left_casted = Decimal::cast(left);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted - std::move(right);
+                return left_casted - (right);
             }
             case 3: /* === String === */
                 throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
@@ -70,7 +70,7 @@ namespace dat {
             case 0: /* === Boolean === */{
                 // Integer - Boolean -> Integer - Integer = Integer
                 const VariantTypes &right_casted = Integer::cast(right_variant);
-                return left * std::move(right_casted);
+                return left * (right_casted);
             }
             case 1: /* === Integer === */ {
                 // Integer * Integer = Integer
@@ -85,7 +85,7 @@ namespace dat {
                 // Integer * Decimal -> Decimal * Decimal = Decimal
                 const auto &left_casted = Decimal::cast(left);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted * std::move(right);
+                return left_casted * (right);
             }
 
             case 3: /* === String === */
@@ -102,7 +102,7 @@ namespace dat {
             case 0: /* === Boolean === */{
                 // Integer * Boolean -> Integer * Integer = Integer
                 const VariantTypes &right_casted = Integer::cast(right_variant);
-                return left * std::move(right_casted);
+                return left * (right_casted);
             }
             case 1: /* === Integer === */ {
                 // Integer * Integer = Integer
@@ -123,7 +123,7 @@ namespace dat {
                 // Integer / Decimal -> Decimal / Decimal = Decimal
                 const auto &left_casted = Decimal::cast(left);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted / std::move(right);
+                return left_casted / (right);
             }
 
             case 3: /* === String === */
@@ -167,7 +167,7 @@ namespace dat {
                 const auto &right = std::get<Decimal>(right_variant);
                 const auto &left = Decimal::cast(*this);
 
-                return left < std::move(right);
+                return left < (right);
             }
             default:
                 throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
@@ -192,7 +192,7 @@ namespace dat {
                 const auto &right = std::get<Decimal>(right_variant);
                 const auto &left = Decimal::cast(*this);
 
-                return left > std::move(right);
+                return left > (right);
             }
             default:
                 throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
@@ -217,7 +217,7 @@ namespace dat {
                 const auto &right = std::get<Decimal>(right_variant);
                 const auto &left = Decimal::cast(*this);
 
-                return left <= std::move(right);
+                return left <= (right);
             }
             default:
                 throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
@@ -242,7 +242,7 @@ namespace dat {
                 const auto &right = std::get<Decimal>(right_variant);
                 const auto &left = Decimal::cast(*this);
 
-                return left >= std::move(right);
+                return left >= (right);
             }
             default:
                 throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
@@ -267,7 +267,7 @@ namespace dat {
                 const auto &right = std::get<Decimal>(right_variant);
                 const auto &left = Decimal::cast(*this);
 
-                return left == std::move(right);
+                return left == (right);
             }
             default:
                 throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
@@ -292,7 +292,7 @@ namespace dat {
                 const auto &right = std::get<Decimal>(right_variant);
                 const auto &left = Decimal::cast(*this);
 
-                return left != std::move(right);
+                return left != (right);
             }
             default:
                 throw std::runtime_error("Unexpected type of right_variant in operator.cpp");

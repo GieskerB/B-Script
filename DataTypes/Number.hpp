@@ -65,12 +65,12 @@ namespace dat {
         INTEGER = 4,
         LONG = 8
     };
+
     static constexpr std::array<Size, 4> sizes = {Size::BYTE, Size::SHORT, Size::INTEGER, Size::LONG};
 
     class Number : public DataType {
 
         friend class Integer;
-
         friend class Decimal;
 
     protected:
@@ -86,13 +86,10 @@ namespace dat {
     public:
 
         Number() = delete;
-
-        Number(const Number &) = delete;
-
-        Number(const Number &&) noexcept;
+//        Number(const Number &) = delete;
+//        Number(const Number &&) noexcept;
 
         void invert();
-
         [[nodiscard]] bool is_zero() const;
     };
 

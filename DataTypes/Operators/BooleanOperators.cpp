@@ -11,25 +11,25 @@ namespace dat {
                 // Boolean + Boolean -> Integer + Bool = Integer
                 const auto &left_casted = Integer::cast(left);
                 const auto &right = std::get<Boolean>(right_variant);
-                return left_casted + std::move(right);
+                return left_casted + right;
             }
             case 1: /* === Integer === */ {
                 // Boolean + Integer -> Integer + Integer = Integer
                 const auto &left_casted = Integer::cast(left);
                 const auto &right = std::get<Integer>(right_variant);
-                return left_casted + std::move(right);
+                return left_casted + right;
             }
             case 2: /* === Decimal === */ {
                 // Boolean + Decimal -> Decimal + Decimal = Decimal
                 const auto &left_casted = Integer::cast(left);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted + std::move(right);
+                return left_casted + right;
             }
             case 3: /* === String === */{
                 // Boolean + String -> String + String = String
                 const auto &left_casted = String::cast(left);
                 const auto &right = std::get<String>(right_variant);
-                return left_casted + std::move(right);
+                return left_casted +right;
             }
             default:
                 throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
@@ -43,19 +43,19 @@ namespace dat {
                 // Boolean - Boolean -> Integer - Boolean = Integer
                 const auto &left_casted = Integer::cast(left);
                 const auto &right = std::get<Boolean>(right_variant);
-                return left_casted - std::move(right);
+                return left_casted - right;
             }
             case 1: /* === Integer === */ {
                 // Boolean - Integer -> Integer - Integer = Integer
                 const auto &left_casted = Integer::cast(left);
                 const auto &right = std::get<Integer>(right_variant);
-                return left_casted - std::move(right);
+                return left_casted - right;
             }
             case 2: /* === Decimal === */ {
                 // Boolean - Decimal -> Decimal - Decimal = Decimal
                 const auto &left_casted = Decimal::cast(left);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted - std::move(right);
+                return left_casted -right;
             }
             case 3: /* === String === */
                 throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
@@ -72,19 +72,19 @@ namespace dat {
                 // Boolean * Boolean -> Integer * Boolean = Integer
                 const auto &left_casted = Integer::cast(left);
                 const auto &right = std::get<Boolean>(right_variant);
-                return left_casted * std::move(right);
+                return left_casted * right;
             }
             case 1: /* === Integer === */ {
                 // Boolean * Integer -> Integer * Integer = Integer
                 const auto &left_casted = Integer::cast(left);
                 const auto &right = std::get<Integer>(right_variant);
-                return left_casted * std::move(right);
+                return left_casted * right;
             }
             case 2: /* === Decimal === */ {
                 // Boolean * Decimal -> Decimal * Decimal = Decimal
                 const auto &left_casted = Integer::cast(left);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted * std::move(right);
+                return left_casted * right;
             }
             case 3: /* === String === */
                 throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)

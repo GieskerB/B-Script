@@ -58,9 +58,9 @@ namespace dat {
                 m_storage = 0;
                 break;
             case Boolean::TriState::NEUTRAL: {
-                auto pos = other.get_position();
-                throw err::RuntimeError(pos.first, pos.second, "Can not convert value 'neutral' into a number",
-                                        other.get_context());
+                auto pos = other.position();
+                throw err::RuntimeError(pos.first, pos.second, "Can not convert m_value 'neutral' into a number",
+                                        other.context());
             }
         }
     }
@@ -75,14 +75,14 @@ namespace dat {
     }
 
     Decimal::Decimal(const String &other) : Number(Size::LONG, false), c_SCALING_FACTOR(0) {
-        throw err::RuntimeError(other.get_position().first, other.get_position().second,
+        throw err::RuntimeError(other.position().first, other.position().second,
                                 "Casting error form String to Decimal.",
-                                other.get_context());
+                                other.context());
     }
 
     // Move Constructor
-    Decimal::Decimal(const dat::Decimal &&other) noexcept: Number(std::move(other)),
-                                                           c_SCALING_FACTOR(other.c_SCALING_FACTOR) {}
+//    Decimal::Decimal(const dat::Decimal &&other) noexcept: Number(std::move(other)),
+//                                                           c_SCALING_FACTOR(other.c_SCALING_FACTOR) {}
 
     // Constructs a Decimal form a string
     Decimal::Decimal(std::string str_repr, Size size, unsigned char scaling_factor) : Number(size, str_repr.empty() or
@@ -135,7 +135,7 @@ namespace dat {
     }
 
     Decimal Decimal::copy(const dat::Decimal &other) {
-        return Decimal(other);
+        return {other};
     }
 
     Decimal Decimal::cast(const dat::String &other) {

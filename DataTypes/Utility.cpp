@@ -24,9 +24,6 @@ namespace dat {
         }
     }
 
-    /*
-     * name is self-explanatory
-     */
     std::string number_to_string(uint64 number, bool is_positive) {
         std::vector<char> digits;
 
@@ -49,9 +46,6 @@ namespace dat {
         return result.str();
     }
 
-    /*
-     * name is self-explanatory
-     */
     uint64 string_to_number(const std::string &str_repr) {
         const int start = str_repr[0] == '-' ? 1 : 0;
 
@@ -201,7 +195,7 @@ namespace dat {
 
     std::pair<lex::Position, lex::Position> get_position_form_variant(const VariantTypes &variant) {
         auto get_pos = [](const auto &v) -> auto {
-            return v.get_position();
+            return v.position();
         };
         return std::visit(get_pos, variant);
     }

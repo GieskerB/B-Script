@@ -19,7 +19,7 @@ namespace dat {
     String::String(const std::string &value) : DataType(lex::Position::NULL_POSITION, lex::Position::NULL_POSITION,
                                                         nullptr), m_storage(value.substr(0, String::MAX_LENGTH)) {};
 
-    String::String(const dat::String &&other) noexcept: DataType(std::move(other)), m_storage(other.m_storage) {}
+//    String::String(const dat::String &&other) noexcept: DataType(std::move(other)), m_storage(other.m_storage) {}
 
     void String::print(std::ostream &os) const {
         os << m_storage;
@@ -35,7 +35,7 @@ namespace dat {
         return String(other);
     }
     String String::copy(const dat::String & other) {
-        return String(other);
+        return {other};
     }
 
 

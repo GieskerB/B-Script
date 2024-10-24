@@ -78,6 +78,7 @@ namespace lex {
 
     public:
 
+        Lexer() = delete;
         explicit Lexer(const std::string&);
 
         void advance();

@@ -13,9 +13,9 @@ namespace dat {
                 m_storage = 0;
                 break;
             case Boolean::TriState::NEUTRAL: {
-                auto pos = other.get_position();
-                throw err::RuntimeError(pos.first, pos.second, "Can not convert value 'neutral' into a number",
-                                        other.get_context());
+                auto pos = other.position();
+                throw err::RuntimeError(pos.first, pos.second, "Can not convert m_value 'neutral' into a number",
+                                        other.context());
             }
         }
     }
@@ -30,12 +30,12 @@ namespace dat {
     }
 
     Integer::Integer(const String &other) : Number(Size::LONG, false), c_IS_SIGNED(false) {
-        throw err::RuntimeError(other.get_position().first, other.get_position().second,
+        throw err::RuntimeError(other.position().first, other.position().second,
                                 "Casting error form String to Integer.",
-                                other.get_context());
+                                other.context());
     }
 
-    Integer::Integer(const Integer &&other) noexcept: Number(std::move(other)), c_IS_SIGNED(other.c_IS_SIGNED) {}
+//    Integer::Integer(const Integer &&other) noexcept: Number(std::move(other)), c_IS_SIGNED(other.c_IS_SIGNED) {}
 
 
     Integer::Integer(std::string str_repr, Size size, bool is_signed) : Number(size,
@@ -59,7 +59,7 @@ namespace dat {
     }
 
     Integer Integer::copy(const dat::Integer &other) {
-        return Integer(other);
+        return {other};
     }
 
     Integer Integer::cast(const dat::Decimal &other) {

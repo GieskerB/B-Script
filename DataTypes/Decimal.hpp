@@ -27,12 +27,12 @@ namespace dat {
 
         explicit Decimal(const Boolean&);
         explicit Decimal(const Integer&);
-        explicit Decimal(const Decimal&);
         explicit Decimal(const String&);
 
     public:
         Decimal() = delete;
-        Decimal(const Decimal &&) noexcept ;
+        Decimal(const Decimal&);
+//        Decimal(const Decimal &&) noexcept ;
         explicit Decimal(std::string, Size = Size::LONG, unsigned char = 16);
 
         static Decimal cast(const Boolean& );
@@ -45,12 +45,12 @@ namespace dat {
         void print(std::ostream& os) const override;
 
         VariantTypes operator+(const VariantTypes &) const;
-        VariantTypes operator-(const VariantTypes &) const;
-        VariantTypes operator*(const VariantTypes &) const;
-        VariantTypes operator/(const VariantTypes &) const;
+        Decimal operator-(const VariantTypes &) const;
+        Decimal operator*(const VariantTypes &) const;
+        Decimal operator/(const VariantTypes &) const;
 
-        VariantTypes operator+() const;
-        VariantTypes operator-() const;
+        Decimal operator+() const;
+        Decimal operator-() const;
         VariantTypes operator!() const;
 
         Boolean operator<( const VariantTypes&) const;

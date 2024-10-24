@@ -26,12 +26,12 @@ namespace dat {
         explicit String(const Boolean&);
         explicit String(const Integer&);
         explicit String(const Decimal&);
-        explicit String(const String&);
 
     public:
 
         String() = delete;
-        String(const String&&) noexcept;
+        String(const String&);
+//        String(const String&&) noexcept;
 
         explicit String(const std::string&);
 
