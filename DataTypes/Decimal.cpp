@@ -126,38 +126,6 @@ namespace dat {
     }
 
 
-    Decimal Decimal::cast(const Boolean &other) {
-        return Decimal(other);
-    }
-
-    Decimal Decimal::cast(const dat::Integer &other) {
-        return Decimal(other);
-    }
-
-    Decimal Decimal::copy(const dat::Decimal &other) {
-        return {other};
-    }
-
-    Decimal Decimal::cast(const dat::String &other) {
-        return Decimal(other);
-    }
-
-    Decimal Decimal::cast(const VariantTypes &other) {
-        switch (other.index()) {
-            case 0 :
-                return Decimal::cast(std::get<Boolean>(other));
-            case 1 :
-                return Decimal::cast(std::get<Integer>(other));
-            case 2 :
-                return Decimal::copy(std::get<Decimal>(other));
-            case 3 :
-                return Decimal::cast(std::get<String>(other));
-            default:
-                throw std::runtime_error("Error in Decimal cast: Unexpected DataType");
-        }
-    }
-
-
     /*
      * In case of Decimal... Print the integer part like an integer and the reconstructed the fraction part.
      */

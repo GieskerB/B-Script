@@ -5,31 +5,31 @@
 namespace dat {
 
     VariantTypes Boolean::operator+(const VariantTypes &right_variant) const {
-        Boolean left = Boolean::copy(*this);
+        Boolean left_boolean = Boolean(*this);
         switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
                 // Boolean + Boolean -> Integer + Bool = Integer
-                const auto &left_casted = Integer::cast(left);
-                const auto &right = std::get<Boolean>(right_variant);
-                return left_casted + right;
+                const Integer left(left_boolean);
+                const auto& right = std::get<Boolean>(right_variant);
+                return left + right;
             }
             case 1: /* === Integer === */ {
                 // Boolean + Integer -> Integer + Integer = Integer
-                const auto &left_casted = Integer::cast(left);
+                const Integer left(left_boolean);
                 const auto &right = std::get<Integer>(right_variant);
-                return left_casted + right;
+                return left + right;
             }
             case 2: /* === Decimal === */ {
                 // Boolean + Decimal -> Decimal + Decimal = Decimal
-                const auto &left_casted = Integer::cast(left);
+                const Decimal left(left_boolean);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted + right;
+                return left + right;
             }
             case 3: /* === String === */{
                 // Boolean + String -> String + String = String
-                const auto &left_casted = String::cast(left);
+                const String left(left_boolean);
                 const auto &right = std::get<String>(right_variant);
-                return left_casted +right;
+                return left + right;
             }
             default:
                 throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
@@ -37,25 +37,25 @@ namespace dat {
     }
 
     VariantTypes Boolean::operator-(const VariantTypes &right_variant) const {
-        Boolean left = Boolean::copy(*this);
+        Boolean left_boolean = Boolean(*this);
         switch (right_variant.index()) {
             case 0: /* === Boolean === */{
                 // Boolean - Boolean -> Integer - Boolean = Integer
-                const auto &left_casted = Integer::cast(left);
+                const Integer left(left_boolean);
                 const auto &right = std::get<Boolean>(right_variant);
-                return left_casted - right;
+                return left - right;
             }
             case 1: /* === Integer === */ {
                 // Boolean - Integer -> Integer - Integer = Integer
-                const auto &left_casted = Integer::cast(left);
+                const Integer left(left_boolean);
                 const auto &right = std::get<Integer>(right_variant);
-                return left_casted - right;
+                return left - right;
             }
             case 2: /* === Decimal === */ {
                 // Boolean - Decimal -> Decimal - Decimal = Decimal
-                const auto &left_casted = Decimal::cast(left);
+                const Decimal left(left_boolean);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted -right;
+                return left - right;
             }
             case 3: /* === String === */
                 throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
@@ -66,25 +66,25 @@ namespace dat {
     }
 
     VariantTypes Boolean::operator*(const VariantTypes &right_variant) const {
-        Boolean left = Boolean::copy(*this);
+        Boolean left_boolean = Boolean(*this);
         switch (right_variant.index()) {
             case 0: /* === Boolean === */{
                 // Boolean * Boolean -> Integer * Boolean = Integer
-                const auto &left_casted = Integer::cast(left);
+                const Integer left(left_boolean);
                 const auto &right = std::get<Boolean>(right_variant);
-                return left_casted * right;
+                return left* right;
             }
             case 1: /* === Integer === */ {
                 // Boolean * Integer -> Integer * Integer = Integer
-                const auto &left_casted = Integer::cast(left);
+                const Integer left(left_boolean);
                 const auto &right = std::get<Integer>(right_variant);
-                return left_casted * right;
+                return left * right;
             }
             case 2: /* === Decimal === */ {
                 // Boolean * Decimal -> Decimal * Decimal = Decimal
-                const auto &left_casted = Integer::cast(left);
+                const Decimal left(left_boolean);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted * right;
+                return left * right;
             }
             case 3: /* === String === */
                 throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
@@ -108,19 +108,19 @@ namespace dat {
         }
     }
 
-    VariantTypes Boolean::operator+() const {
+    Integer Boolean::operator+() const {
         // +Boolean -> +Integer = Integer
-        return +Integer::cast(*this);
+        return +Integer(*this);
     }
 
-    VariantTypes Boolean::operator-() const {
+    Integer Boolean::operator-() const {
         // -Boolean -> -Integer = Integer
-        return -Integer::cast(*this);
+        return -Integer(*this);
     }
 
-    VariantTypes Boolean::operator!() const {
+    Boolean Boolean::operator!() const {
         // !Boolean = Boolean
-        Boolean result = Boolean::copy(*this);
+        Boolean result = Boolean(*this);
         if (m_storage == TriState::TRUE) {
             result.m_storage = TriState::FALSE;
         } else if (m_storage == TriState::FALSE) {
@@ -130,7 +130,7 @@ namespace dat {
     }
 
     Boolean Boolean::operator<(const VariantTypes &other) const {
-        Boolean copy = Boolean::copy(*this);
+        Boolean copy = Boolean(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
                 const auto &other_boolean = std::get<Boolean>(other);
@@ -155,7 +155,7 @@ namespace dat {
     }
 
     Boolean Boolean::operator>(const VariantTypes &other) const {
-        Boolean copy = Boolean::copy(*this);
+        Boolean copy = Boolean(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
                 const auto &other_boolean = std::get<Boolean>(other);
@@ -180,7 +180,7 @@ namespace dat {
     }
 
     Boolean Boolean::operator<=(const VariantTypes &other) const {
-        Boolean copy = Boolean::copy(*this);
+        Boolean copy = Boolean(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
                 const auto &other_boolean = std::get<Boolean>(other);
@@ -205,7 +205,7 @@ namespace dat {
     }
 
     Boolean Boolean::operator>=(const VariantTypes &other) const {
-        Boolean copy = Boolean::copy(*this);
+        Boolean copy = Boolean(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
                 const auto &other_boolean = std::get<Boolean>(other);
@@ -230,7 +230,7 @@ namespace dat {
     }
 
     Boolean Boolean::operator==(const VariantTypes &other) const {
-        Boolean copy = Boolean::copy(*this);
+        Boolean copy = Boolean(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
                 const auto &other_boolean = std::get<Boolean>(other);
@@ -252,7 +252,7 @@ namespace dat {
     }
 
     Boolean Boolean::operator!=(const VariantTypes &other) const {
-        Boolean copy = Boolean::copy(*this);
+        Boolean copy = Boolean(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
                 const auto &other_boolean = std::get<Boolean>(other);
@@ -274,7 +274,7 @@ namespace dat {
     }
 
     Boolean Boolean::operator&&(const VariantTypes &other) const {
-        Boolean copy = Boolean::copy(*this);
+        Boolean copy = Boolean(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
                 const auto &other_boolean = std::get<Boolean>(other);
@@ -298,7 +298,7 @@ namespace dat {
     }
 
     Boolean Boolean::operator||(const VariantTypes &other) const {
-        Boolean copy = Boolean::copy(*this);
+        Boolean copy = Boolean(*this);
         switch (other.index()) {
             case 0: /* === Boolean === */ {
                 const auto &other_boolean = std::get<Boolean>(other);

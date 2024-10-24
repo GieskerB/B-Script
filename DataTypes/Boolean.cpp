@@ -3,6 +3,10 @@
 
 namespace dat {
 
+    const std::string Boolean::TRUE = "true";
+    const std::string Boolean::FALSE = "false";
+    const std::string Boolean::NEUTRAL = "neutral";
+
     Boolean::Boolean(const Boolean &other) : DataType(other.m_position_start, other.m_position_end, other.p_context),
                                              m_storage(other.m_storage) {}
 
@@ -35,36 +39,6 @@ namespace dat {
             m_storage = TriState::NEUTRAL;
         } else {
             throw std::runtime_error("Invalid boolean format: " + value);
-        }
-    }
-
-//    Boolean::Boolean(const Boolean &&other) noexcept: DataType(std::move(other)), m_storage(other.m_storage) {}
-
-    Boolean Boolean::copy(const Boolean &other) {
-        return {other};
-    }
-    Boolean Boolean::cast(const dat::Integer & other) {
-        return Boolean(other);
-    }
-    Boolean Boolean::cast(const dat::Decimal & other) {
-        return Boolean(other);
-    }
-    Boolean Boolean::cast(const dat::String & other) {
-        return Boolean(other);
-    }
-
-    Boolean Boolean::cast(const VariantTypes &other) {
-        switch (other.index()) {
-            case 0 :
-                return Boolean::copy(std::get<Boolean>(other));
-            case 1 :
-                return Boolean::cast(std::get<Integer>(other));
-            case 2 :
-                return Boolean::cast(std::get<Decimal>(other));
-            case 3 :
-                return Boolean::cast(std::get<String>(other));
-            default:
-                throw std::runtime_error("Error in Boolean cast: Unexpected DataType");
         }
     }
 

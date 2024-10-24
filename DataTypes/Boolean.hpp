@@ -28,29 +28,22 @@ namespace dat {
 
         TriState m_storage;
 
-        explicit Boolean(const Integer&);
-        explicit Boolean(const Decimal&);
-        explicit Boolean(const String&);
 
         explicit Boolean(TriState);
         explicit Boolean(bool);
 
     public:
 
-        static constexpr std::string TRUE{"true"};
-        static constexpr std::string FALSE{"false"};
-        static constexpr std::string NEUTRAL{"neutral"};
+        static const std::string TRUE;
+        static const std::string FALSE;
+        static const std::string NEUTRAL;
 
         Boolean() = delete;
         Boolean(const Boolean&);
-//        Boolean(const Boolean&&) noexcept;
+        explicit Boolean(const Integer&);
+        explicit Boolean(const Decimal&);
+        explicit Boolean(const String&);
         explicit Boolean(const std::string&);
-
-        static Boolean copy(const Boolean& );
-        static Boolean cast(const Integer&);
-        static Boolean cast(const Decimal&);
-        static Boolean cast(const String&);
-        static Boolean cast(const VariantTypes& );
 
         [[nodiscard]] std::string to_string() const;
         void print(std::ostream& os) const override;
@@ -60,18 +53,18 @@ namespace dat {
         VariantTypes operator*(const VariantTypes &) const;
         VariantTypes operator/(const VariantTypes &) const;
 
-        VariantTypes operator+() const;
-        VariantTypes operator-() const;
-        VariantTypes operator!() const;
+        Integer operator+() const;
+        Integer operator-() const;
+        Boolean operator!() const;
 
-        Boolean operator<( const VariantTypes&) const;
-        Boolean operator>( const VariantTypes&) const;
-        Boolean operator<=( const VariantTypes&) const;
-        Boolean operator>=( const VariantTypes&) const;
-        Boolean operator==( const VariantTypes&) const;
-        Boolean operator!=( const VariantTypes&) const;
-        Boolean operator&&( const VariantTypes&) const;
-        Boolean operator||( const VariantTypes&) const;
+        Boolean operator<(const VariantTypes&) const;
+        Boolean operator>(const VariantTypes&) const;
+        Boolean operator<=(const VariantTypes&) const;
+        Boolean operator>=(const VariantTypes&) const;
+        Boolean operator==(const VariantTypes&) const;
+        Boolean operator!=(const VariantTypes&) const;
+        Boolean operator&&(const VariantTypes&) const;
+        Boolean operator||(const VariantTypes&) const;
     };
 
 } // dat

@@ -23,14 +23,14 @@ namespace dat {
 
         std::string m_storage;
 
-        explicit String(const Boolean&);
-        explicit String(const Integer&);
-        explicit String(const Decimal&);
 
     public:
 
         String() = delete;
         String(const String&);
+        explicit String(const Boolean&);
+        explicit String(const Integer&);
+        explicit String(const Decimal&);
 //        String(const String&&) noexcept;
 
         explicit String(const std::string&);

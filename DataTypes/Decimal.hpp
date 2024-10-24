@@ -25,21 +25,13 @@ namespace dat {
 
         static std::pair<std::string, std::string> slip(const std::string &);
 
-        explicit Decimal(const Boolean&);
-        explicit Decimal(const Integer&);
-        explicit Decimal(const String&);
-
     public:
         Decimal() = delete;
         Decimal(const Decimal&);
-//        Decimal(const Decimal &&) noexcept ;
+        explicit Decimal(const Boolean&);
+        explicit Decimal(const Integer&);
+        explicit Decimal(const String&);
         explicit Decimal(std::string, Size = Size::LONG, unsigned char = 16);
-
-        static Decimal cast(const Boolean& );
-        static Decimal cast(const Integer&);
-        static Decimal copy(const Decimal&);
-        static Decimal cast(const String&);
-        static Decimal cast(const VariantTypes & );
 
         [[nodiscard]] std::string to_string() const;
         void print(std::ostream& os) const override;

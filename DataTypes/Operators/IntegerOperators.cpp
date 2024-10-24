@@ -5,12 +5,12 @@
 namespace dat {
 
     VariantTypes Integer::operator+(const VariantTypes &right_variant) const {
-        Integer left = Integer::copy(*this);
+        Integer left = Integer(*this);
         switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
                 // Integer + Boolean -> Integer + Integer = Integer
-                const VariantTypes right_casted = Integer::cast(right_variant);
-                return left + (right_casted);
+                const Integer right(std::get<Boolean>(right_variant));
+                return left + right;
             }
             case 1: /* === Integer === */ {
                 // Integer + Integer = Integer
@@ -24,9 +24,9 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Integer + Decimal -> Decimal + Decimal = Decimal
-                const auto &left_casted = Decimal::cast(left);
+                const Decimal left_casted (left);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted + (right);
+                return left_casted + right;
             }
             case 3: /* === String === */
                 throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
@@ -38,23 +38,23 @@ namespace dat {
     }
 
     VariantTypes Integer::operator-(const VariantTypes &right_variant) const {
-        Integer left = Integer::copy(*this);
+        Integer left = Integer(*this);
         switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
                 // Integer - Boolean -> Integer - Integer = Integer
-                const VariantTypes &right_casted = Integer::cast(right_variant);
-                return left - (right_casted);
+                const Integer right(std::get<Boolean>(right_variant));
+                return left - right;
             }
             case 1: /* === Integer === */ {
                 // Integer - Integer -> Integer + (-Integer) = Integer
-                const auto &right_casted= Integer::copy(std::get<Integer>(right_variant));
-                return left + (-right_casted);
+                const auto &right_casted= Integer(std::get<Integer>(right_variant));
+                return left + -right_casted;
             }
             case 2: /* === Decimal === */ {
                 // Integer - Decimal -> Decimal - Decimal = Decimal
-                const auto &left_casted = Decimal::cast(left);
+                const Decimal left_casted (left);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted - (right);
+                return left_casted - right;
             }
             case 3: /* === String === */
                 throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
@@ -65,12 +65,12 @@ namespace dat {
     }
 
     VariantTypes Integer::operator*(const VariantTypes &right_variant) const {
-        Integer left = Integer::copy(*this);
+        Integer left = Integer(*this);
         switch (right_variant.index()) {
             case 0: /* === Boolean === */{
                 // Integer - Boolean -> Integer - Integer = Integer
-                const VariantTypes &right_casted = Integer::cast(right_variant);
-                return left * (right_casted);
+                const Integer right ( std::get<Boolean>(right_variant));
+                return left * right;
             }
             case 1: /* === Integer === */ {
                 // Integer * Integer = Integer
@@ -83,9 +83,9 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Integer * Decimal -> Decimal * Decimal = Decimal
-                const auto &left_casted = Decimal::cast(left);
+                const Decimal left_casted (left);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted * (right);
+                return left_casted * right;
             }
 
             case 3: /* === String === */
@@ -97,12 +97,12 @@ namespace dat {
     }
 
     VariantTypes Integer::operator/(const VariantTypes &right_variant) const {
-        Integer left = Integer::copy(*this);
+        Integer left = Integer(*this);
         switch (right_variant.index()) {
             case 0: /* === Boolean === */{
                 // Integer * Boolean -> Integer * Integer = Integer
-                const VariantTypes &right_casted = Integer::cast(right_variant);
-                return left * (right_casted);
+                const Integer right ( std::get<Boolean>(right_variant));
+                return left * right;
             }
             case 1: /* === Integer === */ {
                 // Integer * Integer = Integer
@@ -121,9 +121,9 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Integer / Decimal -> Decimal / Decimal = Decimal
-                const auto &left_casted = Decimal::cast(left);
+                const Decimal left_casted (left);
                 const auto &right = std::get<Decimal>(right_variant);
-                return left_casted / (right);
+                return left_casted * right;
             }
 
             case 3: /* === String === */
@@ -135,12 +135,12 @@ namespace dat {
     }
 
 
-    VariantTypes Integer::operator+() const {
-        return Integer::copy(*this);
+    Integer Integer::operator+() const {
+        return *this;
     }
 
-    VariantTypes Integer::operator-() const {
-        Integer result = Integer::copy(*this);
+    Integer Integer::operator-() const {
+        Integer result = Integer(*this);
         result.invert();
         return result;
     }
@@ -165,9 +165,9 @@ namespace dat {
             case 2: /* === Decimal === */ {
                 // Integer < Decimal -> Decimal < Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
-                const auto &left = Decimal::cast(*this);
+                const auto &left = Decimal(*this);
 
-                return left < (right);
+                return left < right;
             }
             default:
                 throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
@@ -190,7 +190,7 @@ namespace dat {
             case 2: /* === Decimal === */ {
                 // Integer > Decimal -> Decimal > Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
-                const auto &left = Decimal::cast(*this);
+                const auto &left = Decimal(*this);
 
                 return left > (right);
             }
@@ -215,7 +215,7 @@ namespace dat {
             case 2: /* === Decimal === */ {
                 // Integer <= Decimal -> Decimal <= Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
-                const auto &left = Decimal::cast(*this);
+                const auto &left = Decimal(*this);
 
                 return left <= (right);
             }
@@ -240,7 +240,7 @@ namespace dat {
             case 2: /* === Decimal === */ {
                 // Integer >= Decimal -> Decimal >= Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
-                const auto &left = Decimal::cast(*this);
+                const auto &left = Decimal(*this);
 
                 return left >= (right);
             }
@@ -265,7 +265,7 @@ namespace dat {
             case 2: /* === Decimal === */ {
                 // Integer == Decimal -> Decimal == Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
-                const auto &left = Decimal::cast(*this);
+                const auto &left = Decimal(*this);
 
                 return left == (right);
             }
@@ -290,7 +290,7 @@ namespace dat {
             case 2: /* === Decimal === */ {
                 // Integer != Decimal -> Decimal != Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
-                const auto &left = Decimal::cast(*this);
+                const auto &left = Decimal(*this);
 
                 return left != (right);
             }
