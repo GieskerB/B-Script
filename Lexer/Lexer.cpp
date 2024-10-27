@@ -4,6 +4,7 @@
 #include "Lexer.hpp"
 #include "../FileReader/FileReader.hpp"
 #include "../Error/Error.hpp"
+#include "Keywords.hpp"
 
 namespace lex {
 
@@ -39,7 +40,7 @@ namespace lex {
             advance();
         }
 
-        return Token{TokenType::VALUE, start, m_pos, number_string};
+        return Token{TokenType::VALUE, start, m_pos, number_string, m_var_type_param};
     }
 
     Token Lexer::make_word_token() {
@@ -57,10 +58,11 @@ namespace lex {
         const std::string word_string = word_string_stream.str();
         if (CONSTANTS.VARIABLE_KEYWORDS.end() !=
             std::find(CONSTANTS.VARIABLE_KEYWORDS.begin(), CONSTANTS.VARIABLE_KEYWORDS.end(), word_string)) {
+            m_var_type_param = lex::keywords.var_type_keys.at(word_string);
             return Token{TokenType::VAR_KEYWORD, start, m_pos, word_string};
         } else if (CONSTANTS.CONSTANTS_KEYWORDS.end() !=
                    std::find(CONSTANTS.CONSTANTS_KEYWORDS.begin(), CONSTANTS.CONSTANTS_KEYWORDS.end(), word_string)) {
-            return Token{TokenType::VALUE, start, m_pos, word_string};
+            return Token{TokenType::VALUE, start, m_pos, word_string, m_var_type_param};
         } else if (CONSTANTS.BUILD_IN_KEYWORDS.end() !=
                    std::find(CONSTANTS.BUILD_IN_KEYWORDS.begin(), CONSTANTS.BUILD_IN_KEYWORDS.end(), word_string)) {
             return Token{TokenType::IF, start, m_pos, word_string};
@@ -87,7 +89,7 @@ namespace lex {
         } else {
             throw err::InvalidSyntaxError(start, m_pos, "Missing '\"' to close to string.");
         }
-        return Token{TokenType::VALUE, start, m_pos, string};
+        return Token{TokenType::VALUE, start, m_pos, string, m_var_type_param};
     }
 
     Token Lexer::make_two_char_token(char first_char, char second_char, TokenType single_token_type,
@@ -113,7 +115,6 @@ namespace lex {
 
     }
 
-
     Lexer::Lexer(const std::string &file_name) : m_pos{-1, 0, -1, 0, file_name}, m_current_char('\0') {
         FileReader fr{};
         fr.open_file(file_name);
@@ -124,7 +125,6 @@ namespace lex {
         advance();
     }
 
-
     void Lexer::advance() {
         m_pos.advance(m_current_char);
         if (m_pos.index() < m_text.size()) {
@@ -134,9 +134,9 @@ namespace lex {
         }
     }
 
-
     std::vector<Token> Lexer::lex_all() {
         std::vector<Token> tokens;
+        m_var_type_param = 0;
         while (can_lex()) {
             if (m_current_char == ' ' or m_current_char == '\t' or m_current_char == '\n') {
                 advance();
@@ -180,6 +180,7 @@ namespace lex {
                 advance();
             } else if (m_current_char == ';') {
                 tokens.emplace_back(TokenType::END_OF_LINE, m_pos);
+                m_var_type_param = 0;
                 advance();
             } else if (m_current_char == '!') {
                 tokens.push_back(make_two_char_token('!', '=', TokenType::LOGIC_NOT, TokenType::NOT_EQUALS));

@@ -10,7 +10,7 @@ namespace dat {
             case 0: /* === Boolean === */ {
                 // Boolean + Boolean -> Integer + Bool = Integer
                 const Integer left(left_boolean);
-                const auto& right = std::get<Boolean>(right_variant);
+                const auto &right = std::get<Boolean>(right_variant);
                 return left + right;
             }
             case 1: /* === Integer === */ {
@@ -72,7 +72,7 @@ namespace dat {
                 // Boolean * Boolean -> Integer * Boolean = Integer
                 const Integer left(left_boolean);
                 const auto &right = std::get<Boolean>(right_variant);
-                return left* right;
+                return left * right;
             }
             case 1: /* === Integer === */ {
                 // Boolean * Integer -> Integer * Integer = Integer
@@ -120,7 +120,7 @@ namespace dat {
 
     Boolean Boolean::operator!() const {
         // !Boolean = Boolean
-        Boolean result = Boolean(*this);
+        Boolean result(*this);
         if (m_storage == TriState::TRUE) {
             result.m_storage = TriState::FALSE;
         } else if (m_storage == TriState::FALSE) {
@@ -129,15 +129,15 @@ namespace dat {
         return result;
     }
 
-    Boolean Boolean::operator<(const VariantTypes &other) const {
-        Boolean copy = Boolean(*this);
-        switch (other.index()) {
+    Boolean Boolean::operator<(const VariantTypes &right_variant) const {
+        Boolean left(*this);
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
-                const auto &other_boolean = std::get<Boolean>(other);
-                if (m_storage == TriState::NEUTRAL or other_boolean.m_storage == TriState::NEUTRAL) {
+                const auto &right = std::get<Boolean>(right_variant);
+                if (m_storage == TriState::NEUTRAL or right.m_storage == TriState::NEUTRAL) {
                     return Boolean(TriState::NEUTRAL);
                 }
-                if (m_storage < other_boolean.m_storage) {
+                if (m_storage < right.m_storage) {
                     return Boolean(TriState::TRUE);
                 } else {
                     return Boolean(TriState::FALSE);
@@ -146,23 +146,23 @@ namespace dat {
             case 1: /* === Integer === */
             case 2: /* === Decimal === */
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                                                       .second,
                                               "Operators not implemented.");
             default:
-                throw std::runtime_error("Unexpected type of other in operator.cpp");
+                throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
         }
     }
 
-    Boolean Boolean::operator>(const VariantTypes &other) const {
-        Boolean copy = Boolean(*this);
-        switch (other.index()) {
+    Boolean Boolean::operator>(const VariantTypes &right_variant) const {
+        Boolean left(*this);
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
-                const auto &other_boolean = std::get<Boolean>(other);
-                if (m_storage == TriState::NEUTRAL or other_boolean.m_storage == TriState::NEUTRAL) {
+                const auto &right = std::get<Boolean>(right_variant);
+                if (m_storage == TriState::NEUTRAL or right.m_storage == TriState::NEUTRAL) {
                     return Boolean(TriState::NEUTRAL);
                 }
-                if (m_storage > other_boolean.m_storage) {
+                if (m_storage > right.m_storage) {
                     return Boolean(TriState::TRUE);
                 } else {
                     return Boolean(TriState::FALSE);
@@ -171,7 +171,7 @@ namespace dat {
             case 1: /* === Integer === */
             case 2: /* === Decimal === */
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                                                       .second,
                                               "Operators not implemented.");
             default:
@@ -179,15 +179,15 @@ namespace dat {
         }
     }
 
-    Boolean Boolean::operator<=(const VariantTypes &other) const {
-        Boolean copy = Boolean(*this);
-        switch (other.index()) {
+    Boolean Boolean::operator<=(const VariantTypes &right_variant) const {
+        Boolean left(*this);
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
-                const auto &other_boolean = std::get<Boolean>(other);
-                if (m_storage == TriState::NEUTRAL or other_boolean.m_storage == TriState::NEUTRAL) {
+                const auto &right = std::get<Boolean>(right_variant);
+                if (m_storage == TriState::NEUTRAL or right.m_storage == TriState::NEUTRAL) {
                     return Boolean(TriState::NEUTRAL);
                 }
-                if (m_storage <= other_boolean.m_storage) {
+                if (m_storage <= right.m_storage) {
                     return Boolean(TriState::TRUE);
                 } else {
                     return Boolean(TriState::FALSE);
@@ -196,7 +196,7 @@ namespace dat {
             case 1: /* === Integer === */
             case 2: /* === Decimal === */
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                                                       .second,
                                               "Operators not implemented.");
             default:
@@ -204,15 +204,15 @@ namespace dat {
         }
     }
 
-    Boolean Boolean::operator>=(const VariantTypes &other) const {
-        Boolean copy = Boolean(*this);
-        switch (other.index()) {
+    Boolean Boolean::operator>=(const VariantTypes &right_variant) const {
+        Boolean left(*this);
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
-                const auto &other_boolean = std::get<Boolean>(other);
-                if (m_storage == TriState::NEUTRAL or other_boolean.m_storage == TriState::NEUTRAL) {
+                const auto &right = std::get<Boolean>(right_variant);
+                if (m_storage == TriState::NEUTRAL or right.m_storage == TriState::NEUTRAL) {
                     return Boolean(TriState::NEUTRAL);
                 }
-                if (m_storage >= other_boolean.m_storage) {
+                if (m_storage >= right.m_storage) {
                     return Boolean(TriState::TRUE);
                 } else {
                     return Boolean(TriState::FALSE);
@@ -221,7 +221,7 @@ namespace dat {
             case 1: /* === Integer === */
             case 2: /* === Decimal === */
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                                                       .second,
                                               "Operators not implemented.");
             default:
@@ -229,12 +229,15 @@ namespace dat {
         }
     }
 
-    Boolean Boolean::operator==(const VariantTypes &other) const {
-        Boolean copy = Boolean(*this);
-        switch (other.index()) {
+    Boolean Boolean::operator==(const VariantTypes &right_variant) const {
+        Boolean left(*this);
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
-                const auto &other_boolean = std::get<Boolean>(other);
-                if (m_storage == other_boolean.m_storage) {
+                const auto &right = std::get<Boolean>(right_variant);
+                if (m_storage == TriState::NEUTRAL or right.m_storage == TriState::NEUTRAL) {
+                    return Boolean(TriState::NEUTRAL);
+                }
+                if (m_storage == right.m_storage) {
                     return Boolean(TriState::TRUE);
                 } else {
                     return Boolean(TriState::FALSE);
@@ -243,7 +246,7 @@ namespace dat {
             case 1: /* === Integer === */
             case 2: /* === Decimal === */
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                                                       .second,
                                               "Operators not implemented.");
             default:
@@ -251,12 +254,15 @@ namespace dat {
         }
     }
 
-    Boolean Boolean::operator!=(const VariantTypes &other) const {
-        Boolean copy = Boolean(*this);
-        switch (other.index()) {
+    Boolean Boolean::operator!=(const VariantTypes &right_variant) const {
+        Boolean left(*this);
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
-                const auto &other_boolean = std::get<Boolean>(other);
-                if (m_storage != other_boolean.m_storage) {
+                const auto &right = std::get<Boolean>(right_variant);
+                if (m_storage == TriState::NEUTRAL or right.m_storage == TriState::NEUTRAL) {
+                    return Boolean(TriState::NEUTRAL);
+                }
+                if (m_storage == right.m_storage) {
                     return Boolean(TriState::TRUE);
                 } else {
                     return Boolean(TriState::FALSE);
@@ -265,7 +271,7 @@ namespace dat {
             case 1: /* === Integer === */
             case 2: /* === Decimal === */
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                                                       .second,
                                               "Operators not implemented.");
             default:
@@ -273,15 +279,14 @@ namespace dat {
         }
     }
 
-    Boolean Boolean::operator&&(const VariantTypes &other) const {
-        Boolean copy = Boolean(*this);
-        switch (other.index()) {
+    Boolean Boolean::operator&&(const VariantTypes &right_variant) const {
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
-                const auto &other_boolean = std::get<Boolean>(other);
-                if (copy.m_storage == TriState::FALSE || other_boolean.m_storage == TriState::FALSE) {
+                const auto &right = std::get<Boolean>(right_variant);
+                if (m_storage == TriState::FALSE || right.m_storage == TriState::FALSE) {
                     return Boolean(TriState::FALSE);
                 }
-                if (copy.m_storage == TriState::TRUE && other_boolean.m_storage == TriState::TRUE) {
+                if (m_storage == TriState::TRUE && right.m_storage == TriState::TRUE) {
                     return Boolean(TriState::TRUE);
                 }
                 return Boolean(TriState::NEUTRAL); // One or both are NEUTRAL
@@ -289,23 +294,22 @@ namespace dat {
             case 1: /* === Integer === */
             case 2: /* === Decimal === */
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                                                       .second,
                                               "Operators not implemented.");
             default:
-                throw std::runtime_error("Unexpected type of other in operator.cpp");
+                throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
         }
     }
 
-    Boolean Boolean::operator||(const VariantTypes &other) const {
-        Boolean copy = Boolean(*this);
-        switch (other.index()) {
+    Boolean Boolean::operator||(const VariantTypes &right_variant) const {
+        switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
-                const auto &other_boolean = std::get<Boolean>(other);
-                if (copy.m_storage == TriState::TRUE || other_boolean.m_storage == TriState::TRUE) {
+                const auto &right = std::get<Boolean>(right_variant);
+                if (m_storage == TriState::TRUE || right.m_storage == TriState::TRUE) {
                     return Boolean(TriState::TRUE);
                 }
-                if (copy.m_storage == TriState::FALSE && other_boolean.m_storage == TriState::FALSE) {
+                if (m_storage == TriState::FALSE && right.m_storage == TriState::FALSE) {
                     return Boolean(TriState::FALSE);
                 }
                 return Boolean(TriState::NEUTRAL); // One or both are NEUTRAL
@@ -313,11 +317,11 @@ namespace dat {
             case 1: /* === Integer === */
             case 2: /* === Decimal === */
             case 3: /* === String === */
-                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(other)
+                throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
                                                       .second,
                                               "Operators not implemented.");
             default:
-                throw std::runtime_error("Unexpected type of other in operator.cpp");
+                throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
         }
     }
 }

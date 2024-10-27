@@ -8,17 +8,27 @@
 #include "../String.hpp"
 #include "../Utility.hpp"
 
-/*
- * All operators are commutative. Therefor A+B = B+A.
- * There are currently 4 Operators [Boolean, Integer, Decimal, String]
- * This ordner denotes the direction of implementation:
- * e.g. I'll implement Boolean + String, but if String + Boolean is called, I simply "calculate" Boolean + String!
- */
-
 namespace dat {
 
-    VariantTypes String::operator+(const VariantTypes &other) const {
-        throw std::runtime_error("Unexpected type of other in operator.cpp");
+    VariantTypes String::operator+(const VariantTypes &right_variant) const {
+        switch (right_variant.index()) {
+            case 0: /* === Boolean === */ {
+                // String + Boolean -> String + String = String
+            }
+            case 1: /* === Integer === */ {
+                // String + Integer = String + String = String
+            }
+            case 2: /* === Decimal === */ {
+                // String + Decimal -> String + String = String
+            }
+            case 3: /* === String === */ {
+                // String + String = String
+                const auto& right = std::get<String>(right_variant);
+//                auto temp = m_storage.append(right.m_storage);
+            }
+            default:
+                throw std::runtime_error("Unexpected type of right_variant in operator.cpp");
+        }
     }
 
     VariantTypes String::operator-(const VariantTypes &other) const {

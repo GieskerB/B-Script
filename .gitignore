@@ -7,5 +7,5 @@ cmake-build-debug/
 /cmake-build-debug
 cmake-build-debug
 
-# cmake list file
+# cmake var_type_names file
 CMakeLists.txt

@@ -4,13 +4,13 @@
 
 namespace lex {
 
-//    Token::Token():Token(TokenType::NONE,Position::NULL_POSITION) {}
-
-    Token::Token(TokenType token_type, const Position& start, const Position& end, std::string value) : c_type(token_type),
-                                                                                                        c_value(std::move(value)),
-                                                                                                        c_start_pos(start),
-                                                                                                        c_end_pos(end){
-        if(c_end_pos == Position::NULL_POSITION) {
+    Token::Token(TokenType token_type, const Position &start, const Position &end, std::string value,
+                 short parameter) : c_type(token_type),
+                                          c_value(std::move(value)),
+                                          c_parameter(parameter),
+                                          c_start_pos(start),
+                                          c_end_pos(end) {
+        if (c_end_pos == Position::NULL_POSITION) {
             c_end_pos = Position(c_start_pos);
             c_end_pos.advance();
         }
@@ -22,15 +22,15 @@ namespace lex {
         switch (token.c_type) {
             case VALUE:
                 temp_string = "VALUE:";
-                os<< open << temp_string << token.c_value<< close;
+                os << open << temp_string << token.c_value << close;
                 break;
             case VAR_KEYWORD:
                 temp_string = "VAR_KEYWORD:";
-                os<< open << temp_string << token.c_value<< close;
+                os << open << temp_string << token.c_value << close;
                 break;
             case IDENTIFIER:
                 temp_string = "IDENTIFIER:";
-                os<< open<< temp_string << token.c_value<< close;
+                os << open << temp_string << token.c_value << close;
                 break;
             case PLUS:
             case MINUS:
@@ -51,7 +51,7 @@ namespace lex {
             case LEFT_SQUARED_PARENTHESES:
             case RIGHT_SQUARED_PARENTHESES:
                 temp_string = static_cast<char>(token.c_type - 'p');
-                os << " " <<temp_string<<" ";
+                os << " " << temp_string << " ";
                 break;
                 break;
             case LOGIC_AND:
@@ -72,8 +72,11 @@ namespace lex {
                 break;
             case NONE:
                 temp_string = "NULL";
-                os<< open << temp_string << token.c_value<< close;
+                os << open << temp_string << token.c_value << close;
                 break;
+        }
+        if(token.c_parameter != 0) {
+            os << "<" << token.c_parameter << ">";
         }
         return os;
     }

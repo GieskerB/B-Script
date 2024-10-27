@@ -40,11 +40,12 @@ namespace lex {
     class Token {
     public:
         const TokenType c_type;
-        const std::string c_value, c_parameter;
+        const std::string c_value;
+        const short c_parameter;
         Position c_start_pos, c_end_pos;
 
         Token() = delete;
-        explicit Token(TokenType, const Position&, const Position& = Position::NULL_POSITION, std::string = "");
+        explicit Token(TokenType, const Position&, const Position& = Position::NULL_POSITION, std::string = "", short = 0);
 
         friend std::ostream &operator<<(std::ostream &, const Token &);
     };

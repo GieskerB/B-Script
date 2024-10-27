@@ -1,7 +1,6 @@
 #include <sstream>
 #include <vector>
 #include <ranges>
-#include <cmath>
 
 #include "Number.hpp"
 #include "Utility.hpp"
@@ -29,18 +28,11 @@ namespace dat {
 
     }
 
-    /*
-     * Initialization of lex_all base values.
-     */
     Number::Number(Size size, bool is_positive) : DataType(lex::Position::NULL_POSITION,
                                                            lex::Position::NULL_POSITION,
                                                            nullptr),
                                                   c_SIZE(size), m_storage(0),
                                                   m_is_positive(is_positive) {}
-
-//    Number::Number(const dat::Number &&other) noexcept: DataType(std::move(other)), c_SIZE(other.c_SIZE),
-//                                                        m_storage(other.m_storage),
-//                                                        m_is_positive(other.m_is_positive) {}
 
 
     void Number::invert() {

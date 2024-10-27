@@ -73,36 +73,83 @@ namespace dat {
         return result;
     }
 
-    VariantTypes create_datatype_form_string(const std::string &string) {
-        if (string[0] == '"') {
-            return String(string);
-        } else if (string == Boolean::TRUE or string == Boolean::FALSE or string == Boolean::NEUTRAL) {
-            return Boolean(string);
+    int get_last_number(const std::string &str) {
+        int result = 0, counter = 1;
+
+        for (auto it = str.end(); it != str.begin(); --it) {
+            char current = *it;
+            if (current >= '0' and current <= '9') {
+                result += (current - '0') * counter;
+                counter *= 10;
+            }
         }
 
-        bool has_decimal_point = std::find(string.begin(), string.end(), '.') != string.end();
-        if (!has_decimal_point) {
-            return Integer(string);
-        } else {
-            std::stringstream string_stream{string};
-            std::pair<std::string, std::string> split;
-            std::getline(string_stream, split.first, '.');
-            std::getline(string_stream, split.second);
+        return result;
+    }
+    int get_last_number_before_colon(const std::string &str) {
 
+        int result = 0, counter = 1;
 
-            char required_bits_int_part = split.first.size() > 20 ? LookUp::log_base_2_of_10_to_x[20]
-                                                                  : LookUp::log_base_2_of_10_to_x[split.first.size()];
-            char required_bits_dec_part = split.second.size() > 20 ? LookUp::log_base_2_of_10_to_x[20]
-                                                                   : LookUp::log_base_2_of_10_to_x[split.second.size()];
-
-//            required_bits_dec_part = split.second.size() * 4 +1;
-
-            if (required_bits_int_part + required_bits_dec_part > 64) {
-                required_bits_dec_part = static_cast<char> (64 - required_bits_int_part);
+        for (auto it = str.end(); it != str.begin(); --it) {
+            char current = *it;
+            if (current >= '0' and current <= '9') {
+                result += (current - '0') * counter;
+                counter *= 10;
             }
-//            required_bits_dec_part /= 2;
-//            required_bits_dec_part += 20;
-            return Decimal(string, Size::LONG, required_bits_dec_part);
+        }
+
+        return result;
+    }
+
+    VariantTypes create_datatype_form_string(const lex::Token &tok) {
+        const short parameter = tok.c_parameter;
+        const std::string &value_str = tok.c_value;
+
+        // Handel Strings and Boolean very easily
+        if (value_str[0] == '"') {
+            return String(value_str);
+        } else if (value_str == Boolean::TRUE or value_str == Boolean::FALSE or value_str == Boolean::NEUTRAL) {
+            return Boolean(value_str);
+        }
+
+        // Now the complex part: Numbers
+        bool has_decimal_point = std::find(value_str.begin(), value_str.end(), '.') != value_str.end();
+        if (parameter == 0) {
+            // No data type specified.
+            if (!has_decimal_point) {
+                return Integer(value_str);
+            }
+            // Estimate bits needed for integer part.
+            char decimal_point_pos = value_str.find('.') > 0 ? 20 : value_str.find('.');
+            char required_bits_int_part = LookUp::log_base_2_of_10_to_x[decimal_point_pos];
+            return Decimal(value_str, Size::LONG, 64 - required_bits_int_part);
+        } else {
+
+        }
+
+//
+//        if (!has_decimal_point) {
+//            return Integer(string);
+//        } else {
+//            std::stringstream string_stream{string};
+//            std::pair<std::string, std::string> split;
+//            std::getline(string_stream, split.first, '.');
+//            std::getline(string_stream, split.second);
+//
+//
+//            char required_bits_int_part = split.first.size() > 20 ? LookUp::log_base_2_of_10_to_x[20]
+//                                                                  : LookUp::log_base_2_of_10_to_x[split.first.size()];
+//            char required_bits_dec_part = split.second.size() > 20 ? LookUp::log_base_2_of_10_to_x[20]
+//                                                                   : LookUp::log_base_2_of_10_to_x[split.second.size()];
+//
+////            required_bits_dec_part = split.second.size() * 4 +1;
+//
+//            if (required_bits_int_part + required_bits_dec_part > 64) {
+//                required_bits_dec_part = static_cast<char> (64 - required_bits_int_part);
+//            }
+////            required_bits_dec_part /= 2;
+////            required_bits_dec_part += 20;
+//            return Decimal(string, Size::LONG, required_bits_dec_part);
 
 //
 //            char index = static_cast<char> (CONSTANTS.SIZE -1);
@@ -122,7 +169,7 @@ namespace dat {
 //            }
 //            std::cerr << (int)required_bits_dec_part;
 //            return Decimal(string, Size::LONG, required_bits_dec_part);
-        }
+//        }
     }
 
     std::pair<uint128, bool>

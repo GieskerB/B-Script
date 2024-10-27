@@ -13,18 +13,20 @@
 
 namespace lex {
     class Token;
-    enum TokenType: unsigned short;
+
+    enum TokenType : unsigned short;
 
     struct Constants {
         std::vector<std::string> VARIABLE_KEYWORDS;
         std::vector<std::string> CONSTANTS_KEYWORDS;
         std::vector<std::string> BUILD_IN_KEYWORDS;
-         void generate_number_keywords(){
+
+        void generate_variable_type_keywords() {
             VARIABLE_KEYWORDS.emplace_back("int");
             VARIABLE_KEYWORDS.emplace_back("dec");
             VARIABLE_KEYWORDS.emplace_back("bool");
             VARIABLE_KEYWORDS.emplace_back("str");
-            for (auto& size : dat::sizes) {
+            for (auto &size: dat::sizes) {
                 const char byte_to_bits{static_cast<char>(size * 8)};
                 const std::string size_string = std::to_string(byte_to_bits);
                 VARIABLE_KEYWORDS.push_back("int" + size_string);
@@ -38,18 +40,20 @@ namespace lex {
             }
         }
 
-         void generate_constants_keywords(){
-            CONSTANTS_KEYWORDS.emplace_back( dat::Boolean::TRUE);
-            CONSTANTS_KEYWORDS.emplace_back( dat::Boolean::FALSE);
-            CONSTANTS_KEYWORDS.emplace_back( dat::Boolean::NEUTRAL);
+
+
+        void generate_constants_keywords() {
+            CONSTANTS_KEYWORDS.emplace_back(dat::Boolean::TRUE);
+            CONSTANTS_KEYWORDS.emplace_back(dat::Boolean::FALSE);
+            CONSTANTS_KEYWORDS.emplace_back(dat::Boolean::NEUTRAL);
         }
 
         void generate_build_in_keywords() {
             BUILD_IN_KEYWORDS.emplace_back("if");
-         }
+        }
 
-         Constants() {
-            generate_number_keywords();
+        Constants() {
+            generate_variable_type_keywords();
             generate_constants_keywords();
             generate_build_in_keywords();
         }
@@ -58,11 +62,11 @@ namespace lex {
     const Constants CONSTANTS{};
 
     /**
-     * The lexer turns a text into a sequenz of tokens for the parser to process.
+     * The lexer turns a text into a sequence of tokens for the parser to process.
      */
     class Lexer {
-
         std::string m_text;
+        short m_var_type_param;
         Position m_pos;
         char m_current_char;
 
@@ -74,15 +78,12 @@ namespace lex {
         [[nodiscard]] Token make_word_token();
         [[nodiscard]] Token make_string_token();
 
-        Token make_two_char_token(char, char, TokenType  ,  TokenType );
+        Token make_two_char_token(char, char, TokenType, TokenType);
 
     public:
-
         Lexer() = delete;
-        explicit Lexer(const std::string&);
-
+        explicit Lexer(const std::string &);
         void advance();
-
         std::vector<Token> lex_all();
 
     };
