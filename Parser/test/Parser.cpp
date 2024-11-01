@@ -2,9 +2,10 @@
 #include "../../Error/Error.hpp"
 #include "Expression.hpp"
 
-Parser::Parser(const std::string &source_code) : m_tok_index(0) {
+Parser::Parser(const std::string &source_code) : m_tok_index(-1) {
     lex::Lexer lexer{source_code};
     this->m_tokens = lexer.lex_all();
+    advance();
 }
 
 lex::Token Parser::advance() {
@@ -27,6 +28,7 @@ std::shared_ptr<Expression> Parser::parse_expression() {
         auto right = parse_comparison_expression();
         left = std::make_shared<BinaryExpression>(left, op_token, right);
     }
+    advance();
     return left;
 }
 
@@ -53,6 +55,7 @@ std::shared_ptr<Expression> Parser::parse_comparison_expression() {
             auto right = parse_arithmetic_expression();
             left = std::make_shared<BinaryExpression>(left, op_token, right);
         }
+        advance();
         return left;
     }
 }
@@ -65,6 +68,7 @@ std::shared_ptr<Expression> Parser::parse_arithmetic_expression() {
         auto right = parse_term();
         left = std::make_shared<BinaryExpression>(left, op_token, right);
     }
+    advance();
     return left;
 }
 
@@ -76,6 +80,7 @@ std::shared_ptr<Expression> Parser::parse_term() {
         auto right = parse_factor();
         left = std::make_shared<BinaryExpression>(left, op_token, right);
     }
+    advance();
     return left;
 }
 

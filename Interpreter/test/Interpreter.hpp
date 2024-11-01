@@ -1,5 +1,5 @@
-#ifndef B_SHARP_INTERPRETER_HPP
-#define B_SHARP_INTERPRETER_HPP
+#ifndef B_SHARP_INTERPRETERNEW_HPP
+#define B_SHARP_INTERPRETERNEW_HPP
 
 #include <memory>
 #include "../../Parser/test/Program.hpp"

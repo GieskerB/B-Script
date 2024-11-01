@@ -26,6 +26,7 @@ namespace lex {
         RIGHT_SQUARED_PARENTHESES = ']' + 'p',
         EQUALS = '=',
         END_OF_LINE = ';',
+        END_OF_FILE = '\n',
         LESS_THEN = '<',
         GREATER_THEN= '>',
         NOT_EQUALS = '!' + '=',

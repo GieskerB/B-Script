@@ -29,23 +29,23 @@ namespace dat {
 
     std::ostream & operator<<(std::ostream &, const VariantTypes&);
 
-//    VariantTypes operator+(const VariantTypes&, const VariantTypes&);
-//    VariantTypes operator-(const VariantTypes&, const VariantTypes&);
-//    VariantTypes operator*(const VariantTypes&, const VariantTypes&);
-//    VariantTypes operator/(const VariantTypes&, const VariantTypes&);
+    VariantTypes operator+(const VariantTypes&, const VariantTypes&);
+    VariantTypes operator-(const VariantTypes&, const VariantTypes&);
+    VariantTypes operator*(const VariantTypes&, const VariantTypes&);
+    VariantTypes operator/(const VariantTypes&, const VariantTypes&);
 
-//    VariantTypes operator+(const VariantTypes&);
-//    VariantTypes operator-(const VariantTypes&);
-//    VariantTypes operator!(const VariantTypes&);
+    VariantTypes operator+(const VariantTypes&);
+    VariantTypes operator-(const VariantTypes&);
+    VariantTypes operator!(const VariantTypes&);
 
-//    Boolean operator<(const VariantTypes&, const VariantTypes&);
-//    Boolean operator>(const VariantTypes&, const VariantTypes&);
-//    Boolean operator<=(const VariantTypes&, const VariantTypes&);
-//    Boolean operator>=(const VariantTypes&, const VariantTypes&);
-//    Boolean operator==(const VariantTypes&, const VariantTypes&);
-//    Boolean operator!=(const VariantTypes&, const VariantTypes&);
-//    Boolean operator&&(const VariantTypes&, const VariantTypes&);
-//    Boolean operator||(const VariantTypes&, const VariantTypes&);
+    Boolean operator<(const VariantTypes&, const VariantTypes&);
+    Boolean operator>(const VariantTypes&, const VariantTypes&);
+    Boolean operator<=(const VariantTypes&, const VariantTypes&);
+    Boolean operator>=(const VariantTypes&, const VariantTypes&);
+    Boolean operator==(const VariantTypes&, const VariantTypes&);
+    Boolean operator!=(const VariantTypes&, const VariantTypes&);
+    Boolean operator&&(const VariantTypes&, const VariantTypes&);
+    Boolean operator||(const VariantTypes&, const VariantTypes&);
 
 
 } // dat

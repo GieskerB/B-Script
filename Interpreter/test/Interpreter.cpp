@@ -44,9 +44,10 @@ dat::VariantTypes evaluate_program(const Program& program) {
 
 dat::VariantTypes evaluate_statement(const std::shared_ptr<Statement>& statement,const itp::Context& context) {
     dat::VariantTypes value = dat::Integer("0");
+    std::cout << (int)statement->get_type() << "---";
     switch (statement->get_type()) {
         case BINARY:
-            evaluate_binary_node(*std::dynamic_pointer_cast<BinaryExpression>(statement), context);
+           value = evaluate_binary_node(*std::dynamic_pointer_cast<BinaryExpression>(statement), context);
             break;
         case UNARY:
             break;

@@ -4,10 +4,26 @@
 #include "Parser/Parser.hpp"
 #include "Interpreter/Interpreter.hpp"
 #include "Interpreter/Context.hpp"
+#include "Parser/test/Parser.hpp"
+#include "Interpreter/test/Interpreter.hpp"
 
 int main() {
 
     //TODO next: Variable assignment
+    const bool new_version = true;
+
+    if(new_version) {
+        Parser pars("main.bs");
+
+
+        auto prog = pars.parse_all();
+
+
+        auto var = evaluate_program(prog);
+
+        std::cout << std::get<1>(var) << "\n";
+
+    } else {
 
     try {
         // Work in 3 steps per file:
@@ -40,6 +56,7 @@ int main() {
         error.print();
     } catch (std::runtime_error &error) {
         std::cerr << "An programming error occurred:\n" << error.what();
+    }
     }
     return 0;
 }

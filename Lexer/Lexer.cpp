@@ -199,6 +199,7 @@ namespace lex {
                 throw err::IllegalCharError(m_pos, "Character " + std::string{m_current_char} + " not allowed here");
             }
         }
+        tokens.emplace_back(TokenType::END_OF_FILE,m_pos);
         return tokens;
     }
 }
