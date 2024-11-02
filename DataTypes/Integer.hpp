@@ -33,14 +33,7 @@ namespace dat {
 
         Integer() = delete;
         Integer(const Integer&);
-//        Integer(const Integer &&) noexcept;
         explicit Integer(std::string, Size = Size::LONG, bool = false);
-
-        static Integer cast(const Boolean& );
-        static Integer copy(const Integer& );
-        static Integer cast(const Decimal& );
-        static Integer cast(const String& );
-        static Integer cast(const VariantTypes & );
 
         [[nodiscard]] std::string to_string() const;
         void print(std::ostream& os) const override;
@@ -50,8 +43,8 @@ namespace dat {
         VariantTypes operator*(const VariantTypes &) const;
         VariantTypes operator/(const VariantTypes &) const;
 
-        Integer operator+() const;
-        Integer operator-() const;
+        VariantTypes operator+() const;
+        VariantTypes operator-() const;
         VariantTypes operator!() const;
 
         Boolean operator<( const VariantTypes&) const;

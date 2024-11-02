@@ -9,7 +9,7 @@ FileReader::~FileReader() {
 
 std::string FileReader::read_line() {
     if(!can_read()) {
-        throw std::runtime_error("Can not Read the file: '" + m_file_name + "'");
+        throw std::runtime_error("Can not read the file: '" + m_file_name + "'");
     }
     m_state = FileReaderState::READING;
     std::string line;

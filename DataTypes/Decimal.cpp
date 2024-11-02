@@ -67,6 +67,10 @@ namespace dat {
 
     Decimal::Decimal(const Integer &other) : Number(other.c_SIZE, other.m_is_positive), c_SCALING_FACTOR(0) {
         m_storage = other.m_storage;
+        // https://stackoverflow.com/questions/671815/what-is-the-fastest-most-efficient-way-to-find-the-highest-set-bit-msb-in-an-i
+        // __builtin_clzll Returns the number of leading 0-bits in X, starting at the most significant bit position.
+         c_SCALING_FACTOR = m_storage == 0 ? 64 : __builtin_clzll(other.m_storage);
+         m_storage <<= c_SCALING_FACTOR;
     }
 
     Decimal::Decimal(const Decimal &other) : Number(other.c_SIZE, other.m_is_positive),
@@ -80,14 +84,11 @@ namespace dat {
                                 other.context());
     }
 
-    // Move Constructor
-//    Decimal::Decimal(const dat::Decimal &&other) noexcept: Number(std::move(other)),
-//                                                           c_SCALING_FACTOR(other.c_SCALING_FACTOR) {}
 
     // Constructs a Decimal form a string
-    Decimal::Decimal(std::string str_repr, Size size, unsigned char scaling_factor) : Number(size, str_repr.empty() or
-                                                                                                   str_repr[0] != '-'),
-                                                                                      c_SCALING_FACTOR(scaling_factor) {
+    Decimal::Decimal(std::string str_repr, Size size, uint8_t scaling_factor) : Number(size, str_repr.empty() or
+                                                                                             str_repr[0] != '-'),
+                                                                                c_SCALING_FACTOR(scaling_factor) {
 
         // Throw Error if format is wrong
         if (str_repr.empty()) {
@@ -110,7 +111,7 @@ namespace dat {
         uint64 decimal_bitmap = ((1ULL << scaling_factor) - 1);
         uint64 numerator = string_to_number(parts.second);
         uint64 denominator = pow_base_10(parts.second.size());
-        for (unsigned char i{0}; i < c_SCALING_FACTOR; ++i) {
+        for (uint8_t i{0}; i < c_SCALING_FACTOR; ++i) {
             // Converting from fraction to binary like with pen and paper...
             numerator *= 2;
             decimal_part <<= 1;
@@ -159,6 +160,7 @@ namespace dat {
 
         // Reduce output limit to the important part.
         std::string fractional_part = temporary_storage.str();
+//        std::cerr << fractional_part<<"->" << (int) c_SCALING_FACTOR<<"\n";
         fractional_part = fractional_part.substr(0, LookUp::log_base_10_of_2_to_x[c_SCALING_FACTOR]);
 
 
@@ -168,6 +170,10 @@ namespace dat {
             --index;
         }
         fractional_part = fractional_part.substr(0, index);
+
+        if (fractional_part.empty()) {
+            fractional_part = "0";
+        }
 
         result << fractional_part;
         return result.str();

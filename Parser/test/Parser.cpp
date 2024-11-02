@@ -2,9 +2,12 @@
 #include "../../Error/Error.hpp"
 #include "Expression.hpp"
 
-Parser::Parser(const std::string &source_code) : m_tok_index(-1) {
+Parser::Parser(const std::string &source_code) : m_tok_index(-1), p_curr_tok(nullptr) {
     lex::Lexer lexer{source_code};
     this->m_tokens = lexer.lex_all();
+    for (auto &tok: m_tokens) {
+        std::cout << tok << " ";
+    }
     advance();
 }
 
@@ -17,18 +20,24 @@ lex::Token Parser::advance() {
 }
 
 std::shared_ptr<Statement> Parser::parse_statement() {
-    return parse_expression();
+    auto expr = parse_expression();
+
+    if (p_curr_tok->c_type != lex::TokenType::END_OF_LINE) {
+        throw err::InvalidSyntaxError(p_curr_tok->c_start_pos, p_curr_tok->c_end_pos,
+                                      "Expected ';' at end of expression");
+    }
+    advance();
+    return expr;
 }
 
 std::shared_ptr<Expression> Parser::parse_expression() {
     auto left = parse_comparison_expression();
     while (p_curr_tok->c_type == lex::TokenType::LOGIC_AND || p_curr_tok->c_type == lex::TokenType::LOGIC_OR) {
-        lex::Token& op_token = *p_curr_tok;
+        lex::Token &op_token = *p_curr_tok;
         advance();
         auto right = parse_comparison_expression();
         left = std::make_shared<BinaryExpression>(left, op_token, right);
     }
-    advance();
     return left;
 }
 
@@ -38,7 +47,7 @@ std::shared_ptr<Expression> Parser::parse_assignment_expression() {
 
 std::shared_ptr<Expression> Parser::parse_comparison_expression() {
     if (p_curr_tok->c_type == lex::TokenType::LOGIC_NOT) {
-        lex::Token& operator_token = *p_curr_tok;
+        lex::Token &operator_token = *p_curr_tok;
         advance();
         auto right = parse_comparison_expression();
         return std::make_shared<UnaryExpression>(operator_token, right);
@@ -50,12 +59,11 @@ std::shared_ptr<Expression> Parser::parse_comparison_expression() {
                p_curr_tok->c_type == lex::TokenType::LESS_THEN_OR_EQUALS ||
                p_curr_tok->c_type == lex::TokenType::GREATER_THEN ||
                p_curr_tok->c_type == lex::TokenType::GREATER_THEN_OR_EQUALS) {
-            lex::Token& op_token = *p_curr_tok;
+            lex::Token &op_token = *p_curr_tok;
             advance();
             auto right = parse_arithmetic_expression();
             left = std::make_shared<BinaryExpression>(left, op_token, right);
         }
-        advance();
         return left;
     }
 }
@@ -63,41 +71,35 @@ std::shared_ptr<Expression> Parser::parse_comparison_expression() {
 std::shared_ptr<Expression> Parser::parse_arithmetic_expression() {
     auto left = parse_term();
     while (p_curr_tok->c_type == lex::TokenType::PLUS || p_curr_tok->c_type == lex::TokenType::MINUS) {
-        lex::Token& op_token = *p_curr_tok;
+        lex::Token &op_token = *p_curr_tok;
         advance();
         auto right = parse_term();
         left = std::make_shared<BinaryExpression>(left, op_token, right);
     }
-    advance();
     return left;
 }
 
 std::shared_ptr<Expression> Parser::parse_term() {
     auto left = parse_factor();
     while (p_curr_tok->c_type == lex::TokenType::MULTIPLY || p_curr_tok->c_type == lex::TokenType::DIVIDE) {
-        lex::Token& op_token = *p_curr_tok;
+        lex::Token &op_token = *p_curr_tok;
         advance();
         auto right = parse_factor();
         left = std::make_shared<BinaryExpression>(left, op_token, right);
     }
-    advance();
     return left;
 }
 
 std::shared_ptr<Expression> Parser::parse_factor() {
     if (p_curr_tok->c_type == lex::TokenType::PLUS or p_curr_tok->c_type == lex::TokenType::MINUS) {
-        lex::Token& op_token = *p_curr_tok;
+        lex::Token &op_token = *p_curr_tok;
         advance();
         auto right = parse_expression();
         return std::make_shared<UnaryExpression>(op_token, right);
-    } else if (p_curr_tok->c_type == lex::TokenType::VALUE) {
-        lex::Token& temp_token = *p_curr_tok;
+    } else if (p_curr_tok->c_type == lex::TokenType::VALUE or p_curr_tok->c_type == lex::TokenType::IDENTIFIER) {
+        lex::Token &temp_token = *p_curr_tok;
         advance();
-        return std::make_shared<Literal>(temp_token.c_value);
-    } else if (p_curr_tok->c_type == lex::TokenType::IDENTIFIER) {
-        lex::Token& temp_token = *p_curr_tok;
-        advance();
-        return std::make_shared<Identifier>(temp_token);
+        return std::make_shared<ValueExpression>(temp_token);
     } else if (p_curr_tok->c_type == lex::TokenType::LEFT_ROUND_PARENTHESES) {
         advance();
         auto expr = parse_expression();
@@ -118,6 +120,9 @@ Program Parser::parse_all() {
 
     while (m_tok_index < m_tokens.size()) {
         program.add_statement(parse_statement());
+        if (p_curr_tok->c_type == lex::END_OF_FILE) {
+            break;
+        }
     }
     return program;
 }

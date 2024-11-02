@@ -12,7 +12,7 @@ class Parser {
 
 private:
     std::vector<lex::Token> m_tokens;
-    lex::Token* p_curr_tok;
+    lex::Token* p_curr_tok{};
     uint64_t m_tok_index;
 
     lex::Token advance();

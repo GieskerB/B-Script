@@ -89,7 +89,6 @@ namespace par {
 //                temp = expression();
         }
         if (m_current_token.c_type != lex::TokenType::END_OF_LINE) {
-            std::cerr << m_current_token << "\n";
             throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
                                           "Expected ';' at end of expression");
         }
@@ -144,7 +143,7 @@ namespace par {
         advance();
         if (m_current_token.c_type != lex::TokenType::IDENTIFIER) {
             throw err::InvalidSyntaxError(m_current_token.c_start_pos, m_current_token.c_end_pos,
-                                          "Expected Identifier here.");
+                                          "Expected ValueExpression here.");
         }
 
         auto identifier = m_current_token;

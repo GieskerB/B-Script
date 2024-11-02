@@ -108,17 +108,17 @@ namespace dat {
         }
     }
 
-    Integer Boolean::operator+() const {
+    VariantTypes Boolean::operator+() const {
         // +Boolean -> +Integer = Integer
         return +Integer(*this);
     }
 
-    Integer Boolean::operator-() const {
+    VariantTypes Boolean::operator-() const {
         // -Boolean -> -Integer = Integer
         return -Integer(*this);
     }
 
-    Boolean Boolean::operator!() const {
+    VariantTypes Boolean::operator!() const {
         // !Boolean = Boolean
         Boolean result(*this);
         if (m_storage == TriState::TRUE) {

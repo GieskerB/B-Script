@@ -13,7 +13,7 @@ namespace dat {
             }
             case 1: /* === Integer === */ {
                 // Integer + Integer = Integer
-                Integer left = Integer(*this);
+                Integer left{*this};
                 const auto &right = std::get<Integer>(right_variant);
                 auto result = storage_addition(left.m_storage, right.m_storage, left.m_is_positive,
                                                right.m_is_positive);
@@ -24,7 +24,7 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Integer + Decimal -> Decimal + Decimal = Decimal
-                const Decimal left (*this);
+                const Decimal left{*this};
                 const auto &right = std::get<Decimal>(right_variant);
                 return left + right;
             }
@@ -46,12 +46,12 @@ namespace dat {
             }
             case 1: /* === Integer === */ {
                 // Integer - Integer -> Integer + (-Integer) = Integer
-                const auto &right_casted= Integer(std::get<Integer>(right_variant));
+                const auto &right_casted = Integer(std::get<Integer>(right_variant));
                 return *this + -right_casted;
             }
             case 2: /* === Decimal === */ {
                 // Integer - Decimal -> Decimal - Decimal = Decimal
-                const Decimal left_casted (*this);
+                const Decimal left_casted{*this};
                 const auto &right = std::get<Decimal>(right_variant);
                 return left_casted - right;
             }
@@ -67,14 +67,14 @@ namespace dat {
         switch (right_variant.index()) {
             case 0: /* === Boolean === */{
                 // Integer - Boolean -> Integer - Integer = Integer
-                const Integer right ( std::get<Boolean>(right_variant));
+                const Integer right(std::get<Boolean>(right_variant));
                 return *this * right;
             }
             case 1: /* === Integer === */ {
                 // Integer * Integer = Integer
-                Integer left(*this);
+                Integer left{*this};
                 const auto &other_integer = std::get<Integer>(right_variant);
-                // neg times neg = pos
+                // neg times neg = pos -> XOR
                 left.m_is_positive ^= ~other_integer.m_is_positive;
                 left.m_storage *= other_integer.m_storage;
                 left.clap_to_size();
@@ -82,7 +82,7 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Integer * Decimal -> Decimal * Decimal = Decimal
-                const Decimal left (*this);
+                const Decimal left{*this};
                 const auto &right = std::get<Decimal>(right_variant);
                 return left * right;
             }
@@ -98,13 +98,13 @@ namespace dat {
     VariantTypes Integer::operator/(const VariantTypes &right_variant) const {
         switch (right_variant.index()) {
             case 0: /* === Boolean === */{
-                // Integer * Boolean -> Integer * Integer = Integer
-                const Integer right ( std::get<Boolean>(right_variant));
+                // Integer / Boolean -> Integer * Integer = Integer
+                const Integer right(std::get<Boolean>(right_variant));
                 return *this * right;
             }
             case 1: /* === Integer === */ {
-                // Integer * Integer = Integer
-                Integer left(*this);
+                // Integer / Integer = Integer
+                Integer left{*this};
                 const auto &other_integer = std::get<Integer>(right_variant);
                 if (other_integer.is_zero()) {
                     throw err::RuntimeError(other_integer.m_position_start, other_integer.m_position_end,
@@ -120,7 +120,7 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Integer / Decimal -> Decimal / Decimal = Decimal
-                const Decimal left (*this);
+                const Decimal left{*this};
                 const auto &right = std::get<Decimal>(right_variant);
                 return left * right;
             }
@@ -134,12 +134,12 @@ namespace dat {
     }
 
 
-    Integer Integer::operator+() const {
+    VariantTypes Integer::operator+() const {
         return *this;
     }
 
-    Integer Integer::operator-() const {
-        Integer result = Integer(*this);
+    VariantTypes Integer::operator-() const {
+        Integer result{*this};
         result.invert();
         return result;
     }
@@ -158,12 +158,12 @@ namespace dat {
                 // Integer < Integer = Boolean
                 const auto &right = std::get<Integer>(right_variant);
                 const auto &comparison = storage_comparison(m_storage, right.m_storage, m_is_positive,
-                                                     right.m_is_positive);
+                                                            right.m_is_positive);
                 return Boolean(std::get<0>(comparison));
             }
             case 2: /* === Decimal === */ {
                 // Integer < Decimal -> Decimal < Decimal = Boolean
-                const Decimal left (*this);
+                const Decimal left{*this};
                 const auto &right = std::get<Decimal>(right_variant);
 
                 return left < right;
@@ -188,7 +188,7 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Integer > Decimal -> Decimal > Decimal = Boolean
-                const Decimal left (*this);
+                const Decimal left{*this};
                 const auto &right = std::get<Decimal>(right_variant);
 
                 return left > right;
@@ -213,7 +213,7 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Integer <= Decimal -> Decimal <= Decimal = Boolean
-                const Decimal left (*this);
+                const Decimal left{*this};
                 const auto &right = std::get<Decimal>(right_variant);
 
                 return left <= right;
@@ -238,7 +238,7 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Integer >= Decimal -> Decimal >= Decimal = Boolean
-                const Decimal left (*this);
+                const Decimal left{*this};
                 const auto &right = std::get<Decimal>(right_variant);
 
                 return left >= right;
@@ -263,7 +263,7 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Integer == Decimal -> Decimal == Decimal = Boolean
-                const Decimal left (*this);
+                const Decimal left{*this};
                 const auto &right = std::get<Decimal>(right_variant);
 
                 return left == right;
@@ -288,7 +288,7 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Integer != Decimal -> Decimal != Decimal = Boolean
-                const Decimal left (*this);
+                const Decimal left{*this};
                 const auto &right = std::get<Decimal>(right_variant);
 
                 return left != right;

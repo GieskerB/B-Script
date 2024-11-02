@@ -22,8 +22,6 @@ namespace dat {
     public:
 
         DataType() = delete;
-//        DataType(const DataType&) = delete;
-//        DataType(const DataType&&) noexcept ;
 
         void set_position(const lex::Position &, const lex::Position &);
         void set_context(itp::Context &);

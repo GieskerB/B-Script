@@ -12,11 +12,10 @@ public:
 };
 
 class UnaryExpression : public Expression {
-private:
-    lex::Token m_operator;
-    std::shared_ptr<Expression> m_expression;
-
 public:
+    const lex::Token c_operator;
+    const std::shared_ptr<Expression> c_right;
+
     UnaryExpression() = delete;
     ~UnaryExpression() override = default;
     UnaryExpression(lex::Token, const std::shared_ptr<Expression> &);
@@ -32,26 +31,15 @@ public:
     BinaryExpression(const std::shared_ptr<Expression> &, lex::Token, const std::shared_ptr<Expression> &);
 };
 
-class Identifier : public Expression {
-private:
-    lex::Token m_symbol;
-
+class ValueExpression : public Expression {
 public:
-    Identifier() = delete;
-    ~Identifier() override = default;
-    explicit Identifier(lex::Token);
+    const lex::Token c_symbol;
+
+    ValueExpression() = delete;
+    ~ValueExpression() override = default;
+    explicit ValueExpression(lex::Token);
 };
 
 
-class Literal : public Expression {
-private:
-    std::string m_value, m_expected_type;
-
-public:
-    Literal() = delete;
-    ~Literal() override = default;
-    explicit Literal(std::string);
-    Literal(std::string,std::string);
-};
 
 #endif //B_SHARP_EXPRESSION_HPP

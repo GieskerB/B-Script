@@ -53,9 +53,9 @@ namespace dat {
         VariantTypes operator*(const VariantTypes &) const;
         VariantTypes operator/(const VariantTypes &) const;
 
-        Integer operator+() const;
-        Integer operator-() const;
-        Boolean operator!() const;
+        VariantTypes operator+() const;
+        VariantTypes operator-() const;
+        VariantTypes operator!() const;
 
         Boolean operator<(const VariantTypes&) const;
         Boolean operator>(const VariantTypes&) const;

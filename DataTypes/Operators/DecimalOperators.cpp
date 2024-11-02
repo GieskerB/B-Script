@@ -1,12 +1,14 @@
 #include <iostream>
-#include "../Number.hpp"
-#include "../../Error/Error.hpp"
 
 #include "../Boolean.hpp"
 #include "../Integer.hpp"
 #include "../Decimal.hpp"
 #include "../String.hpp"
 #include "../Utility.hpp"
+
+#include "../Number.hpp"
+#include "../../Error/Error.hpp"
+
 
 namespace dat {
 
@@ -25,9 +27,9 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Decimal + Decimal = Decimal
-                Decimal left(*this);
+                Decimal left{*this};
                 const auto &right = std::get<Decimal>(right_variant);
-                const char scale = static_cast<char>(left.c_SCALING_FACTOR - right.c_SCALING_FACTOR);
+                const auto scale = static_cast<int8_t>(left.c_SCALING_FACTOR - right.c_SCALING_FACTOR);
 
                 auto shifted_storage = shift_to_equal_size(left.m_storage, right.m_storage, scale);
 
@@ -48,7 +50,7 @@ namespace dat {
         }
     }
 
-    Decimal Decimal::operator-(const VariantTypes &right_variant) const {
+    VariantTypes Decimal::operator-(const VariantTypes &right_variant) const {
         switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
                 // Decimal - Boolean -> Decimal - Decimal = Decimal
@@ -62,8 +64,8 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Decimal - Decimal -> Decimal + (-Decimal) = Decimal
-                const auto &other_decimal = Decimal(std::get<Decimal>(right_variant));
-                return std::get<Decimal>(*this + (-other_decimal)); // This cant be a String
+                const auto &right = Decimal(std::get<Decimal>(right_variant));
+                return *this + (-right);
             }
             case 3: /* === String === */
                 throw err::InvalidSyntaxError(m_position_start, get_position_form_variant(right_variant)
@@ -73,7 +75,7 @@ namespace dat {
         }
     }
 
-    Decimal Decimal::operator*(const VariantTypes &right_variant) const {
+    VariantTypes Decimal::operator*(const VariantTypes &right_variant) const {
         switch (right_variant.index()) {
             case 0: /* === Boolean === */ {
                 // Decimal * Boolean -> Decimal * Decimal = Decimal
@@ -87,20 +89,20 @@ namespace dat {
             }
             case 2: /* === Decimal === */ {
                 // Decimal * Decimal = Decimal
-                Decimal left(*this);
-                const auto &other_decimal = std::get<Decimal>(right_variant);
-                const char scale = static_cast<char>(left.c_SCALING_FACTOR - other_decimal.c_SCALING_FACTOR);
+                Decimal left{*this};
+                const auto &right = std::get<Decimal>(right_variant);
+                const int8_t scale = static_cast<int8_t>(left.c_SCALING_FACTOR - right.c_SCALING_FACTOR);
 
-                auto shifted_storage = shift_to_equal_size(left.m_storage, other_decimal.m_storage, scale);
+                auto shifted_storage = shift_to_equal_size(left.m_storage, right.m_storage, scale);
 
-                left.m_is_positive ^= ~other_decimal.m_is_positive;
+                left.m_is_positive ^= ~right.m_is_positive;
 
                 shifted_storage.first *= shifted_storage.second;
 
                 if (scale > 0) {
                     shifted_storage.first >>= left.c_SCALING_FACTOR;
                 } else {
-                    shifted_storage.first >>= other_decimal.c_SCALING_FACTOR;
+                    shifted_storage.first >>= right.c_SCALING_FACTOR;
                 }
 
                 left.m_storage = unshift_form_equal_size(shifted_storage.first, scale);
@@ -116,7 +118,7 @@ namespace dat {
         }
     }
 
-    Decimal Decimal::operator/(const VariantTypes &right_variant) const {
+    VariantTypes Decimal::operator/(const VariantTypes &right_variant) const {
         switch (right_variant.index()) {
             case 0: /* === Boolean === */{
                 // Decimal / Boolean -> Decimal / Decimal = Decimal
@@ -129,14 +131,14 @@ namespace dat {
                 return *this * right;
             }
             case 2: /* === Decimal === */ {
-                Decimal left (*this);
+                Decimal left{*this};
                 const auto &right = std::get<Decimal>(right_variant);
                 if (right.is_zero()) {
                     throw err::RuntimeError(right.m_position_start, right.m_position_end,
                                             "Division by 0 is not allowed!", *right.p_context);
                 }
 
-                const char scale = static_cast<char>(left.c_SCALING_FACTOR - right.c_SCALING_FACTOR);
+                const int8_t scale = static_cast<int8_t>(left.c_SCALING_FACTOR - right.c_SCALING_FACTOR);
                 auto shifted_storage = shift_to_equal_size(left.m_storage, right.m_storage, scale);
 
                 left.m_is_positive ^= ~right.m_is_positive;
@@ -163,12 +165,12 @@ namespace dat {
     }
 
 
-    Decimal Decimal::operator+() const {
+    VariantTypes Decimal::operator+() const {
         return *this;
     }
 
-    Decimal Decimal::operator-() const {
-        auto result = Decimal(*this);
+    VariantTypes Decimal::operator-() const {
+        auto result = Decimal{*this};
         result.m_is_positive = !result.m_is_positive;
         return result;
     }
@@ -192,7 +194,7 @@ namespace dat {
                 // Decimal < Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
                 auto shifted_storage = shift_to_equal_size(m_storage, right.m_storage,
-                                                           static_cast<char>(c_SCALING_FACTOR -
+                                                           static_cast<int8_t>(c_SCALING_FACTOR -
                                                                              right.c_SCALING_FACTOR));
 
                 auto comp = storage_comparison(shifted_storage.first, shifted_storage.second, m_is_positive,
@@ -219,7 +221,7 @@ namespace dat {
                 // Decimal < Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
                 auto shifted_storage = shift_to_equal_size(m_storage, right.m_storage,
-                                                           static_cast<char>(c_SCALING_FACTOR -
+                                                           static_cast<int8_t>(c_SCALING_FACTOR -
                                                                              right.c_SCALING_FACTOR));
 
                 auto comp = storage_comparison(shifted_storage.first, shifted_storage.second, m_is_positive,
@@ -246,7 +248,7 @@ namespace dat {
                 // Decimal < Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
                 auto shifted_storage = shift_to_equal_size(m_storage, right.m_storage,
-                                                           static_cast<char>(c_SCALING_FACTOR -
+                                                           static_cast<int8_t>(c_SCALING_FACTOR -
                                                                              right.c_SCALING_FACTOR));
 
                 auto comp = storage_comparison(shifted_storage.first, shifted_storage.second, m_is_positive,
@@ -273,7 +275,7 @@ namespace dat {
                 // Decimal < Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
                 auto shifted_storage = shift_to_equal_size(m_storage, right.m_storage,
-                                                           static_cast<char>(c_SCALING_FACTOR -
+                                                           static_cast<int8_t>(c_SCALING_FACTOR -
                                                                              right.c_SCALING_FACTOR));
 
                 auto comp = storage_comparison(shifted_storage.first, shifted_storage.second, m_is_positive,
@@ -300,7 +302,7 @@ namespace dat {
                 // Decimal < Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
                 auto shifted_storage = shift_to_equal_size(m_storage, right.m_storage,
-                                                           static_cast<char>(c_SCALING_FACTOR -
+                                                           static_cast<int8_t>(c_SCALING_FACTOR -
                                                                              right.c_SCALING_FACTOR));
 
                 auto comp = storage_comparison(shifted_storage.first, shifted_storage.second, m_is_positive,
@@ -327,7 +329,7 @@ namespace dat {
                 // Decimal < Decimal = Boolean
                 const auto &right = std::get<Decimal>(right_variant);
                 auto shifted_storage = shift_to_equal_size(m_storage, right.m_storage,
-                                                           static_cast<char>(c_SCALING_FACTOR -
+                                                           static_cast<int8_t>(c_SCALING_FACTOR -
                                                                              right.c_SCALING_FACTOR));
 
                 auto comp = storage_comparison(shifted_storage.first, shifted_storage.second, m_is_positive,

@@ -15,9 +15,9 @@ namespace itp {
 namespace dat {
 
     struct LookUp {
-        static constexpr std::array<char, 21> log_base_2_of_10_to_x{0, 4, 7, 10, 14, 17, 20, 24, 27, 30, 34, 37, 40, 44,
+        static constexpr std::array<uint8_t , 21> log_base_2_of_10_to_x{0, 4, 7, 10, 14, 17, 20, 24, 27, 30, 34, 37, 40, 44,
                                                                     47, 50, 54, 57, 60, 64};
-        static constexpr std::array<char, 65> log_base_10_of_2_to_x{0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5,
+        static constexpr std::array<uint8_t, 65> log_base_10_of_2_to_x{0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5,
                                                                     6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10,
                                                                     10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 13, 14, 14,
                                                                     14, 15, 15, 15,
@@ -55,8 +55,6 @@ namespace dat {
                 std::pair{"9223372036854775807", 9223372036854775807},
                 std::pair{"18446744073709551615", std::numeric_limits<unsigned long long>::max()}
         };
-
-        LookUp();
     };
 
     enum Size : char {

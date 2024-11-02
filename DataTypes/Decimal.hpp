@@ -21,7 +21,7 @@ namespace dat {
         friend class Integer;
         friend class String;
 
-        unsigned char c_SCALING_FACTOR;
+        uint8_t c_SCALING_FACTOR;
 
         static std::pair<std::string, std::string> slip(const std::string &);
 
@@ -31,18 +31,18 @@ namespace dat {
         explicit Decimal(const Boolean&);
         explicit Decimal(const Integer&);
         explicit Decimal(const String&);
-        explicit Decimal(std::string, Size = Size::LONG, unsigned char = 16);
+        explicit Decimal(std::string, Size = Size::LONG, uint8_t = 16);
 
         [[nodiscard]] std::string to_string() const;
         void print(std::ostream& os) const override;
 
         VariantTypes operator+(const VariantTypes &) const;
-        Decimal operator-(const VariantTypes &) const;
-        Decimal operator*(const VariantTypes &) const;
-        Decimal operator/(const VariantTypes &) const;
+        VariantTypes operator-(const VariantTypes &) const;
+        VariantTypes operator*(const VariantTypes &) const;
+        VariantTypes operator/(const VariantTypes &) const;
 
-        Decimal operator+() const;
-        Decimal operator-() const;
+        VariantTypes operator+() const;
+        VariantTypes operator-() const;
         VariantTypes operator!() const;
 
         Boolean operator<( const VariantTypes&) const;

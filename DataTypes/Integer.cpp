@@ -35,8 +35,6 @@ namespace dat {
                                 other.context());
     }
 
-//    Integer::Integer(const Integer &&other) noexcept: Number(std::move(other)), c_IS_SIGNED(other.c_IS_SIGNED) {}
-
 
     Integer::Integer(std::string str_repr, Size size, bool is_signed) : Number(size,
                                                                                str_repr.empty() or str_repr[0] != '-'),
@@ -48,43 +46,11 @@ namespace dat {
         if (!m_is_positive and str_repr.size() == 1) {
             throw std::runtime_error("Invalid number format1: '" + str_repr + "'\n");
         }
-
+        str_repr = str_repr.substr(0, str_repr.find('.') );
         m_storage = string_to_number(str_repr);
-        uint64 bitmap = ((1ULL << (c_SIZE * 8)) - 1);
+        uint64 bitmap = c_SIZE == Size::LONG ? -1 : ((1ULL << (c_SIZE * 8)) - 1);
         m_storage &= bitmap;
     }
-
-    Integer Integer::cast(const Boolean &other) {
-        return Integer(other);
-    }
-
-    Integer Integer::copy(const dat::Integer &other) {
-        return {other};
-    }
-
-    Integer Integer::cast(const dat::Decimal &other) {
-        return Integer(other);
-    }
-
-    Integer Integer::cast(const dat::String &other) {
-        return Integer(other);
-    }
-
-    Integer Integer::cast(const VariantTypes &other) {
-        switch (other.index()) {
-            case 0 :
-                return Integer::cast(std::get<Boolean>(other));
-            case 1 :
-                return Integer::copy(std::get<Integer>(other));
-            case 2 :
-                return Integer::cast(std::get<Decimal>(other));
-            case 3 :
-                return Integer::cast(std::get<String>(other));
-            default:
-                throw std::runtime_error("Error in Integer cast: Unexpected DataType");
-        }
-    }
-
 
     std::string Integer::to_string() const {
         return number_to_string(m_storage, m_is_positive);
