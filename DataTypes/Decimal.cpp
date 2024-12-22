@@ -35,7 +35,7 @@ namespace dat {
     /*
      * Splits the string representation of the number at the decimal point and returns both parts (integer & fraction)
      */
-    std::pair<std::string, std::string> Decimal::slip(const std::string &str_repr) {
+    std::pair<std::string, std::string> split(const std::string &str_repr) {
         const int point_index = find_decimal_point(str_repr);
 
         std::pair<std::string, std::string> result{};
@@ -73,11 +73,6 @@ namespace dat {
          m_storage <<= c_SCALING_FACTOR;
     }
 
-    Decimal::Decimal(const Decimal &other) : Number(other.c_SIZE, other.m_is_positive),
-                                             c_SCALING_FACTOR(other.c_SCALING_FACTOR) {
-        m_storage = other.m_storage;
-    }
-
     Decimal::Decimal(const String &other) : Number(Size::LONG, false), c_SCALING_FACTOR(0) {
         throw err::RuntimeError(other.position().first, other.position().second,
                                 "Casting error form String to Decimal.",
@@ -98,7 +93,7 @@ namespace dat {
         }
 
         // Prepare numbers for upcoming conversion:
-        auto parts = Decimal::slip(str_repr);
+        auto parts = split(str_repr);
 
         // Converts string to number and limits it to its given size, as well as shifting it to make room for the
         // decimal part.
@@ -183,4 +178,43 @@ namespace dat {
         os << to_string();
     }
 
+    Decimal::operator Boolean() const {
+        return Boolean{*this};
+    }
+    Decimal::operator Integer() const {
+        return Integer{*this};
+    }
+    Decimal::operator String() const {
+        return String{*this};
+    }
+
+    Decimal Decimal::operator+(const Decimal &other) const {
+        return Decimal{std::string{"0"}};
+    }
+
+    Decimal Decimal::operator-(const Decimal &other) const {
+        return Decimal{std::string{"0"}};
+    }
+
+    Decimal Decimal::operator*(const Decimal &other) const {
+        return Decimal{std::string{"0"}};
+    }
+
+    Decimal Decimal::operator/(const Decimal &) const {
+        throw std::runtime_error("Binary Operator with a Boolean in the denominator is not defined!");
+    }
+
+    Decimal Decimal::operator+() const { return Decimal{std::string{"0"}}; }
+    Decimal Decimal::operator-() const { return Decimal{std::string{"0"}}; }
+    Decimal Decimal::operator!() const { return Decimal{std::string{"0"}}; }
+
+    Boolean Decimal::operator<(const Decimal &) const { return false; }
+    Boolean Decimal::operator>(const Decimal &) const { return false; }
+    Boolean Decimal::operator<=(const Decimal &) const { return false; }
+    Boolean Decimal::operator>=(const Decimal &) const { return false; }
+    Boolean Decimal::operator==(const Decimal &) const { return false; }
+    Boolean Decimal::operator!=(const Decimal &) const { return false; }
+    Boolean Decimal::operator&&(const Decimal &) const { return false; }
+    Boolean Decimal::operator||(const Decimal &) const { return false; }
+    
 } // dat

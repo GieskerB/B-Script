@@ -23,36 +23,39 @@ namespace dat {
 
         uint8_t c_SCALING_FACTOR;
 
-        static std::pair<std::string, std::string> slip(const std::string &);
 
     public:
         Decimal() = delete;
-        Decimal(const Decimal&);
+        Decimal(const Decimal&) = default;
+        explicit Decimal(std::string, Size = Size::LONG, uint8_t = 16);
         explicit Decimal(const Boolean&);
         explicit Decimal(const Integer&);
         explicit Decimal(const String&);
-        explicit Decimal(std::string, Size = Size::LONG, uint8_t = 16);
 
         [[nodiscard]] std::string to_string() const;
         void print(std::ostream& os) const override;
 
-        VariantTypes operator+(const VariantTypes &) const;
-        VariantTypes operator-(const VariantTypes &) const;
-        VariantTypes operator*(const VariantTypes &) const;
-        VariantTypes operator/(const VariantTypes &) const;
+        operator Boolean() const;
+        operator Integer() const;
+        operator String() const;
+        
+        Decimal operator+(const Decimal &) const;
+        Decimal operator-(const Decimal &) const;
+        Decimal operator*(const Decimal &) const;
+        Decimal operator/(const Decimal &) const;
 
-        VariantTypes operator+() const;
-        VariantTypes operator-() const;
-        VariantTypes operator!() const;
+        Decimal operator+() const;
+        Decimal operator-() const;
+        Decimal operator!() const;
 
-        Boolean operator<( const VariantTypes&) const;
-        Boolean operator>( const VariantTypes&) const;
-        Boolean operator<=( const VariantTypes&) const;
-        Boolean operator>=( const VariantTypes&) const;
-        Boolean operator==( const VariantTypes&) const;
-        Boolean operator!=( const VariantTypes&) const;
-        Boolean operator&&( const VariantTypes&) const;
-        Boolean operator||( const VariantTypes&) const;
+        Boolean operator<( const Decimal&) const;
+        Boolean operator>( const Decimal&) const;
+        Boolean operator<=( const Decimal&) const;
+        Boolean operator>=( const Decimal&) const;
+        Boolean operator==( const Decimal&) const;
+        Boolean operator!=( const Decimal&) const;
+        Boolean operator&&( const Decimal&) const;
+        Boolean operator||( const Decimal&) const;
     };
 } // dat
 

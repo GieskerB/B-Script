@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "../Lexer/Position.hpp"
-#include "SymboleTable.hpp"
+#include "SymbolTable.hpp"
 
 namespace itp {
 

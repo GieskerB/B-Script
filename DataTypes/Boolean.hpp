@@ -28,9 +28,9 @@ namespace dat {
 
         TriState m_storage;
 
+        Boolean(TriState);
+        Boolean(bool);
 
-        explicit Boolean(TriState);
-        explicit Boolean(bool);
 
     public:
 
@@ -39,32 +39,36 @@ namespace dat {
         static const std::string NEUTRAL;
 
         Boolean() = delete;
-        Boolean(const Boolean&);
+        Boolean(const Boolean&) = default;
+        explicit Boolean(const std::string &);
         explicit Boolean(const Integer&);
         explicit Boolean(const Decimal&);
         explicit Boolean(const String&);
-        explicit Boolean(const std::string&);
 
         [[nodiscard]] std::string to_string() const;
-        void print(std::ostream& os) const override;
+        void print(std::ostream &os) const override;
 
-        VariantTypes operator+(const VariantTypes &) const;
-        VariantTypes operator-(const VariantTypes &) const;
-        VariantTypes operator*(const VariantTypes &) const;
-        VariantTypes operator/(const VariantTypes &) const;
+        operator Integer() const;
+        operator Decimal() const;
+        operator String() const;
 
-        VariantTypes operator+() const;
-        VariantTypes operator-() const;
-        VariantTypes operator!() const;
+        Boolean operator+(const Boolean &) const;
+        Boolean operator-(const Boolean &) const;
+        Boolean operator*(const Boolean &) const;
+        Boolean operator/(const Boolean &) const;
 
-        Boolean operator<(const VariantTypes&) const;
-        Boolean operator>(const VariantTypes&) const;
-        Boolean operator<=(const VariantTypes&) const;
-        Boolean operator>=(const VariantTypes&) const;
-        Boolean operator==(const VariantTypes&) const;
-        Boolean operator!=(const VariantTypes&) const;
-        Boolean operator&&(const VariantTypes&) const;
-        Boolean operator||(const VariantTypes&) const;
+        Boolean operator+() const;
+        Boolean operator-() const;
+        Boolean operator!() const;
+
+        Boolean operator<(const Boolean&) const;
+        Boolean operator>(const Boolean&) const;
+        Boolean operator<=(const Boolean&) const;
+        Boolean operator>=(const Boolean&) const;
+        Boolean operator==(const Boolean&) const;
+        Boolean operator!=(const Boolean&) const;
+        Boolean operator&&(const Boolean&) const;
+        Boolean operator||(const Boolean&) const;
     };
 
 } // dat

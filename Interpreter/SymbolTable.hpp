@@ -1,5 +1,5 @@
-#ifndef B_SHARP_SYMBOLETABLE_HPP
-#define B_SHARP_SYMBOLETABLE_HPP
+#ifndef B_SHARP_SYMBOLTABLE_HPP
+#define B_SHARP_SYMBOLTABLE_HPP
 
 #include <unordered_map>
 #include <string>
@@ -21,4 +21,4 @@ namespace itp {
     };
 } // itp
 
-#endif //B_SHARP_SYMBOLETABLE_HPP
+#endif //B_SHARP_SYMBOLTABLE_HPP

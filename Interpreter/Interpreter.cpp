@@ -1,7 +1,6 @@
-#include <cassert>
+#include "../DataTypes/Utility.hpp"
 #include "Interpreter.hpp"
 #include "Context.hpp"
-#include "../DataTypes/Utility.hpp"
 #include "../Error/Error.hpp"
 
 namespace itp {

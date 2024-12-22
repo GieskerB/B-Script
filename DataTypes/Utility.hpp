@@ -22,29 +22,29 @@ namespace dat {
     std::pair<uint64, bool> storage_addition(uint64, uint64, bool, bool);
     std::tuple<bool, bool, bool> storage_comparison(uint128, const uint128 &, bool, bool);
     std::tuple<bool, bool, bool> storage_comparison(uint64, uint64, bool, bool);
-    std::pair<uint128, uint128> shift_to_equal_size(uint64, uint64, int8_t);
-    uint64 unshift_form_equal_size(uint128, int8_t);
+    std::pair<uint128, uint128> shift_to_equal_scale(const uint64, const uint64, const int8_t);
+    uint64 unshift_form_equal_scale(const uint128, const int8_t);
     std::pair<lex::Position, lex::Position> get_position_form_variant(const VariantTypes &);
     std::ostream &operator<<(std::ostream &, const VariantTypes &);
-
-    VariantTypes operator+(const VariantTypes &, const VariantTypes &);
-    VariantTypes operator-(const VariantTypes &, const VariantTypes &);
-    VariantTypes operator*(const VariantTypes &, const VariantTypes &);
-    VariantTypes operator/(const VariantTypes &, const VariantTypes &);
-    VariantTypes operator+(const VariantTypes &);
-    VariantTypes operator-(const VariantTypes &);
-    VariantTypes operator!(const VariantTypes &);
-
-    Boolean operator<(const VariantTypes &, const VariantTypes &);
-    Boolean operator>(const VariantTypes &, const VariantTypes &);
-    Boolean operator<=(const VariantTypes &, const VariantTypes &);
-    Boolean operator>=(const VariantTypes &, const VariantTypes &);
-    Boolean operator==(const VariantTypes &, const VariantTypes &);
-    Boolean operator!=(const VariantTypes &, const VariantTypes &);
-    Boolean operator&&(const VariantTypes &, const VariantTypes &);
-    Boolean operator||(const VariantTypes &, const VariantTypes &);
-
-
+    
 } // dat
+
+
+dat::VariantTypes operator+(const dat::VariantTypes &, const dat::VariantTypes &);
+dat::VariantTypes operator-(const dat::VariantTypes &, const dat::VariantTypes &);
+dat::VariantTypes operator*(const dat::VariantTypes &, const dat::VariantTypes &);
+dat::VariantTypes operator/(const dat::VariantTypes &, const dat::VariantTypes &);
+dat::VariantTypes operator+(const dat::VariantTypes &);
+dat::VariantTypes operator-(const dat::VariantTypes &);
+dat::VariantTypes operator!(const dat::VariantTypes &);
+
+dat::Boolean operator<(const dat::VariantTypes &, const dat::VariantTypes &);
+dat::Boolean operator>(const dat::VariantTypes &, const dat::VariantTypes &);
+dat::Boolean operator<=(const dat::VariantTypes &, const dat::VariantTypes &);
+dat::Boolean operator>=(const dat::VariantTypes &, const dat::VariantTypes &);
+dat::Boolean operator==(const dat::VariantTypes &, const dat::VariantTypes &);
+dat::Boolean operator!=(const dat::VariantTypes &, const dat::VariantTypes &);
+dat::Boolean operator&&(const dat::VariantTypes &, const dat::VariantTypes &);
+dat::Boolean operator||(const dat::VariantTypes &, const dat::VariantTypes &);
 
 #endif //B_SHARP_UTILITY_HPP

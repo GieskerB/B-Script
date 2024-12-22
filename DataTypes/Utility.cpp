@@ -94,17 +94,17 @@ namespace dat {
             return Decimal(value_str, Size::LONG, 64 - required_bits_int_part);
         } else {
             auto size = static_cast<dat::Size>(param >> 4 & 0b1111);
-            if(param & lex::Keywords::BITMAP_INT) {
+            if (param & lex::Keywords::BITMAP_INT) {
                 return Integer(value_str, size, !(param & lex::Keywords::BITMAP_UNSIGNED));
             } else {
                 uint8_t scale_fac = param >> 16;
-                return Decimal(value_str,size,scale_fac);
+                return Decimal(value_str, size, scale_fac);
             }
         }
     }
 
     std::pair<uint128, bool>
-    storage_addition(uint128 storage1, const uint128& storage2, bool is_positive1, const bool is_positive2) {
+    storage_addition(uint128 storage1, const uint128 &storage2, bool is_positive1, const bool is_positive2) {
         if ((is_positive1 and is_positive2) or (!is_positive1 and !is_positive2)) {
             // Idea is: +5 + 2 = +(5 + 2)
             // And: -5 - 2 = -(5 + 2)
@@ -138,7 +138,8 @@ namespace dat {
     }
 
     std::tuple<bool, bool, bool>
-    storage_comparison(const uint128 storage1, const uint128& storage2, const bool is_positive1, const bool is_positive2) {
+    storage_comparison(const uint128 storage1, const uint128 &storage2, const bool is_positive1,
+                       const bool is_positive2) {
         bool is_smaller = (!is_positive1 and is_positive2) or (is_positive1 == is_positive2 and storage1 < storage2);
         bool is_equals = storage1 == storage2 and is_positive1 == is_positive2;
         bool is_bigger = (is_positive1 and !is_positive2) or (is_positive1 == is_positive2 and storage1 > storage2);
@@ -152,21 +153,21 @@ namespace dat {
     }
 
     std::pair<uint128, uint128>
-    shift_to_equal_size(const uint64 storage1, const uint64 storage2, const int8_t SCALING_DELTA) {
-        if (SCALING_DELTA > 0) {
-            return std::pair{storage1, (static_cast<uint128> (storage2)) << SCALING_DELTA};
-        } else if (SCALING_DELTA < 0) {
-            return std::pair{(static_cast<uint128> (storage1)) << -SCALING_DELTA, storage2};
+    shift_to_equal_scale(const uint64 storage1, const uint64 storage2, const int8_t scale_delta) {
+        if (scale_delta > 0) {
+            return std::pair{storage1, (static_cast<uint128> (storage2)) << scale_delta};
+        } else if (scale_delta < 0) {
+            return std::pair{(static_cast<uint128> (storage1)) << -scale_delta, storage2};
         } else {
             return std::pair{storage1, storage2};
         }
     }
 
-    uint64 unshift_form_equal_size(const uint128 large_storage1, const int8_t SCALING_DELTA) {
-        if (SCALING_DELTA < 0) {
-            return large_storage1 >> - SCALING_DELTA;
+    uint64 unshift_form_equal_scale(const uint128 storage, const int8_t scale_delta) {
+        if (scale_delta < 0) {
+            return storage >> -scale_delta;
         } else {
-            return large_storage1;
+            return storage;
         }
     }
 
@@ -185,217 +186,217 @@ namespace dat {
         return ostream;
     }
 
-    VariantTypes operator+(const VariantTypes &left, const VariantTypes &right) {
-        switch (left.index()) {
-            case 0:
-                return std::get<Boolean>(left) + right;
-            case 1:
-                return std::get<Integer>(left) + right;
-            case 2:
-                return std::get<Decimal>(left) + right;
-            case 3:
-                return std::get<String>(left) + right;
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    VariantTypes operator-(const VariantTypes &left, const VariantTypes &right) {
-//        return std::visit([&right](auto&& leftValue) {
-//            return leftValue - right;
-//        }, left);
-        switch (left.index()) {
-            case 0:
-                return std::get<Boolean>(left) - right;
-            case 1:
-                return std::get<Integer>(left) - right;
-            case 2:
-                return std::get<Decimal>(left) - right;
-            case 3:
-                return std::get<String>(left) - right;
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    VariantTypes operator*(const VariantTypes &left, const VariantTypes &right) {
-        switch (left.index()) {
-            case 0:
-                return std::get<Boolean>(left) * right;
-            case 1:
-                return std::get<Integer>(left) * right;
-            case 2:
-                return std::get<Decimal>(left) * right;
-            case 3:
-                return std::get<String>(left) * right;
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    VariantTypes operator/(const VariantTypes &left, const VariantTypes &right) {
-        switch (left.index()) {
-            case 0:
-                return std::get<Boolean>(left) / right;
-            case 1:
-                return std::get<Integer>(left) / right;
-            case 2:
-                return std::get<Decimal>(left) / right;
-            case 3:
-                return std::get<String>(left) / right;
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    Boolean operator<(const VariantTypes &left, const VariantTypes &right) {
-        switch (left.index()) {
-            case 0:
-                return std::get<Boolean>(left) < right;
-            case 1:
-                return std::get<Integer>(left) < right;
-            case 2:
-                return std::get<Decimal>(left) < right;
-            case 3:
-                return std::get<String>(left) < right;
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    Boolean operator<=(const VariantTypes &left, const VariantTypes &right) {
-        switch (left.index()) {
-            case 0:
-                return std::get<Boolean>(left) <= right;
-            case 1:
-                return std::get<Integer>(left) <= right;
-            case 2:
-                return std::get<Decimal>(left) <= right;
-            case 3:
-                return std::get<String>(left) <= right;
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    Boolean operator>(const VariantTypes &left, const VariantTypes &right) {
-        switch (left.index()) {
-            case 0:
-                return std::get<Boolean>(left) > right;
-            case 1:
-                return std::get<Integer>(left) > right;
-            case 2:
-                return std::get<Decimal>(left) > right;
-            case 3:
-                return std::get<String>(left) > right;
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    Boolean operator>=(const VariantTypes &left, const VariantTypes &right) {
-        switch (left.index()) {
-            case 0:
-                return std::get<Boolean>(left) >= right;
-            case 1:
-                return std::get<Integer>(left) >= right;
-            case 2:
-                return std::get<Decimal>(left) >= right;
-            case 3:
-                return std::get<String>(left) >= right;
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    Boolean operator==(const VariantTypes &left, const VariantTypes &right) {
-        switch (left.index()) {
-            case 0:
-                return std::get<Boolean>(left) == right;
-            case 1:
-                return std::get<Integer>(left) == right;
-            case 2:
-                return std::get<Decimal>(left) == right;
-            case 3:
-                return std::get<String>(left) == right;
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    Boolean operator!=(const VariantTypes &left, const VariantTypes &right) {
-        switch (left.index()) {
-            case 0:
-                return std::get<Boolean>(left) != right;
-            case 1:
-                return std::get<Integer>(left) != right;
-            case 2:
-                return std::get<Decimal>(left) != right;
-            case 3:
-                return std::get<String>(left) != right;
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    Boolean operator&&(const VariantTypes &left, const VariantTypes &right) {
-        switch (left.index()) {
-            case 0:
-                return std::get<Boolean>(left) && right;
-            case 1:
-                return std::get<Integer>(left) && right;
-            case 2:
-                return std::get<Decimal>(left) && right;
-            case 3:
-                return std::get<String>(left) && right;
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    Boolean operator||(const VariantTypes &left, const VariantTypes &right) {
-        switch (left.index()) {
-            case 0:
-                return std::get<Boolean>(left) || right;
-            case 1:
-                return std::get<Integer>(left) || right;
-            case 2:
-                return std::get<Decimal>(left) || right;
-            case 3:
-                return std::get<String>(left) || right;
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    VariantTypes operator+(const VariantTypes &var) {
-        switch (var.index()) {
-            case 0:
-                return +std::get<Boolean>(var);
-            case 1:
-                return +std::get<Integer>(var);
-            case 2:
-                return +std::get<Decimal>(var);
-            case 3:
-                return +std::get<String>(var);
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    VariantTypes operator-(const VariantTypes &var) {
-        switch (var.index()) {
-            case 0:
-                return -std::get<Boolean>(var);
-            case 1:
-                return -std::get<Integer>(var);
-            case 2:
-                return -std::get<Decimal>(var);
-            case 3:
-                return -std::get<String>(var);
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
-
-    VariantTypes operator!(const VariantTypes &var) {
-        switch (var.index()) {
-            case 0:
-                return -std::get<Boolean>(var);
-            case 1:
-                return -std::get<Integer>(var);
-            case 2:
-                return -std::get<Decimal>(var);
-            case 3:
-                return -std::get<String>(var);
-        }
-        throw std::runtime_error("std::variant error in Utility operator");
-    }
+//    VariantTypes operator+(const VariantTypes &left, const VariantTypes &right) {
+//        switch (left.index()) {
+//            case 0:
+//                return std::get<Boolean>(left) + right;
+//            case 1:
+//                return std::get<Integer>(left) + right;
+//            case 2:
+//                return std::get<Decimal>(left) + right;
+//            case 3:
+//                return std::get<String>(left) + right;
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    VariantTypes operator-(const VariantTypes &left, const VariantTypes &right) {
+////        return std::visit([&right](auto&& leftValue) {
+////            return leftValue - right;
+////        }, left);
+//        switch (left.index()) {
+//            case 0:
+//                return std::get<Boolean>(left) - right;
+//            case 1:
+//                return std::get<Integer>(left) - right;
+//            case 2:
+//                return std::get<Decimal>(left) - right;
+//            case 3:
+//                return std::get<String>(left) - right;
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    VariantTypes operator*(const VariantTypes &left, const VariantTypes &right) {
+//        switch (left.index()) {
+//            case 0:
+//                return std::get<Boolean>(left) * right;
+//            case 1:
+//                return std::get<Integer>(left) * right;
+//            case 2:
+//                return std::get<Decimal>(left) * right;
+//            case 3:
+//                return std::get<String>(left) * right;
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    VariantTypes operator/(const VariantTypes &left, const VariantTypes &right) {
+//        switch (left.index()) {
+//            case 0:
+//                return std::get<Boolean>(left) / right;
+//            case 1:
+//                return std::get<Integer>(left) / right;
+//            case 2:
+//                return std::get<Decimal>(left) / right;
+//            case 3:
+//                return std::get<String>(left) / right;
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    Boolean operator<(const VariantTypes &left, const VariantTypes &right) {
+//        switch (left.index()) {
+//            case 0:
+//                return std::get<Boolean>(left) < right;
+//            case 1:
+//                return std::get<Integer>(left) < right;
+//            case 2:
+//                return std::get<Decimal>(left) < right;
+//            case 3:
+//                return std::get<String>(left) < right;
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    Boolean operator<=(const VariantTypes &left, const VariantTypes &right) {
+//        switch (left.index()) {
+//            case 0:
+//                return std::get<Boolean>(left) <= right;
+//            case 1:
+//                return std::get<Integer>(left) <= right;
+//            case 2:
+//                return std::get<Decimal>(left) <= right;
+//            case 3:
+//                return std::get<String>(left) <= right;
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    Boolean operator>(const VariantTypes &left, const VariantTypes &right) {
+//        switch (left.index()) {
+//            case 0:
+//                return std::get<Boolean>(left) > right;
+//            case 1:
+//                return std::get<Integer>(left) > right;
+//            case 2:
+//                return std::get<Decimal>(left) > right;
+//            case 3:
+//                return std::get<String>(left) > right;
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    Boolean operator>=(const VariantTypes &left, const VariantTypes &right) {
+//        switch (left.index()) {
+//            case 0:
+//                return std::get<Boolean>(left) >= right;
+//            case 1:
+//                return std::get<Integer>(left) >= right;
+//            case 2:
+//                return std::get<Decimal>(left) >= right;
+//            case 3:
+//                return std::get<String>(left) >= right;
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    Boolean operator==(const VariantTypes &left, const VariantTypes &right) {
+//        switch (left.index()) {
+//            case 0:
+//                return std::get<Boolean>(left) == right;
+//            case 1:
+//                return std::get<Integer>(left) == right;
+//            case 2:
+//                return std::get<Decimal>(left) == right;
+//            case 3:
+//                return std::get<String>(left) == right;
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    Boolean operator!=(const VariantTypes &left, const VariantTypes &right) {
+//        switch (left.index()) {
+//            case 0:
+//                return std::get<Boolean>(left) != right;
+//            case 1:
+//                return std::get<Integer>(left) != right;
+//            case 2:
+//                return std::get<Decimal>(left) != right;
+//            case 3:
+//                return std::get<String>(left) != right;
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    Boolean operator&&(const VariantTypes &left, const VariantTypes &right) {
+//        switch (left.index()) {
+//            case 0:
+//                return std::get<Boolean>(left) && right;
+//            case 1:
+//                return std::get<Integer>(left) && right;
+//            case 2:
+//                return std::get<Decimal>(left) && right;
+//            case 3:
+//                return std::get<String>(left) && right;
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    Boolean operator||(const VariantTypes &left, const VariantTypes &right) {
+//        switch (left.index()) {
+//            case 0:
+//                return std::get<Boolean>(left) || right;
+//            case 1:
+//                return std::get<Integer>(left) || right;
+//            case 2:
+//                return std::get<Decimal>(left) || right;
+//            case 3:
+//                return std::get<String>(left) || right;
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    VariantTypes operator+(const VariantTypes &var) {
+//        switch (var.index()) {
+//            case 0:
+//                return +std::get<Boolean>(var);
+//            case 1:
+//                return +std::get<Integer>(var);
+//            case 2:
+//                return +std::get<Decimal>(var);
+//            case 3:
+//                return +std::get<String>(var);
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    VariantTypes operator-(const VariantTypes &var) {
+//        switch (var.index()) {
+//            case 0:
+//                return -std::get<Boolean>(var);
+//            case 1:
+//                return -std::get<Integer>(var);
+//            case 2:
+//                return -std::get<Decimal>(var);
+//            case 3:
+//                return -std::get<String>(var);
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
+//
+//    VariantTypes operator!(const VariantTypes &var) {
+//        switch (var.index()) {
+//            case 0:
+//                return -std::get<Boolean>(var);
+//            case 1:
+//                return -std::get<Integer>(var);
+//            case 2:
+//                return -std::get<Decimal>(var);
+//            case 3:
+//                return -std::get<String>(var);
+//        }
+//        throw std::runtime_error("std::variant error in Utility operator");
+//    }
 
 } // dat

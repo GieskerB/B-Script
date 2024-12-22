@@ -1,5 +1,5 @@
 
-#include "SymboleTable.hpp"
+#include "SymbolTable.hpp"
 
 namespace itp {
     SymbolTable::SymbolTable(SymbolTable *parent) : p_parent(parent) {}

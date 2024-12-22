@@ -4,7 +4,7 @@
 
 namespace dat {
 
-    Integer::Integer(const Boolean &other) : Number(Size::BYTE, true), c_IS_SIGNED(false) {
+    Integer::Integer(const Boolean &other) : Number(Size::BYTE, true), c_SIGNED(false) {
         switch (other.m_storage) {
             case Boolean::TriState::TRUE:
                 m_storage = 1;
@@ -20,16 +20,12 @@ namespace dat {
         }
     }
 
-    Integer::Integer(const Integer &other) : Number(other.c_SIZE, other.m_is_positive), c_IS_SIGNED(other.c_IS_SIGNED) {
-        m_storage = other.m_storage;
-    }
-
     Integer::Integer(const Decimal &other) : Number(other.c_SIZE, other.m_is_positive),
-                                             c_IS_SIGNED(false) {
+                                             c_SIGNED(false) {
         m_storage = other.m_storage >> other.c_SCALING_FACTOR;
     }
 
-    Integer::Integer(const String &other) : Number(Size::LONG, false), c_IS_SIGNED(false) {
+    Integer::Integer(const String &other) : Number(Size::LONG, false), c_SIGNED(false) {
         throw err::RuntimeError(other.position().first, other.position().second,
                                 "Casting error form String to Integer.",
                                 other.context());
@@ -38,7 +34,7 @@ namespace dat {
 
     Integer::Integer(std::string str_repr, Size size, bool is_signed) : Number(size,
                                                                                str_repr.empty() or str_repr[0] != '-'),
-                                                                        c_IS_SIGNED(is_signed) {
+                                                                        c_SIGNED(is_signed) {
         if (str_repr.empty()) {
             return;
         }
@@ -62,6 +58,45 @@ namespace dat {
     void Integer::print(std::ostream &os) const {
         os << to_string();
     }
+
+    Integer::operator Boolean() const {
+        return Boolean{*this};
+    }
+    Integer::operator Decimal() const {
+        return Decimal{*this};
+    }
+    Integer::operator String() const {
+        return String{*this};
+    }
+
+    Integer Integer::operator+(const Integer &other) const {
+        return Integer{std::string{"0"}};
+    }
+
+    Integer Integer::operator-(const Integer &other) const {
+        return Integer{std::string{"0"}};
+    }
+
+    Integer Integer::operator*(const Integer &other) const {
+        return Integer{std::string{"0"}};
+    }
+
+    Integer Integer::operator/(const Integer &) const {
+        throw std::runtime_error("Binary Operator with a Boolean in the denominator is not defined!");
+    }
+
+    Integer Integer::operator+() const { return Integer{std::string{"0"}}; }
+    Integer Integer::operator-() const { return Integer{std::string{"0"}}; }
+    Integer Integer::operator!() const { return Integer{std::string{"0"}}; }
+
+    Boolean Integer::operator<(const Integer &) const { return false; }
+    Boolean Integer::operator>(const Integer &) const { return false; }
+    Boolean Integer::operator<=(const Integer &) const { return false; }
+    Boolean Integer::operator>=(const Integer &) const { return false; }
+    Boolean Integer::operator==(const Integer &) const { return false; }
+    Boolean Integer::operator!=(const Integer &) const { return false; }
+    Boolean Integer::operator&&(const Integer &) const { return false; }
+    Boolean Integer::operator||(const Integer &) const { return false; }
 
 
 } // dat

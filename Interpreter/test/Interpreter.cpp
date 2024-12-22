@@ -77,7 +77,7 @@ dat::VariantTypes eval_value_node(const ValueExpression&  val_expr, const itp::C
 }
 
 dat::VariantTypes evaluate_statement(const std::shared_ptr<Statement>& statement,const itp::Context& context) {
-    dat::VariantTypes value = dat::Integer("0");
+    dat::VariantTypes value = dat::Integer(std::string{"0"});
     switch (statement->get_type()) {
         case PROGRAM:
             value = evaluate_program(*std::dynamic_pointer_cast<Program>(statement));

@@ -1,5 +1,5 @@
 #include "Context.hpp"
-#include "SymboleTable.hpp"
+#include "SymbolTable.hpp"
 
 #include <utility>
 
