@@ -47,4 +47,6 @@ dat::Boolean operator!=(const dat::VariantTypes &, const dat::VariantTypes &);
 dat::Boolean operator&&(const dat::VariantTypes &, const dat::VariantTypes &);
 dat::Boolean operator||(const dat::VariantTypes &, const dat::VariantTypes &);
 
+//TODO: Take a look at this operator<=>
+
 #endif //B_SHARP_UTILITY_HPP

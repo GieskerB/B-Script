@@ -68,24 +68,24 @@ namespace dat {
         return String{*this};
     }
 
-    Boolean Boolean::operator+(const Boolean &other) const {
+    Integer Boolean::operator+(const Boolean &other) const {
         return static_cast<Integer>(*this) + static_cast<Integer>(other);
     }
 
-    Boolean Boolean::operator-(const Boolean &other) const {
+    Integer Boolean::operator-(const Boolean &other) const {
         return static_cast<Integer>(*this) - static_cast<Integer>(other);
     }
 
-    Boolean Boolean::operator*(const Boolean &other) const {
+    Integer Boolean::operator*(const Boolean &other) const {
         return static_cast<Integer>(*this) * static_cast<Integer>(other);
     }
 
-    Boolean Boolean::operator/(const Boolean &) const {
+    Integer Boolean::operator/(const Boolean &) const {
         throw std::runtime_error("Binary Operator with a Boolean in the denominator is not defined!");
     }
 
-    Boolean Boolean::operator+() const { return false; }
-    Boolean Boolean::operator-() const { return false; }
+    Integer Boolean::operator+() const { return Integer{std::string {"0"}}; }
+    Integer Boolean::operator-() const { return Integer{std::string {"0"}}; }
     Boolean Boolean::operator!() const { return false; }
 
     Boolean Boolean::operator<(const Boolean &) const { return false; }

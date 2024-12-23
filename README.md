@@ -15,20 +15,20 @@ can also be chosen at runtime and these different FixedPoint object can be used 
 
 ### Special Feature
 
-Because of the motivation the _special feature_ of B-Script is the usage of this Fixed-Point class \underline{instead 
-of} floats or double! 
+Because of the motivation the _special feature_ of B-Script is the usage of this Fixed-Point class \underline{instead
+of} floats or double!
 
 ### Datatypes
 
-As a simple name for the Fixed-Point variable I chose 'dec' as in decimal number. Not to be confused with decimal as a 
+As a simple name for the Fixed-Point variable I chose 'dec' as in decimal number. Not to be confused with decimal as a
 base 10 number also that is true, too.
 
-In addition to the Fixed-Point class, I have created a custom Integer class to make if easier for me to implement lex_all
+In addition to the Fixed-Point class, I have created a custom Integer class to make if easier for me to implement
+lex_all
 the different operators. Since floats and doubles are missing, currently only two datatypes exists: int, dec (bool, str
 and maybe char may follow)\
 But both int and dec can be stored as a 1, 2, 4 or 8 Byte variable. This will be set by the variable type. In addition,
 as written earlier, the scaling factor for the Fixed-Point class can be chosen as well.
-
 
 An example of how this might look:
 
@@ -65,3 +65,86 @@ factor      : INT | DEC | BOOL | STR | IDENTIFIER
               '(' expression ')'
 ```
 
+### Operator implementation
+
+This list of operators does B-Script support:
+
+#### Arithmetic:
+
+- operator+ $\rightarrow$ ``` 12.34 + 7 ``` or ``` +5 ```
+- operator- $\rightarrow$ ``` 3 - 91 ``` or ``` -3.14 ```
+- operator* $\rightarrow$ ``` 2.5 * 0.5 ```
+- operator/ $\rightarrow$ ``` 1 / 6.543 ```
+
+#### Compare:
+
+- operator< $\rightarrow$ ``` 3 < 4 ```
+- operator> $\rightarrow$ ``` 1.2 > -15 ```
+- operator<= $\rightarrow$ ``` 7 <= 13.1 ```
+- operator>= $\rightarrow$ ``` -14.14 >= 123 ```
+- operator== $\rightarrow$ ``` 4 == 4 ```
+- operator!= $\rightarrow$ ``` 3.14 != 3 ```
+
+#### Logic:
+
+- operator! $\rightarrow$ ``` !true ```
+- operator&& $\rightarrow$ ``` true && false ```
+- operator|| $\rightarrow$ ``` false || true ```
+
+|  operator+  | Boolean | Integer | Decimal | String |
+|:-----------:|:-------:|:-------:|:-------:|:------:|
+| **Boolean** | Integer | Integer | Decimal | String |
+| **Integer** |    ~    | Integer | Decimal | String |
+| **Decimal** |    ~    |    ~    | Decimal | String |
+| **String**  |    ~    |    ~    |    ~    | String |
+
+|  operator-  | Boolean | Integer | Decimal | String |
+|:-----------:|:-------:|:-------:|:-------:|:------:|
+| **Boolean** | Integer | Integer | Decimal | *n.d.* |
+| **Integer** |    ~    | Integer | Decimal | *n.d.* |
+| **Decimal** |    ~    |    ~    | Decimal | *n.d.* |
+| **String**  |    ~    |    ~    |    ~    | *n.d.* |
+
+|  operator*  | Boolean | Integer | Decimal | String |
+|:-----------:|:-------:|:-------:|:-------:|:------:|
+| **Boolean** | Integer | Integer | Decimal | *n.d.* |
+| **Integer** |    ~    | Integer | Decimal | String |
+| **Decimal** |    ~    |    ~    | Decimal | *n.d.* |
+| **String**  |    ~    |    ~    |    ~    | *n.d.* |
+
+|  operator/  | Boolean | Integer | Decimal | String |
+|:-----------:|:-------:|:-------:|:-------:|:------:|
+| **Boolean** | *n.d.*  | *n.d.*  | *n.d.*  | *n.d.* |
+| **Integer** |    ~    | Integer | Decimal | *n.d.* |
+| **Decimal** |    ~    |    ~    | Decimal | *n.d.* |
+| **String**  |    ~    |    ~    |    ~    | *n.d.* |
+
+| Unary-operators | Boolean | Integer | Decimal | String |
+|:---------------:|:-------:|:-------:|:-------:|:------:|
+|  **operator+**  | Integer | Integer | Decimal | *n.d.* |
+|  **operator-**  | Integer | Integer | Decimal | *n.d.* |
+|  **operator!**  | Boolean | *n.d.*  | *n.d.*  | *n.d.* |
+
+| Compare-operators | Boolean | Integer | Decimal | String  |
+|:-----------------:|:-------:|:-------:|:-------:|:-------:|
+|    **Boolean**    | *n.d.*  | *n.d.*  | *n.d.*  | *n.d.*  |
+|    **Integer**    |    ~    | Boolean | Boolean | *n.d.*  |
+|    **Decimal**    |    ~    |    ~    | Boolean | *n.d.*  |
+|    **String**     |    ~    |    ~    |    ~    | Boolean |
+
+| Logic-operators | Boolean | Integer | Decimal | String |
+|:---------------:|:-------:|:-------:|:-------:|:------:|
+|   **Boolean**   | Boolean | *n.d.*  | *n.d.*  | *n.d.* |
+|   **Integer**   | *n.d.*  | *n.d.*  | *n.d.*  | *n.d.* |
+|   **Decimal**   | *n.d.*  | *n.d.*  | *n.d.*  | *n.d.* |
+|   **String**    | *n.d.*  | *n.d.*  | *n.d.*  | *n.d.* |
+
+
+#### Casting
+
+| To\\From | Boolean | Integer | Decimal | String |
+|:--------:|:-------:|:-------:|:-------:|:------:|
+| Boolean  |    ~    |   yes   |   yes   |   no   |
+| Integer  |   yes   |    ~    |   yes   |   no   |
+| Decimal  |   yes   |   yes   |    ~    |   no   |
+|  String  |   yes   |   yes   |   yes   |   ~    |

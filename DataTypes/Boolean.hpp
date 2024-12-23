@@ -52,13 +52,13 @@ namespace dat {
         operator Decimal() const;
         operator String() const;
 
-        Boolean operator+(const Boolean &) const;
-        Boolean operator-(const Boolean &) const;
-        Boolean operator*(const Boolean &) const;
-        Boolean operator/(const Boolean &) const;
+        Integer operator+(const Boolean &) const;
+        Integer operator-(const Boolean &) const;
+        Integer operator*(const Boolean &) const;
+        Integer operator/(const Boolean &) const;
 
-        Boolean operator+() const;
-        Boolean operator-() const;
+        Integer operator+() const;
+        Integer operator-() const;
         Boolean operator!() const;
 
         Boolean operator<(const Boolean&) const;
